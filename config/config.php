@@ -5,8 +5,7 @@
  */
 
 define('SITE_NAME', 'Smart Instructor System - UCSC');
-define('APP_ROOT_URL', '/' . basename(dirname(__DIR__)));
-define('SITE_URL', 'http://localhost' . APP_ROOT_URL);
+define('SITE_URL', 'http://localhost/Smart-Instructor-Coordination-and-Workload-Management-System');
 define('VERSION', '1.0.0');
 
 // Default pagination
@@ -33,15 +32,19 @@ define('STATUS_REJECTED', 'Rejected');
 define('STATUS_ASSIGNED', 'Assigned');
 define('STATUS_COMPLETED', 'Completed');
 
-function app_url(string $path = ''): string
-{
-	$baseUrl = rtrim(SITE_URL, '/');
-	$path = ltrim($path, '/');
-
-	return $path === '' ? $baseUrl : $baseUrl . '/' . $path;
-}
-
 // Date format
 define('DATE_FORMAT', 'Y-m-d');
 define('DATETIME_FORMAT', 'Y-m-d H:i:s');
+
+/**
+ * Build absolute URL from relative path
+ * Usage: app_url('admin/dashboard.php') → 'http://localhost/.../admin/dashboard.php'
+ */
+function app_url($path = '') {
+    $url = rtrim(SITE_URL, '/');
+    if ($path) {
+        $url .= '/' . ltrim($path, '/');
+    }
+    return $url;
+}
 ?>
