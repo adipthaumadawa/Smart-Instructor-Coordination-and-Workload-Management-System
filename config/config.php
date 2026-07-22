@@ -1,11 +1,17 @@
 <?php
+
 /**
  * Application Configuration
  * Smart Instructor Coordination and Workload Management System
  */
 
 define('SITE_NAME', 'Smart Instructor System - UCSC');
-define('SITE_URL', 'http://localhost/Smart-Instructor-Coordination-and-Workload-Management-System');
+
+define(
+    'SITE_URL',
+    'http://localhost/Smart-Instructor-Coordination-and-Workload-Management-System'
+);
+
 define('VERSION', '1.0.0');
 
 // Default pagination
@@ -38,13 +44,16 @@ define('DATETIME_FORMAT', 'Y-m-d H:i:s');
 
 /**
  * Build absolute URL from relative path
- * Usage: app_url('admin/dashboard.php') → 'http://localhost/.../admin/dashboard.php'
+ * Example:
+ * app_url('admin/dashboard.php')
  */
-function app_url($path = '') {
+function app_url($path = '')
+{
     $url = rtrim(SITE_URL, '/');
+
     if ($path) {
         $url .= '/' . ltrim($path, '/');
     }
+
     return $url;
 }
-?>
