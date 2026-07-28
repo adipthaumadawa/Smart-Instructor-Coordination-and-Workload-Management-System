@@ -1,25 +1,34 @@
 <?php
+/**
+ * Login page
+ * Framework-free: no Bootstrap / Font Awesome / Material / Google Fonts CDN
+ */
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 
-if (isLoggedIn()) { header('Location: ' . getDashboardPath($_SESSION['role_id'])); exit; }
+if (isLoggedIn()) {
+    header('Location: ' . getDashboardPath($_SESSION['role_id']));
+    exit;
+}
 
-$error   = '';
+$error = '';
 $success = isset($_GET['logged_out']) ? 'You have been logged out successfully.' : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email    = trim($_POST['email'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     if ($email === '' || $password === '') {
         $error = 'Please enter both email and password.';
     } elseif (loginUser($email, $password)) {
-        header('Location: ' . getDashboardPath($_SESSION['role_id'])); exit;
+        header('Location: ' . getDashboardPath($_SESSION['role_id']));
+        exit;
     } else {
         $error = 'Invalid email or password, or account is inactive.';
     }
@@ -42,38 +51,29 @@ $demoAccounts = [
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | UCSC Smart Instructor System</title>
   <meta name="description" content="Sign in to the UCSC Smart Instructor Coordination System">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
   <style>
-    /* ── Stitch Login Theme ───────────────────────────────── */
     :root {
-      --primary:       #000a1e;
-      --primary-mid:   #002147;
-      --secondary:     #006a6a;
+      --primary: #000a1e;
+      --primary-mid: #002147;
+      --secondary: #006a6a;
       --sec-container: #90efef;
-      --surface:       #f7f9fb;
-      --surface-card:  #ffffff;
-      --surface-low:   #f2f4f6;
-      --on-surface:    #191c1e;
-      --on-surf-var:   #44474e;
-      --outline:       #c4c6cf;
-      --outline-str:   #74777f;
-      --error:         #ba1a1a;
+      --surface: #f7f9fb;
+      --surface-card: #ffffff;
+      --surface-low: #f2f4f6;
+      --on-surface: #191c1e;
+      --on-surf-var: #44474e;
+      --outline: #c4c6cf;
+      --outline-str: #74777f;
+      --error: #ba1a1a;
       --err-container: #ffdad6;
-      --err-on:        #93000a;
-      --green:         #1a7f1a;
-      --green-soft:    #e6f4e6;
-      --ff: 'Inter', 'Segoe UI', system-ui, sans-serif;
-      --r-sm: 8px;
+      --err-on: #93000a;
+      --green: #1a7f1a;
+      --green-soft: #e6f4e6;
+      --ff: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       --r-md: 12px;
-      --r-lg: 16px;
-      --shadow: 0 4px 24px rgba(0,0,0,.10);
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html, body {
       height: 100%;
       font-family: var(--ff);
@@ -82,14 +82,7 @@ $demoAccounts = [
       color: var(--on-surface);
       -webkit-font-smoothing: antialiased;
     }
-
-    /* ── Layout ─────────────────────────────────────────────*/
-    .login-root {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* LEFT – white form panel */
+    .login-root { display: flex; min-height: 100vh; }
     .login-left {
       width: 100%;
       max-width: 480px;
@@ -97,14 +90,12 @@ $demoAccounts = [
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding: 56px 56px;
+      padding: 56px;
       background: var(--surface-card);
       box-shadow: 2px 0 12px rgba(0,0,0,.06);
       overflow-y: auto;
       z-index: 2;
     }
-
-    /* RIGHT – dark navy hero panel */
     .login-right {
       flex: 1;
       background: linear-gradient(160deg, var(--primary) 0%, var(--primary-mid) 100%);
@@ -117,8 +108,6 @@ $demoAccounts = [
       position: relative;
       overflow: hidden;
     }
-
-    /* Subtle building image overlay */
     .login-right::before {
       content: '';
       position: absolute;
@@ -130,22 +119,14 @@ $demoAccounts = [
       opacity: .04;
       pointer-events: none;
     }
-
     .login-right-inner { position: relative; z-index: 1; max-width: 460px; }
-
-    /* ── Branding ────────────────────────────────────────── */
     .login-logo-wrap {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
       margin-bottom: 36px;
     }
-    .login-logo {
-      height: 80px;
-      width: auto;
-      margin-bottom: 20px;
-      object-fit: contain;
-    }
+    .login-logo { height: 80px; width: auto; margin-bottom: 20px; object-fit: contain; }
     .login-app-name {
       font-size: 1.75rem;
       font-weight: 700;
@@ -161,12 +142,8 @@ $demoAccounts = [
       text-transform: uppercase;
       color: var(--on-surf-var);
     }
-
-    /* ── Form ────────────────────────────────────────────── */
     .login-form { display: flex; flex-direction: column; gap: 20px; }
-
     .field-group { display: flex; flex-direction: column; gap: 6px; }
-
     .field-label {
       font-size: .78rem;
       font-weight: 700;
@@ -174,7 +151,6 @@ $demoAccounts = [
       text-transform: uppercase;
       color: var(--on-surf-var);
     }
-
     .field-label-row {
       display: flex;
       justify-content: space-between;
@@ -185,22 +161,18 @@ $demoAccounts = [
       font-weight: 600;
       color: var(--secondary);
       text-decoration: none;
-      transition: opacity .15s;
     }
     .field-label-row a:hover { opacity: .75; }
-
     .input-wrap { position: relative; }
     .input-icon {
-      font-family: 'Material Symbols Outlined';
       position: absolute;
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 18px;
+      font-size: 14px;
       color: var(--outline-str);
       line-height: 1;
       pointer-events: none;
-      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
     }
     .login-input {
       width: 100%;
@@ -221,7 +193,6 @@ $demoAccounts = [
       background: #fff;
     }
     .login-input.pr { padding-right: 44px; }
-
     .toggle-pw {
       position: absolute;
       right: 10px;
@@ -230,41 +201,20 @@ $demoAccounts = [
       background: none;
       border: none;
       cursor: pointer;
-      padding: 4px;
+      padding: 4px 6px;
       color: var(--outline-str);
-      display: flex;
-      align-items: center;
-      transition: color .15s;
+      font-size: 13px;
+      font-family: var(--ff);
     }
     .toggle-pw:hover { color: var(--on-surface); }
-    .toggle-pw span {
-      font-family: 'Material Symbols Outlined';
-      font-size: 18px;
-      line-height: 1;
-      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-    }
-
-    /* Remember me */
-    .remember-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .remember-row { display: flex; align-items: center; gap: 8px; }
     .remember-row input[type="checkbox"] {
       width: 16px;
       height: 16px;
-      border: 1px solid var(--outline);
-      border-radius: 4px;
       accent-color: var(--secondary);
       cursor: pointer;
     }
-    .remember-row label {
-      font-size: .875rem;
-      color: var(--on-surf-var);
-      cursor: pointer;
-    }
-
-    /* Submit button */
+    .remember-row label { font-size: .875rem; color: var(--on-surf-var); cursor: pointer; }
     .btn-login {
       width: 100%;
       padding: 13px 20px;
@@ -275,7 +225,6 @@ $demoAccounts = [
       font-family: var(--ff);
       font-size: .875rem;
       font-weight: 700;
-      letter-spacing: .02em;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -284,14 +233,7 @@ $demoAccounts = [
       transition: background .15s ease, transform .1s ease;
     }
     .btn-login:hover { background: #001a3d; transform: translateY(-1px); }
-    .btn-login span {
-      font-family: 'Material Symbols Outlined';
-      font-size: 18px;
-      line-height: 1;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-
-    /* Alerts */
+    .btn-login:disabled { opacity: .75; cursor: wait; transform: none; }
     .login-alert {
       display: flex;
       align-items: flex-start;
@@ -301,18 +243,10 @@ $demoAccounts = [
       font-size: .875rem;
       font-weight: 500;
       line-height: 1.4;
+      margin-bottom: 20px;
     }
-    .login-alert span {
-      font-family: 'Material Symbols Outlined';
-      font-size: 18px;
-      line-height: 1.4;
-      flex-shrink: 0;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-    .alert-error   { background: var(--err-container); color: var(--err-on);   border: 1px solid #f5b7b7; }
-    .alert-success { background: var(--green-soft);    color: var(--green);     border: 1px solid #a7d7a7; }
-
-    /* Footer notice */
+    .alert-error { background: var(--err-container); color: var(--err-on); border: 1px solid #f5b7b7; }
+    .alert-success { background: var(--green-soft); color: var(--green); border: 1px solid #a7d7a7; }
     .login-footer {
       margin-top: 28px;
       padding-top: 20px;
@@ -326,19 +260,7 @@ $demoAccounts = [
       border-radius: var(--r-md);
       padding: 14px;
     }
-    .notice-box > span {
-      font-family: 'Material Symbols Outlined';
-      font-size: 20px;
-      color: var(--outline-str);
-      line-height: 1.3;
-      flex-shrink: 0;
-      font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
-    }
-    .notice-text {
-      font-size: .8rem;
-      color: var(--on-surf-var);
-      line-height: 1.55;
-    }
+    .notice-text { font-size: .8rem; color: var(--on-surf-var); line-height: 1.55; }
     .notice-contact {
       display: inline-flex;
       align-items: center;
@@ -349,16 +271,9 @@ $demoAccounts = [
       color: var(--secondary);
       text-decoration: none;
     }
-    .notice-contact span {
-      font-family: 'Material Symbols Outlined';
-      font-size: 14px;
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
-    }
     .notice-contact:hover { opacity: .75; }
-
-    /* Demo box */
     .demo-box {
-      margin-top: 16px;
+      margin-top: 12px;
       background: var(--surface-low);
       border: 1px solid var(--outline);
       border-radius: var(--r-md);
@@ -367,16 +282,12 @@ $demoAccounts = [
       color: var(--on-surf-var);
     }
     .demo-box strong { color: var(--secondary); font-weight: 700; }
-
-    /* ── Right panel content ──────────────────────────────── */
     .right-icon {
-      font-family: 'Material Symbols Outlined';
-      font-size: 72px;
+      font-size: 56px;
       color: var(--sec-container);
       line-height: 1;
       margin-bottom: 24px;
-      opacity: .85;
-      font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 48;
+      opacity: .9;
     }
     .right-title {
       font-size: 2.25rem;
@@ -388,7 +299,6 @@ $demoAccounts = [
     }
     .right-desc {
       font-size: 1rem;
-      font-weight: 400;
       color: rgba(255,255,255,.75);
       line-height: 1.65;
     }
@@ -398,56 +308,50 @@ $demoAccounts = [
       gap: 10px;
       margin-top: 40px;
     }
-    .right-dots span:first-child { width: 56px; height: 4px; border-radius: 999px; background: var(--sec-container); }
-    .right-dots span { width: 16px; height: 4px; border-radius: 999px; background: rgba(255,255,255,.25); }
-
-    /* ── Responsive ──────────────────────────────────────── */
+    .right-dots span:first-child {
+      width: 56px; height: 4px; border-radius: 999px; background: var(--sec-container);
+    }
+    .right-dots span {
+      width: 16px; height: 4px; border-radius: 999px; background: rgba(255,255,255,.25);
+    }
     @media (max-width: 768px) {
-      .login-right  { display: none; }
-      .login-left   { max-width: 100%; flex: 1; padding: 40px 28px; }
-      .login-logo   { height: 60px; }
+      .login-right { display: none; }
+      .login-left { max-width: 100%; flex: 1; padding: 40px 28px; }
+      .login-logo { height: 60px; }
       .login-app-name { font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
-
 <div class="login-root">
 
-  <!-- ── LEFT: Form Panel ─────────────────────────────────── -->
   <aside class="login-left">
     <div>
-
-      <!-- Branding -->
       <div class="login-logo-wrap">
-        <img src="<?= app_url('assets/images/ucsc-logo.png') ?>"
-             alt="UCSC Logo" class="login-logo">
+        <img src="<?= app_url('assets/images/ucsc-logo.png') ?>" alt="UCSC Logo" class="login-logo">
         <div class="login-app-name">Smart Instructor</div>
         <div class="login-system-name">University of Colombo School of Computing</div>
       </div>
 
-      <!-- Error / Success alerts -->
       <?php if ($error): ?>
-        <div class="login-alert alert-error" role="alert" style="margin-bottom:20px;">
-          <span>error_outline</span>
+        <div class="login-alert alert-error" role="alert">
+          <span aria-hidden="true">⚠</span>
           <?= htmlspecialchars($error) ?>
         </div>
       <?php endif; ?>
+
       <?php if ($success): ?>
-        <div class="login-alert alert-success" role="alert" style="margin-bottom:20px;">
-          <span>check_circle</span>
+        <div class="login-alert alert-success" role="alert">
+          <span aria-hidden="true">✓</span>
           <?= htmlspecialchars($success) ?>
         </div>
       <?php endif; ?>
 
-      <!-- Login Form -->
       <form method="post" autocomplete="off" class="login-form" id="loginForm">
-
-        <!-- Email -->
         <div class="field-group">
           <label class="field-label" for="email">Institutional Email / Username</label>
           <div class="input-wrap">
-            <span class="input-icon">person</span>
+            <span class="input-icon" aria-hidden="true">👤</span>
             <input
               type="email"
               id="email"
@@ -460,14 +364,13 @@ $demoAccounts = [
           </div>
         </div>
 
-        <!-- Password -->
         <div class="field-group">
           <div class="field-label-row">
             <label class="field-label" for="password">Password</label>
-            <a href="forgot_password.php">Forgot password?</a>
+            <a href="<?= app_url('auth/forgot_password.php') ?>">Forgot password?</a>
           </div>
           <div class="input-wrap">
-            <span class="input-icon">lock</span>
+            <span class="input-icon" aria-hidden="true">🔒</span>
             <input
               type="password"
               id="password"
@@ -476,56 +379,42 @@ $demoAccounts = [
               placeholder="Enter your password"
               required
               autocomplete="current-password">
-            <button type="button" class="toggle-pw" onclick="togglePassword()" aria-label="Toggle password visibility">
-              <span id="pw-icon">visibility_off</span>
-            </button>
+            <button type="button" class="toggle-pw" id="togglePwBtn" aria-label="Show password">Show</button>
           </div>
         </div>
 
-        <!-- Remember me -->
         <div class="remember-row">
           <input type="checkbox" id="remember" name="remember">
           <label for="remember">Remember me for 30 days</label>
         </div>
 
-        <!-- Submit -->
         <button type="submit" class="btn-login" id="submitBtn">
-          Sign In
-          <span>login</span>
+          Sign In →
         </button>
-
       </form>
 
-      <!-- Footer notice -->
       <div class="login-footer">
         <div class="notice-box">
-          <span>info</span>
+          <span aria-hidden="true">ℹ</span>
           <div>
             <div class="notice-text">
               This system is for authorized UCSC personnel only.
               Unauthorized access is strictly prohibited.
             </div>
-            <a href="mailto:admin@ucsc.cmb.ac.lk" class="notice-contact">
-              <span>support_agent</span>
-              Contact Administrator
-            </a>
+            <a href="mailto:admin@ucsc.cmb.ac.lk" class="notice-contact">✉ Contact Administrator</a>
           </div>
         </div>
-
-        <!-- Demo accounts -->
-        <div class="demo-box" style="margin-top:12px;">
+        <div class="demo-box">
           <strong>Demo password:</strong> password123<br>
-          <span style="opacity:.75;"><?= implode(' &bull; ', $demoAccounts) ?></span>
+          <span style="opacity:.75;"><?= htmlspecialchars(implode(' • ', $demoAccounts)) ?></span>
         </div>
       </div>
-
     </div>
   </aside>
 
-  <!-- ── RIGHT: Hero Panel ────────────────────────────────── -->
   <main class="login-right" aria-hidden="true">
     <div class="login-right-inner">
-      <div class="right-icon">domain</div>
+      <div class="right-icon">🏛</div>
       <h1 class="right-title">Streamlining Academic Coordination</h1>
       <p class="right-desc">
         The UCSC Smart Instructor system provides a centralized platform
@@ -533,9 +422,7 @@ $demoAccounts = [
         uncompromising efficiency.
       </p>
       <div class="right-dots">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </div>
     </div>
   </main>
@@ -543,29 +430,32 @@ $demoAccounts = [
 </div>
 
 <script>
-  function togglePassword() {
-    const pw   = document.getElementById('password');
-    const icon = document.getElementById('pw-icon');
-    if (pw.type === 'password') {
-      pw.type = 'text';
-      icon.textContent = 'visibility';
-    } else {
-      pw.type = 'password';
-      icon.textContent = 'visibility_off';
-    }
+(function () {
+  var pw = document.getElementById('password');
+  var btn = document.getElementById('togglePwBtn');
+  if (btn && pw) {
+    btn.addEventListener('click', function () {
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        btn.textContent = 'Hide';
+        btn.setAttribute('aria-label', 'Hide password');
+      } else {
+        pw.type = 'password';
+        btn.textContent = 'Show';
+        btn.setAttribute('aria-label', 'Show password');
+      }
+    });
   }
 
-  // Loading state on submit
-  document.getElementById('loginForm').addEventListener('submit', function () {
-    const btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span style="font-family:\'Material Symbols Outlined\';font-size:18px;animation:spin 1s linear infinite">autorenew</span> Signing in…';
-  });
+  var form = document.getElementById('loginForm');
+  var submitBtn = document.getElementById('submitBtn');
+  if (form && submitBtn) {
+    form.addEventListener('submit', function () {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in…';
+    });
+  }
+})();
 </script>
-
-<style>
-  @keyframes spin { to { transform: rotate(360deg); } }
-</style>
-
 </body>
 </html>
