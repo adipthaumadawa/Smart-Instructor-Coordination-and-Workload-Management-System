@@ -26,10 +26,14 @@ define('VERSION', '1.0.0'); //[cite: 2]
 // Dynamic URL detection (works on local server or production without manual path changes)
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$defaultUrl = $protocol . $host . '/Smart-Instructor-Coordination-and-Workload-Management-System'; //[cite: 2]
+$basePath = '/Smart-Instructor-Coordination-and-Workload-Management-System'; // your folder name
 
-define('SITE_URL', $defaultUrl); //[cite: 2]
-define('APP_URL', SITE_URL);     // Alias so both APP_URL and SITE_URL work seamlessly
+if (!defined('SITE_URL')) {
+    define('SITE_URL', $protocol . $host . $basePath);
+}
+if (!defined('APP_URL')) {
+    define('APP_URL', SITE_URL);
+}     // Alias so both APP_URL and SITE_URL work seamlessly
 
 // =====================================================
 // DATABASE CREDENTIALS (for config/db.php)

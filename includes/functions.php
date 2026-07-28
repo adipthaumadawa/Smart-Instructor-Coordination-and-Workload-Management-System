@@ -15,8 +15,19 @@ require_once __DIR__ . '/auth.php';
  * Helper function to return complete application URLs
  */
 function app_url($path = '') {
-    $path = ltrim($path, '/');
-    return APP_URL . ($path ? '/' . $path : '');
+    $path = ltrim((string)$path, '/');
+
+    if (defined('APP_URL')) {
+        $base = APP_URL;
+    } elseif (defined('SITE_URL')) {
+        $base = SITE_URL;
+    } else {
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $base = $protocol . $host . '/Smart-Instructor-Coordination-and-Workload-Management-System';
+    }
+
+    return rtrim($base, '/') . ($path !== '' ? '/' . $path : '');
 }
 /**
  * Sanitize user input (prevent XSS)
