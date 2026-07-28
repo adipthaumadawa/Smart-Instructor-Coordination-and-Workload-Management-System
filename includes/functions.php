@@ -12,6 +12,13 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/auth.php';
 
 /**
+ * Helper function to return complete application URLs
+ */
+function app_url($path = '') {
+    $path = ltrim($path, '/');
+    return APP_URL . ($path ? '/' . $path : '');
+}
+/**
  * Sanitize user input (prevent XSS)
  */
 function sanitize($data) {
@@ -395,4 +402,9 @@ function getStatusBadge($status) {
     
     return $badges[$status] ?? '<span class="badge bg-secondary">' . ucfirst($status) . '</span>';
 }
+/**
+ * Helper function to generate full application URLs
+ */
+
 ?>
+

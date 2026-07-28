@@ -15,10 +15,7 @@ error_reporting(E_ALL);
 // Set default system timezone
 date_default_timezone_set('Asia/Colombo');
 
-// Safe session initialization
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+
 
 // =====================================================
 // APPLICATION & URL SETTINGS
