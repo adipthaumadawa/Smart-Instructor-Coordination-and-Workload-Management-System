@@ -1,470 +1,716 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timetable - Academia Pro</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "inverse-primary": "#b6c4ff",
-                        "outline": "#757682",
-                        "surface-container-lowest": "#ffffff",
-                        "on-secondary-container": "#fefcff",
-                        "primary-container": "#1e3a8a",
-                        "secondary": "#0051d5",
-                        "on-primary-container": "#90a8ff",
-                        "on-error": "#ffffff",
-                        "surface-dim": "#d8dadc",
-                        "on-tertiary-fixed": "#0b1c30",
-                        "surface-tint": "#4059aa",
-                        "secondary-fixed": "#dbe1ff",
-                        "inverse-surface": "#2d3133",
-                        "error": "#ba1a1a",
-                        "inverse-on-surface": "#eff1f3",
-                        "on-secondary-fixed-variant": "#003ea8",
-                        "on-primary-fixed": "#00164e",
-                        "surface-container-high": "#e6e8ea",
-                        "primary": "#00236f",
-                        "background": "#f7f9fb",
-                        "on-background": "#191c1e",
-                        "surface-variant": "#e0e3e5",
-                        "tertiary-fixed-dim": "#b7c8e1",
-                        "tertiary-container": "#314156",
-                        "on-surface": "#191c1e",
-                        "on-surface-variant": "#444651",
-                        "on-primary": "#ffffff",
-                        "primary-fixed-dim": "#b6c4ff",
-                        "surface": "#f7f9fb",
-                        "surface-container-low": "#f2f4f6",
-                        "outline-variant": "#c5c5d3",
-                        "surface-container": "#eceef0",
-                        "on-secondary-fixed": "#00174b",
-                        "on-secondary": "#ffffff",
-                        "on-error-container": "#93000a",
-                        "surface-container-highest": "#e0e3e5",
-                        "secondary-container": "#316bf3",
-                        "tertiary": "#1b2b3f",
-                        "secondary-fixed-dim": "#b4c5ff",
-                        "primary-fixed": "#dce1ff",
-                        "tertiary-fixed": "#d3e4fe",
-                        "on-tertiary-container": "#9dadc6",
-                        "on-primary-fixed-variant": "#264191",
-                        "surface-bright": "#f7f9fb",
-                        "on-tertiary": "#ffffff",
-                        "error-container": "#ffdad6",
-                        "on-tertiary-fixed-variant": "#38485d"
-                    },
-                    borderRadius: {
-                        DEFAULT: "0.125rem",
-                        lg: "0.25rem",
-                        xl: "0.5rem",
-                        full: "0.75rem"
-                    },
-                    spacing: {
-                        xs: "4px",
-                        gutter: "24px",
-                        md: "16px",
-                        sm: "8px",
-                        lg: "24px",
-                        "sidebar-width": "260px",
-                        "container-max": "1440px",
-                        xl: "32px",
-                        base: "4px"
-                    },
-                    fontFamily: {
-                        "label-sm": ["Inter"],
-                        "headline-md": ["Inter"],
-                        "label-md": ["Inter"],
-                        "headline-xl": ["Inter"],
-                        "headline-xl-mobile": ["Inter"],
-                        "body-lg": ["Inter"],
-                        "body-md": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "body-sm": ["Inter"]
-                    },
-                    fontSize: {
-                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
-                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
-                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "600"}],
-                        "headline-xl": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                        "headline-xl-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
-                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}]
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .timetable-grid {
-            display: grid;
-            grid-template-columns: 80px repeat(5, 1fr);
-            grid-template-rows: auto repeat(10, 80px);
-        }
-        .time-line {
-            position: absolute;
-            left: 0;
-            right: 0;
-            border-top: 2px solid #ef4444;
-            pointer-events: none;
-            z-index: 20;
-        }
-        .time-line::before {
-            content: '';
-            position: absolute;
-            left: -4px;
-            top: -4px;
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timetable · Academia Pro</title>
+  <!-- fonts & icons (only external assets, no frameworks) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <style>
+    /* ---------- reset & base ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f7f9fb;
+      color: #191c1e;
+      display: flex;
+      min-height: 100vh;
+    }
+    /* ---------- design tokens ---------- */
+    :root {
+      --sidebar-width: 260px;
+      --primary: #00236f;
+      --primary-container: #1e3a8a;
+      --on-primary: #ffffff;
+      --on-primary-container: #90a8ff;
+      --secondary: #0051d5;
+      --secondary-container: #316bf3;
+      --on-secondary: #ffffff;
+      --secondary-fixed: #dbe1ff;
+      --secondary-fixed-dim: #b4c5ff;
+      --surface: #f7f9fb;
+      --surface-container-lowest: #ffffff;
+      --surface-container-low: #f2f4f6;
+      --surface-container: #eceef0;
+      --surface-container-high: #e6e8ea;
+      --surface-container-highest: #e0e3e5;
+      --surface-dim: #d8dadc;
+      --on-surface: #191c1e;
+      --on-surface-variant: #444651;
+      --outline: #757682;
+      --outline-variant: #c5c5d3;
+      --error: #ba1a1a;
+      --error-container: #ffdad6;
+      --tertiary: #1b2b3f;
+      --tertiary-container: #314156;
+      --tertiary-fixed: #d3e4fe;
+      --radius-xl: 0.75rem;
+      --radius-lg: 0.5rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    /* ---------- sidebar (fixed) ---------- */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+      border-right: 1px solid var(--outline-variant);
+      overflow-y: auto;
+    }
+    .sidebar-brand { margin-bottom: 24px; padding-left: 8px; }
+    .sidebar-brand h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; color: white; }
+    .sidebar-brand p { font-size: 14px; font-weight: 500; opacity: 0.7; color: var(--on-primary-container); }
+    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      border-radius: var(--radius-lg);
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .sidebar-nav a:hover { background: var(--primary-container); color: white; }
+    .sidebar-nav a.active {
+      background: var(--secondary-container);
+      color: #fefcff;
+      border-left: 4px solid var(--secondary-fixed-dim);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      font-weight: 600;
+    }
+    .sidebar-nav .material-symbols-outlined { font-size: 22px; }
+    .sidebar-footer { margin-top: auto; padding-top: 16px; }
+    .sidebar-footer button {
+      width: 100%;
+      background: var(--secondary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius-xl);
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .sidebar-footer button:hover { opacity: 0.9; }
+
+    /* ---------- top bar ---------- */
+    .topbar {
+      position: fixed;
+      left: var(--sidebar-width);
+      right: 0;
+      top: 0;
+      height: 64px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--outline-variant);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 40;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 16px; flex: 1; }
+    .search-wrapper {
+      position: relative;
+      max-width: 320px;
+      width: 100%;
+    }
+    .search-wrapper .material-symbols-outlined {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--outline);
+      font-size: 20px;
+    }
+    .search-wrapper input {
+      width: 100%;
+      padding: 8px 12px 8px 40px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: 999px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+    .search-wrapper input:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(49,107,243,0.12);
+    }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .topbar-right .icon-btn {
+      background: transparent;
+      border: none;
+      padding: 8px;
+      border-radius: 50%;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .topbar-right .icon-btn:hover { background: var(--surface-container-high); color: var(--primary); }
+    .profile-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-left: 16px;
+      border-left: 1px solid var(--outline-variant);
+    }
+    .profile-text { text-align: right; line-height: 1.3; }
+    .profile-text .name { font-weight: 700; font-size: 14px; }
+    .profile-text .role { font-size: 12px; color: var(--outline); }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--primary-container);
+      object-fit: cover;
+      background: var(--surface-container-high);
+    }
+
+    /* ---------- main content ---------- */
+    .main {
+      margin-left: var(--sidebar-width);
+      margin-top: 64px;
+      padding: 24px;
+      flex: 1;
+      min-height: calc(100vh - 64px);
+      max-width: 1440px;
+      width: 100%;
+    }
+
+    /* header row */
+    .page-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .page-header h2 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--primary);
+    }
+    .page-header p { font-size: 14px; color: var(--on-surface-variant); }
+    .view-toggle {
+      display: flex;
+      background: var(--surface-container-high);
+      padding: 4px;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--outline-variant);
+    }
+    .view-toggle button {
+      padding: 6px 16px;
+      border: none;
+      background: transparent;
+      border-radius: calc(var(--radius-lg) - 2px);
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .view-toggle button.active {
+      background: white;
+      box-shadow: var(--shadow-sm);
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .action-group { display: flex; gap: 12px; flex-wrap: wrap; }
+    .action-group button {
+      padding: 10px 20px;
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-xl);
+      background: white;
+      font-weight: 500;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .action-group .primary-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+    }
+    .action-group .primary-btn:hover { opacity: 0.92; }
+
+    /* filters */
+    .filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 16px;
+      background: white;
+      padding: 16px 20px;
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-xl);
+      margin-bottom: 24px;
+      align-items: end;
+    }
+    .filter-group label { display: block; font-size: 12px; font-weight: 500; color: var(--on-surface-variant); margin-bottom: 4px; }
+    .filter-group select {
+      width: 100%;
+      padding: 8px 12px;
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+    }
+    .filter-group select:focus { outline: none; border-color: var(--secondary); }
+    .clear-filters {
+      background: transparent;
+      border: none;
+      color: var(--secondary);
+      font-weight: 500;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 8px 0;
+    }
+    .clear-filters:hover { text-decoration: underline; }
+
+    /* timetable grid */
+    .timetable-wrap {
+      background: white;
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .grid-header {
+      display: grid;
+      grid-template-columns: 80px repeat(5, 1fr);
+      background: var(--surface-container-low);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .grid-header > div {
+      padding: 12px 8px;
+      text-align: center;
+      border-right: 1px solid var(--outline-variant);
+    }
+    .grid-header > div:last-child { border-right: none; }
+    .grid-header .day-label { font-size: 12px; color: var(--on-surface-variant); }
+    .grid-header .day-num { font-size: 20px; font-weight: 600; color: var(--primary); }
+    .grid-header .highlight .day-label { color: var(--secondary); font-weight: 700; }
+    .grid-header .highlight .day-num { color: var(--secondary); }
+
+    .grid-scroll {
+      position: relative;
+      overflow-y: auto;
+      max-height: 720px;
+    }
+
+    .timetable-grid {
+      display: grid;
+      grid-template-columns: 80px repeat(5, 1fr);
+      grid-template-rows: repeat(10, 80px);
+      position: relative;
+    }
+
+    /* time column */
+    .time-col {
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--outline-variant);
+      background: var(--surface-container-lowest);
+    }
+    .time-slot {
+      height: 80px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 8px;
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+    .time-slot:last-child { border-bottom: none; }
+
+    /* grid cells background */
+    .grid-bg {
+      grid-column: 2 / 7;
+      grid-row: 1 / 11;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(10, 80px);
+      pointer-events: none;
+    }
+    .grid-bg > div {
+      border-right: 1px solid rgba(197,197,211,0.25);
+      border-bottom: 1px solid rgba(197,197,211,0.25);
+    }
+    .grid-bg > div:nth-child(5n) { border-right: none; }
+    .grid-bg > div:nth-child(n+46) { border-bottom: none; }
+
+    /* events overlay */
+    .event {
+      padding: 4px 6px;
+      position: relative;
+      z-index: 5;
+    }
+    .event-card {
+      height: 100%;
+      border-radius: var(--radius-lg);
+      padding: 12px 12px 10px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.15s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: rgba(49,107,243,0.06);
+      border-left: 4px solid var(--secondary-container);
+    }
+    .event-card:hover { transform: scale(1.02); }
+    .event-card .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .event-tag {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 10px;
+      border-radius: 20px;
+      color: white;
+    }
+    .event-tag.lecture { background: var(--secondary-container); }
+    .event-tag.practical { background: var(--primary-container); }
+    .event-tag.meeting { background: var(--tertiary-container); }
+    .event-tag.research { background: var(--outline); }
+    .event-title { font-weight: 700; font-size: 14px; color: var(--primary); margin-top: 4px; }
+    .event-sub { font-size: 12px; color: var(--on-surface-variant); }
+    .event-location {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      color: var(--secondary-container);
+    }
+    .event-card.practical { background: rgba(30,58,138,0.07); border-left-color: var(--primary-container); }
+    .event-card.meeting { background: rgba(49,65,86,0.07); border-left-color: var(--tertiary-container); }
+    .event-card.research { background: rgba(117,118,130,0.08); border-left-color: var(--outline); }
+
+    /* time indicator */
+    .time-line {
+      position: absolute;
+      left: 80px;
+      right: 0;
+      border-top: 2px solid #ef4444;
+      pointer-events: none;
+      z-index: 25;
+      display: none;
+    }
+    .time-line::before {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: -4px;
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+    }
+
+    /* footer stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .stat-card {
+      background: white;
+      padding: 16px 20px;
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: rgba(49,107,243,0.1);
+      color: var(--secondary);
+    }
+    .stat-icon.primary-bg { background: rgba(0,35,111,0.08); color: var(--primary); }
+    .stat-icon.tertiary-bg { background: rgba(49,65,86,0.08); color: var(--tertiary); }
+    .stat-info .label { font-size: 12px; color: var(--on-surface-variant); }
+    .stat-info .value { font-size: 20px; font-weight: 700; color: var(--primary); }
+
+    /* responsive */
+    @media (max-width: 1024px) {
+      .filters { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      :root { --sidebar-width: 0px; }
+      .sidebar { transform: translateX(-100%); }
+      .topbar { left: 0; }
+      .main { margin-left: 0; }
+      .page-header h2 { font-size: 24px; }
+      .filters { grid-template-columns: 1fr; }
+      .grid-header { grid-template-columns: 60px repeat(5,1fr); }
+      .timetable-grid { grid-template-columns: 60px repeat(5,1fr); }
+      .time-slot { font-size: 10px; }
+      .profile-text { display: none; }
+      .search-wrapper { display: none; }
+    }
+  </style>
 </head>
-<body class="bg-background text-on-surface font-body-md">
+<body>
 
-    <!-- SideNavBar -->
-    <aside class="w-sidebar-width h-full fixed left-0 top-0 bg-primary dark:bg-tertiary-container border-r border-outline-variant dark:border-outline flex flex-col h-screen py-lg z-50">
-        <div class="px-lg mb-xl">
-            <h1 class="text-headline-md font-headline-md font-bold text-on-primary">Academia Pro</h1>
-            <p class="text-label-md text-on-primary/60">Instructor Portal</p>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <h1>Academia Pro</h1>
+      <p>Instructor Portal</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
+      <a href="#" class="active"><span class="material-symbols-outlined">calendar_month</span> Timetable</a>
+      <a href="#"><span class="material-symbols-outlined">task_alt</span> My Tasks</a>
+      <a href="#"><span class="material-symbols-outlined">swap_horiz</span> Replacement Requests</a>
+      <a href="#"><span class="material-symbols-outlined">group</span> Student Records</a>
+      <a href="#" style="margin-top:auto;"><span class="material-symbols-outlined">settings</span> Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button><span class="material-symbols-outlined">add</span> New Request</button>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="search-wrapper">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" placeholder="Search sessions, rooms, students...">
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn"><span class="material-symbols-outlined">notifications</span></button>
+      <button class="icon-btn"><span class="material-symbols-outlined">help_outline</span></button>
+      <div class="profile-wrap">
+        <div class="profile-text">
+          <div class="name">Dr. John Silva</div>
+          <div class="role">Senior Lecturer</div>
         </div>
-        <nav class="flex-1 px-sm space-y-xs">
-            <a class="flex items-center gap-md px-md py-sm text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors" href="#">
-                <span class="material-symbols-outlined">dashboard</span>
-                <span class="font-label-md text-label-md">Dashboard</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container border-l-4 border-secondary-fixed rounded-r-full" href="#">
-                <span class="material-symbols-outlined">calendar_month</span>
-                <span class="font-label-md text-label-md">Timetable</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors" href="#">
-                <span class="material-symbols-outlined">task_alt</span>
-                <span class="font-label-md text-label-md">My Tasks</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors" href="#">
-                <span class="material-symbols-outlined">swap_horiz</span>
-                <span class="font-label-md text-label-md">Replacement Requests</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors" href="#">
-                <span class="material-symbols-outlined">group</span>
-                <span class="font-label-md text-label-md">Student Records</span>
-            </a>
-            <a class="flex items-center gap-md px-md py-sm text-on-primary/70 hover:text-on-primary hover:bg-primary-container/50 transition-colors mt-auto" href="#">
-                <span class="material-symbols-outlined">settings</span>
-                <span class="font-label-md text-label-md">Settings</span>
-            </a>
-        </nav>
-        <div class="px-lg mt-lg">
-            <button class="w-full py-md bg-secondary text-on-secondary font-label-md rounded-xl hover:opacity-90 transition-opacity">
-                New Request
-            </button>
+        <img class="avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr5QzPwJG4hKeg1lZ3ewUqHvbg-LNPm8nXM5an5xkjure0YJ0iFNkwN49zAUTRPoz0F2KOck4sxsli41SJVMOpTxJCMP_JJVwPrFahUmV70P-1N0G63xw0niZ1s498YJS5UPIOWKVI1yBh_l6wpGUQqyc4B1xY0fZzfe1sSAe3KWKzbTOe424BecR60hAfISnO9lqZCtb63y5ffH37Iq9hFut-FZojgaQKKrOKFc0htwoc5EaqQ9tOfA" alt="Dr. John Silva">
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- header -->
+    <div class="page-header">
+      <div>
+        <h2>Timetable</h2>
+        <p>Managing academic schedules for the Semester 1, 2024</p>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+        <div class="view-toggle">
+          <button>Day</button>
+          <button class="active">Week</button>
+          <button>Month</button>
         </div>
-    </aside>
-
-    <!-- TopNavBar -->
-    <header class="flex justify-between items-center h-16 px-gutter ml-sidebar-width bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline shadow-sm sticky top-0 z-40">
-        <div class="flex items-center gap-md flex-1">
-            <div class="relative w-96">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-                <input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-md focus:outline-none focus:ring-2 focus:ring-secondary/20" placeholder="Search sessions, rooms, students..." type="text">
-            </div>
+        <div class="action-group">
+          <button><span class="material-symbols-outlined" style="font-size:18px;">print</span> Print</button>
+          <button class="primary-btn"><span class="material-symbols-outlined" style="font-size:18px;">ios_share</span> Export CSV</button>
         </div>
-        <div class="flex items-center gap-lg">
-            <div class="flex gap-sm">
-                <button class="hover:bg-surface-container-high dark:hover:bg-surface-container-highest rounded-full p-2 transition-transform active:scale-90">
-                    <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-                </button>
-                <button class="hover:bg-surface-container-high dark:hover:bg-surface-container-highest rounded-full p-2 transition-transform active:scale-90">
-                    <span class="material-symbols-outlined text-on-surface-variant">help_outline</span>
-                </button>
+      </div>
+    </div>
+
+    <!-- filters -->
+    <div class="filters">
+      <div class="filter-group">
+        <label>Course Filter</label>
+        <select><option>All Courses</option><option>IS1205 - Database Systems</option><option>IS2202 - Algorithms</option><option>EN1202 - Communication</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Venue Filter</label>
+        <select><option>All Venues</option><option>Hall A (Main Block)</option><option>Lab 4 (CS Wing)</option><option>Seminar Room 2</option></select>
+      </div>
+      <div class="filter-group">
+        <label>Session Type</label>
+        <select><option>All Types</option><option>Lecture</option><option>Practical</option><option>Meeting</option></select>
+      </div>
+      <button class="clear-filters">Clear All Filters</button>
+    </div>
+
+    <!-- timetable -->
+    <div class="timetable-wrap">
+      <!-- header days -->
+      <div class="grid-header">
+        <div><span class="material-symbols-outlined" style="color:var(--on-surface-variant);">schedule</span></div>
+        <div><div class="day-label">MON</div><div class="day-num">12</div></div>
+        <div class="highlight"><div class="day-label">TUE</div><div class="day-num">13</div></div>
+        <div><div class="day-label">WED</div><div class="day-num">14</div></div>
+        <div><div class="day-label">THU</div><div class="day-num">15</div></div>
+        <div><div class="day-label">FRI</div><div class="day-num">16</div></div>
+      </div>
+
+      <!-- scrollable body -->
+      <div class="grid-scroll">
+        <div class="timetable-grid" style="position:relative;">
+
+          <!-- time column -->
+          <div class="time-col" style="grid-row:1/11; grid-column:1;">
+            <div class="time-slot">08:00 AM</div><div class="time-slot">09:00 AM</div>
+            <div class="time-slot">10:00 AM</div><div class="time-slot">11:00 AM</div>
+            <div class="time-slot">12:00 PM</div><div class="time-slot">01:00 PM</div>
+            <div class="time-slot">02:00 PM</div><div class="time-slot">03:00 PM</div>
+            <div class="time-slot">04:00 PM</div><div class="time-slot">05:00 PM</div>
+          </div>
+
+          <!-- grid background lines -->
+          <div class="grid-bg">
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+            <div></div><div></div><div></div><div></div><div></div>
+          </div>
+
+          <!-- current time line -->
+          <div class="time-line" id="timeLine"></div>
+
+          <!-- EVENTS -->
+          <!-- MON 9-11 (row 2-3) -->
+          <div class="event" style="grid-column:2; grid-row:2/4;">
+            <div class="event-card">
+              <div><div class="top-row"><span class="event-tag lecture">Lecture</span><span class="material-symbols-outlined" style="font-size:18px; color:var(--secondary);">school</span></div></div>
+              <div><div class="event-title">IS1205</div><div class="event-sub">Database Systems</div></div>
+              <div class="event-location"><span class="material-symbols-outlined" style="font-size:14px;">location_on</span> Hall A</div>
             </div>
-            <div class="flex items-center gap-sm border-l border-outline-variant pl-lg">
-                <div class="text-right">
-                    <p class="text-label-md text-on-surface font-bold">Dr. John Silva</p>
-                    <p class="text-body-sm text-on-surface-variant">Senior Lecturer</p>
-                </div>
-                <img class="w-10 h-10 rounded-full border-2 border-primary-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr5QzPwJG4hKeg1lZ3ewUqHvbg-LNPm8nXM5an5xkjure0YJ0iFNkwN49zAUTRPoz0F2KOck4sxsli41SJVMOpTxJCMP_JJVwPrFahUmV70P-1N0G63xw0niZ1s498YJS5UPIOWKVI1yBh_l6wpGUQqyc4B1xY0fZzfe1sSAe3KWKzbTOe424BecR60hAfISnO9lqZCtb63y5ffH37Iq9hFut-FZojgaQKKrOKFc0htwoc5EaqQ9tOfA" alt="Profile">
+          </div>
+          <!-- TUE 10-12 (row 3-5) practical -->
+          <div class="event" style="grid-column:3; grid-row:3/5;">
+            <div class="event-card practical">
+              <div><div class="top-row"><span class="event-tag practical">Practical</span><span class="material-symbols-outlined" style="font-size:18px; color:var(--primary-container);">terminal</span></div></div>
+              <div><div class="event-title">IS2202</div><div class="event-sub">Algorithms Lab</div></div>
+              <div class="event-location"><span class="material-symbols-outlined" style="font-size:14px;">location_on</span> Lab 4</div>
             </div>
+          </div>
+          <!-- WED 1-2 (row 6) meeting -->
+          <div class="event" style="grid-column:4; grid-row:6/7;">
+            <div class="event-card meeting">
+              <div><div class="top-row"><span class="event-tag meeting">Meeting</span><span class="material-symbols-outlined" style="font-size:18px; color:var(--tertiary-container);">groups</span></div></div>
+              <div><div class="event-title">Faculty Sync</div></div>
+              <div class="event-location"><span class="material-symbols-outlined" style="font-size:14px;">location_on</span> Conf. Room 3</div>
+            </div>
+          </div>
+          <!-- THU 2-4 (row 7-9) lecture -->
+          <div class="event" style="grid-column:5; grid-row:7/9;">
+            <div class="event-card">
+              <div><div class="top-row"><span class="event-tag lecture">Lecture</span><span class="material-symbols-outlined" style="font-size:18px; color:var(--secondary);">school</span></div></div>
+              <div><div class="event-title">EN1202</div><div class="event-sub">Communication Skills</div></div>
+              <div class="event-location"><span class="material-symbols-outlined" style="font-size:14px;">location_on</span> Hall B</div>
+            </div>
+          </div>
+          <!-- FRI 4-5:30 (row 9-11) spans 1.5 rows, we do row 9-11 with h-full but grid rows are fixed, we use row 9/11 -->
+          <div class="event" style="grid-column:6; grid-row:9/11;">
+            <div class="event-card research" style="height:100%;">
+              <div><div class="top-row"><span class="event-tag research">Research</span><span class="material-symbols-outlined" style="font-size:18px; color:var(--outline);">biotech</span></div></div>
+              <div><div class="event-title">PhD Supervision</div></div>
+              <div class="event-location"><span class="material-symbols-outlined" style="font-size:14px;">location_on</span> Office 302</div>
+            </div>
+          </div>
         </div>
-    </header>
+      </div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="ml-sidebar-width p-gutter space-y-lg bg-background min-h-[calc(100vh-64px)]">
-        
-        <!-- Header & View Controls -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
-            <div>
-                <h2 class="text-headline-xl font-headline-xl text-primary mb-1">Timetable</h2>
-                <p class="text-body-md text-on-surface-variant">Managing academic schedules for the Semester 1, 2024</p>
-            </div>
-            <div class="flex items-center gap-sm bg-surface-container-high p-1 rounded-lg border border-outline-variant">
-                <button class="px-md py-1.5 text-label-md text-on-surface-variant hover:text-on-surface">Day</button>
-                <button class="px-md py-1.5 text-label-md bg-white shadow-sm rounded-md text-primary font-bold">Week</button>
-                <button class="px-md py-1.5 text-label-md text-on-surface-variant hover:text-on-surface">Month</button>
-            </div>
-            <div class="flex items-center gap-md">
-                <button class="flex items-center gap-sm px-lg py-md border border-outline-variant rounded-xl bg-white text-on-surface-variant font-label-md hover:bg-surface-container-low transition-colors">
-                    <span class="material-symbols-outlined text-[20px]">print</span>
-                    Print
-                </button>
-                <button class="flex items-center gap-sm px-lg py-md bg-primary text-on-primary rounded-xl font-label-md hover:opacity-95 transition-opacity">
-                    <span class="material-symbols-outlined text-[20px]">ios_share</span>
-                    Export CSV
-                </button>
-            </div>
-        </div>
+    <!-- stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon"><span class="material-symbols-outlined">history_edu</span></div>
+        <div class="stat-info"><div class="label">Total Teaching Hours</div><div class="value">18h / Week</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon primary-bg"><span class="material-symbols-outlined">meeting_room</span></div>
+        <div class="stat-info"><div class="label">Rooms Utilized</div><div class="value">4 Venues</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon tertiary-bg"><span class="material-symbols-outlined">group_add</span></div>
+        <div class="stat-info"><div class="label">Avg. Student Attendance</div><div class="value">92%</div></div>
+      </div>
+    </div>
 
-        <!-- Filters Section -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-md p-lg bg-white border border-outline-variant rounded-xl shadow-sm">
-            <div class="space-y-xs">
-                <label class="text-label-sm text-on-surface-variant">Course Filter</label>
-                <select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm text-body-md focus:ring-secondary focus:border-secondary">
-                    <option>All Courses</option>
-                    <option>IS1205 - Database Systems</option>
-                    <option>IS2202 - Algorithms</option>
-                    <option>EN1202 - Communication</option>
-                </select>
-            </div>
-            <div class="space-y-xs">
-                <label class="text-label-sm text-on-surface-variant">Venue Filter</label>
-                <select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm text-body-md focus:ring-secondary focus:border-secondary">
-                    <option>All Venues</option>
-                    <option>Hall A (Main Block)</option>
-                    <option>Lab 4 (CS Wing)</option>
-                    <option>Seminar Room 2</option>
-                </select>
-            </div>
-            <div class="space-y-xs">
-                <label class="text-label-sm text-on-surface-variant">Session Type</label>
-                <select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-md py-sm text-body-md focus:ring-secondary focus:border-secondary">
-                    <option>All Types</option>
-                    <option>Lecture</option>
-                    <option>Practical</option>
-                    <option>Meeting</option>
-                </select>
-            </div>
-            <div class="flex items-end pb-1 gap-md">
-                <button class="text-label-md text-secondary hover:underline px-md">Clear All Filters</button>
-            </div>
-        </div>
+  </main>
 
-        <!-- Calendar Grid -->
-        <div class="bg-white border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col">
-            
-            <!-- Grid Header: Days -->
-            <div class="timetable-grid border-b border-outline-variant bg-surface-container-low">
-                <div class="p-md text-center border-r border-outline-variant">
-                    <span class="material-symbols-outlined text-on-surface-variant">schedule</span>
-                </div>
-                <div class="p-md text-center border-r border-outline-variant">
-                    <p class="text-label-sm text-on-surface-variant">MON</p>
-                    <p class="text-headline-md text-primary">12</p>
-                </div>
-                <div class="p-md text-center border-r border-outline-variant bg-secondary-fixed/30">
-                    <p class="text-label-sm text-secondary font-bold">TUE</p>
-                    <p class="text-headline-md text-secondary">13</p>
-                </div>
-                <div class="p-md text-center border-r border-outline-variant">
-                    <p class="text-label-sm text-on-surface-variant">WED</p>
-                    <p class="text-headline-md text-primary">14</p>
-                </div>
-                <div class="p-md text-center border-r border-outline-variant">
-                    <p class="text-label-sm text-on-surface-variant">THU</p>
-                    <p class="text-headline-md text-primary">15</p>
-                </div>
-                <div class="p-md text-center">
-                    <p class="text-label-sm text-on-surface-variant">FRI</p>
-                    <p class="text-headline-md text-primary">16</p>
-                </div>
-            </div>
-
-            <!-- Scrollable Grid Body -->
-            <div class="relative overflow-y-auto max-h-[800px] custom-scrollbar">
-                <div class="time-line top-[260px] left-[80px]" style="width: calc(100% - 80px)"></div>
-                
-                <div class="timetable-grid relative">
-                    <!-- Time Column -->
-                    <div class="flex flex-col border-r border-outline-variant">
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">08:00 AM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">09:00 AM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">10:00 AM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">11:00 AM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">12:00 PM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">01:00 PM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">02:00 PM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">03:00 PM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">04:00 PM</div>
-                        <div class="h-[80px] flex items-start justify-center pt-2 text-label-sm text-on-surface-variant">05:00 PM</div>
-                    </div>
-
-                    <!-- Column Grid Lines Background -->
-                    <div class="col-start-2 col-span-5 row-start-1 row-span-10 grid grid-cols-5 grid-rows-10 pointer-events-none">
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-r border-b border-outline-variant/30"></div><div class="border-b border-outline-variant/30"></div>
-                        <div class="border-r border-outline-variant/30"></div><div class="border-r border-outline-variant/30"></div><div class="border-r border-outline-variant/30"></div><div class="border-r border-outline-variant/30"></div><div></div>
-                    </div>
-
-                    <!-- Events Overlay -->
-                    <div class="col-start-2 row-start-2 row-span-2 p-1">
-                        <div class="h-full bg-secondary-container/10 border-l-4 border-secondary-container rounded-lg p-md shadow-sm hover:scale-[1.02] transition-transform cursor-pointer">
-                            <div class="flex justify-between items-start mb-sm">
-                                <span class="bg-secondary-container text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Lecture</span>
-                                <span class="material-symbols-outlined text-secondary text-[18px]">school</span>
-                            </div>
-                            <p class="text-label-md font-bold text-primary">IS1205</p>
-                            <p class="text-body-sm text-on-surface-variant font-medium">Database Systems</p>
-                            <p class="text-label-sm text-secondary-container flex items-center gap-xs mt-sm">
-                                <span class="material-symbols-outlined text-[14px]">location_on</span> Hall A
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-start-3 row-start-3 row-span-2 p-1">
-                        <div class="h-full bg-primary-container/10 border-l-4 border-primary-container rounded-lg p-md shadow-sm hover:scale-[1.02] transition-transform cursor-pointer">
-                            <div class="flex justify-between items-start mb-sm">
-                                <span class="bg-primary-container text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Practical</span>
-                                <span class="material-symbols-outlined text-primary-container text-[18px]">terminal</span>
-                            </div>
-                            <p class="text-label-md font-bold text-primary">IS2202</p>
-                            <p class="text-body-sm text-on-surface-variant font-medium">Algorithms Lab</p>
-                            <p class="text-label-sm text-primary-container flex items-center gap-xs mt-sm">
-                                <span class="material-symbols-outlined text-[14px]">location_on</span> Lab 4
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-start-4 row-start-6 row-span-1 p-1">
-                        <div class="h-full bg-tertiary-container/10 border-l-4 border-tertiary-container rounded-lg p-md shadow-sm hover:scale-[1.02] transition-transform cursor-pointer">
-                            <div class="flex justify-between items-start mb-sm">
-                                <span class="bg-tertiary-container text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Meeting</span>
-                                <span class="material-symbols-outlined text-tertiary-container text-[18px]">groups</span>
-                            </div>
-                            <p class="text-label-md font-bold text-primary">Faculty Sync</p>
-                            <p class="text-label-sm text-on-surface-variant flex items-center gap-xs mt-sm">
-                                <span class="material-symbols-outlined text-[14px]">location_on</span> Conf. Room 3
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-start-5 row-start-7 row-span-2 p-1">
-                        <div class="h-full bg-secondary-container/10 border-l-4 border-secondary-container rounded-lg p-md shadow-sm hover:scale-[1.02] transition-transform cursor-pointer">
-                            <div class="flex justify-between items-start mb-sm">
-                                <span class="bg-secondary-container text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Lecture</span>
-                                <span class="material-symbols-outlined text-secondary text-[18px]">school</span>
-                            </div>
-                            <p class="text-label-md font-bold text-primary">EN1202</p>
-                            <p class="text-body-sm text-on-surface-variant font-medium">Communication Skills</p>
-                            <p class="text-label-sm text-secondary-container flex items-center gap-xs mt-sm">
-                                <span class="material-symbols-outlined text-[14px]">location_on</span> Hall B
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="col-start-6 row-start-9 row-span-2 p-1">
-                        <div class="h-[120px] bg-outline/10 border-l-4 border-outline rounded-lg p-md shadow-sm hover:scale-[1.02] transition-transform cursor-pointer">
-                            <div class="flex justify-between items-start mb-sm">
-                                <span class="bg-outline text-white text-[10px] px-2 py-0.5 rounded-full uppercase font-bold">Research</span>
-                                <span class="material-symbols-outlined text-outline text-[18px]">biotech</span>
-                            </div>
-                            <p class="text-label-md font-bold text-primary">PhD Supervision</p>
-                            <p class="text-label-sm text-on-surface-variant flex items-center gap-xs mt-sm">
-                                <span class="material-symbols-outlined text-[14px]">location_on</span> Office 302
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer Stats / Insights -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
-            <div class="bg-white p-lg border border-outline-variant rounded-xl flex items-center gap-md">
-                <div class="w-12 h-12 bg-secondary-fixed/50 rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-secondary">history_edu</span>
-                </div>
-                <div>
-                    <p class="text-body-sm text-on-surface-variant">Total Teaching Hours</p>
-                    <p class="text-headline-md text-primary font-bold">18h / Week</p>
-                </div>
-            </div>
-            <div class="bg-white p-lg border border-outline-variant rounded-xl flex items-center gap-md">
-                <div class="w-12 h-12 bg-primary-fixed-dim/30 rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-primary">meeting_room</span>
-                </div>
-                <div>
-                    <p class="text-body-sm text-on-surface-variant">Rooms Utilized</p>
-                    <p class="text-headline-md text-primary font-bold">4 Venues</p>
-                </div>
-            </div>
-            <div class="bg-white p-lg border border-outline-variant rounded-xl flex items-center gap-md">
-                <div class="w-12 h-12 bg-tertiary-fixed/50 rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-tertiary">group_add</span>
-                </div>
-                <div>
-                    <p class="text-body-sm text-on-surface-variant">Avg. Student Attendance</p>
-                    <p class="text-headline-md text-primary font-bold">92%</p>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script>
-        function updateTimeLine() {
-            const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-            
-            if (hours >= 8 && hours <= 18) {
-                const totalMinutesSince8 = (hours - 8) * 60 + minutes;
-                const pixelsPerMinute = 80 / 60;
-                const topPos = totalMinutesSince8 * pixelsPerMinute;
-                
-                const timeLine = document.querySelector('.time-line');
-                if (timeLine) {
-                    timeLine.style.top = `${topPos}px`;
-                    timeLine.style.display = 'block';
-                }
-            } else {
-                const timeLine = document.querySelector('.time-line');
-                if (timeLine) timeLine.style.display = 'none';
-            }
+  <script>
+    (function() {
+      // current time line updater
+      function updateTimeLine() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const line = document.getElementById('timeLine');
+        if (!line) return;
+        // grid starts at 8:00 AM, each slot = 80px for 60min
+        if (hours >= 8 && hours < 18) {
+          const totalMin = (hours - 8) * 60 + minutes;
+          const topPx = (totalMin / 60) * 80; // 80px per hour
+          line.style.top = topPx + 'px';
+          line.style.display = 'block';
+        } else {
+          line.style.display = 'none';
         }
+      }
+      updateTimeLine();
+      setInterval(updateTimeLine, 30000);
 
-        updateTimeLine();
-        setInterval(updateTimeLine, 60000);
-    </script>
+      // view toggle
+      const toggleBtns = document.querySelectorAll('.view-toggle button');
+      toggleBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          toggleBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+    })();
+  </script>
+
 </body>
 </html>
