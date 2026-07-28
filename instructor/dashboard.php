@@ -160,7 +160,7 @@ $workloadPercentage = ($weeklyWorkload / $maxWeeklyHours) * 100;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Dashboard | Instructor | Smart Instructor System</title>
     <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= app_url('assets/css/stitch-theme.css') ?>">
+    
 </head>
 <body>
 

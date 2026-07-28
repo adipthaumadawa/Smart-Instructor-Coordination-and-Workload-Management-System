@@ -10,7 +10,7 @@ if (!isset($pageTitle)) { $pageTitle = SITE_NAME; }
     <title><?= htmlspecialchars($pageTitle) ?> | UCSC Smart Instructor System</title>
     <!-- Local CSS only (no Bootstrap, Font Awesome, Material Symbols, or Google Fonts) -->
     <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
-    <link rel="stylesheet" href="<?= app_url('assets/css/stitch-theme.css') ?>">
+    
 </head>
 <body>
 <?php if (!isset($hideNavbar)) { include __DIR__ . '/navbar.php'; } ?>
