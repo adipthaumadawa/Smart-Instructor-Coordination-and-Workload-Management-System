@@ -393,29 +393,28 @@ function formatTime($time) {
 }
 
 /**
- * Get status badge HTML (Bootstrap)
+ * Get status badge HTML (no Bootstrap frameworks)
  */
 function getStatusBadge($status) {
     $status = strtolower($status);
     
     $badges = [
-        'active' => '<span class="badge bg-success">Active</span>',
-        'inactive' => '<span class="badge bg-secondary">Inactive</span>',
-        'pending' => '<span class="badge bg-warning text-dark">Pending</span>',
-        'approved' => '<span class="badge bg-success">Approved</span>',
-        'rejected' => '<span class="badge bg-danger">Rejected</span>',
-        'assigned' => '<span class="badge bg-primary">Assigned</span>',
-        'completed' => '<span class="badge bg-info">Completed</span>',
-        'confirmed' => '<span class="badge bg-success">Confirmed</span>',
-        'cancelled' => '<span class="badge bg-danger">Cancelled</span>',
-        'scheduled' => '<span class="badge bg-primary">Scheduled</span>',
+        'active' => '<span>Active</span>',
+        'inactive' => '<span>Inactive</span>',
+        'pending' => '<span>Pending</span>',
+        'approved' => '<span>Approved</span>',
+        'rejected' => '<span>Rejected</span>',
+        'assigned' => '<span>Assigned</span>',
+        'completed' => '<span>Completed</span>',
+        'confirmed' => '<span>Confirmed</span>',
+        'cancelled' => '<span>Cancelled</span>',
+        'scheduled' => '<span>Scheduled</span>',
     ];
     
-    return $badges[$status] ?? '<span class="badge bg-secondary">' . ucfirst($status) . '</span>';
+    return $badges[$status] ?? '<span>' . ucfirst($status) . '</span>';
 }
 /**
  * Helper function to generate full application URLs
  */
 
 ?>
-

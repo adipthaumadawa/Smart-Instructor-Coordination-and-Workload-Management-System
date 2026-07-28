@@ -3,14 +3,8 @@
  * Smart Instructor Coordination and Workload Management System
  */
 
-// Initialize tooltips and popovers when Bootstrap is loaded
+// Initialize event listeners when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Bootstrap tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-    
     // Auto focus first input in forms
     const firstInput = document.querySelector('form input:not([type="hidden"])');
     if (firstInput) {
@@ -57,7 +51,7 @@ function validateForm(formId) {
 function showLoading(button) {
     if (!button) return;
     button.disabled = true;
-    button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
+    button.innerHTML = '<i class="spinner">sync</i> Processing...';
 }
 
 /**

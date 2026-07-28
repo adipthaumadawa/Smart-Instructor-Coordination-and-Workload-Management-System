@@ -159,152 +159,152 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     $weekStart = date('M d');
     $weekEnd = date('M d, Y', strtotime('+6 days'));
 ?>
-<div class="container-fluid"><div class="row">
+<div><div>
 <?php include __DIR__ . '/sidebar.php'; ?>
-<main class="main-content">
-    <section class="dash-page">
-        <div class="dash-hero">
-            <div class="dash-title">
+<main>
+    <section>
+        <div>
+            <div>
                 <h1><?= htmlspecialchars($heading) ?></h1>
                 <p><?= htmlspecialchars($subtitle) ?></p>
             </div>
-            <div class="dash-actions">
-                <span class="date-chip"><i class="fas fa-calendar-days"></i><?= htmlspecialchars($weekStart) ?> – <?= htmlspecialchars($weekEnd) ?></span>
+            <div>
+                <span><i class="fas fa-calendar-days"></i><?= htmlspecialchars($weekStart) ?> – <?= htmlspecialchars($weekEnd) ?></span>
                 <?php if($primaryActionUrl): ?>
-                    <a class="btn btn-primary dash-primary-action" href="<?= htmlspecialchars($primaryActionUrl) ?>"><i class="fas fa-bolt"></i><?= htmlspecialchars($primaryActionText) ?></a>
+                    <a href="<?= htmlspecialchars($primaryActionUrl) ?>"><i class="fas fa-bolt"></i><?= htmlspecialchars($primaryActionText) ?></a>
                 <?php endif; ?>
             </div>
         </div>
 
-        <div class="kpi-grid">
+        <div>
             <?php foreach($cards as $c): ?>
-            <div class="ui-card kpi-card">
-                <div class="kpi-left">
-                    <div class="kpi-icon <?= htmlspecialchars($c[4]) ?>"><i class="<?= htmlspecialchars($c[3]) ?>"></i></div>
+            <div>
+                <div>
+                    <div><i class="<?= htmlspecialchars($c[3]) ?>"></i></div>
                     <div>
-                        <div class="kpi-label"><?= htmlspecialchars($c[0]) ?></div>
-                        <div class="kpi-number"><?= htmlspecialchars((string)$c[1]) ?></div>
-                        <div class="kpi-note <?= ($c[5] ?? '') === 'danger' ? 'danger' : '' ?>"><?= htmlspecialchars($c[2]) ?></div>
+                        <div><?= htmlspecialchars($c[0]) ?></div>
+                        <div><?= htmlspecialchars((string)$c[1]) ?></div>
+                        <div class="<?= ($c[5] ?? '') === 'danger' ? 'danger' : '' ?>"><?= htmlspecialchars($c[2]) ?></div>
                     </div>
                 </div>
-                <div class="spark <?= ($c[4] === 'coral') ? 'coral' : (($c[4] === 'teal') ? 'teal' : '') ?>"></div>
+                <div class="<?= ($c[4] === 'coral') ? 'coral' : (($c[4] === 'teal') ? 'teal' : '') ?>"></div>
             </div>
             <?php endforeach; ?>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="ui-card dash-card workload-card">
-                <div class="dash-card-head">
-                    <h2 class="dash-card-title">Workload Overview <span class="text-muted fw-normal">(Hours)</span></h2>
-                    <span class="sic-pill">This Week</span>
+        <div>
+            <div>
+                <div>
+                    <h2>Workload Overview <span>(Hours)</span></h2>
+                    <span>This Week</span>
                 </div>
-                <div class="mini-chart" aria-label="Weekly workload chart">
+                <div aria-label="Weekly workload chart">
                     <?php $bars=[55,76,62,42,50,70,52]; $days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun']; foreach($bars as $i=>$h): ?>
-                    <div class="chart-col"><div class="bar" style="--h:<?= $h ?>%"></div><span><?= $days[$i] ?></span></div>
+                    <div><div style="--h:<?= $h ?>%"></div><span><?= $days[$i] ?></span></div>
                     <?php endforeach; ?>
                 </div>
             </div>
 
-            <div class="ui-card dash-card availability-card">
-                <div class="dash-card-head">
-                    <h2 class="dash-card-title">Instructor Availability</h2>
-                    <span class="sic-pill">Live</span>
+            <div>
+                <div>
+                    <h2>Instructor Availability</h2>
+                    <span>Live</span>
                 </div>
-                <div class="px-3 pb-3">
-                    <div class="ring"><div class="ring-inner"><strong><?= $activeInstructors ?: 100 ?></strong><small>Instructors</small></div></div>
-                    <div class="legend-item"><span><i class="dot" style="background:#31c78a"></i>Available</span><strong>42%</strong></div>
-                    <div class="legend-item"><span><i class="dot" style="background:#78a7ff"></i>Partial</span><strong>36%</strong></div>
-                    <div class="legend-item"><span><i class="dot" style="background:#a990ff"></i>Busy</span><strong>16%</strong></div>
-                    <div class="legend-item"><span><i class="dot" style="background:#c8cfdd"></i>On Leave</span><strong>6%</strong></div>
+                <div>
+                    <div><div><strong><?= $activeInstructors ?: 100 ?></strong><small>Instructors</small></div></div>
+                    <div><span><i></i>Available</span><strong>42%</strong></div>
+                    <div><span><i></i>Partial</span><strong>36%</strong></div>
+                    <div><span><i></i>Busy</span><strong>16%</strong></div>
+                    <div><span><i></i>On Leave</span><strong>6%</strong></div>
                 </div>
             </div>
 
-            <div class="ui-card dash-card schedule-card">
-                <div class="dash-card-head">
-                    <h2 class="dash-card-title">Upcoming Schedule</h2>
-                    <a href="<?= app_url('instructor/timetable.php') ?>" class="section-link">View full</a>
+            <div>
+                <div>
+                    <h2>Upcoming Schedule</h2>
+                    <a href="<?= app_url('instructor/timetable.php') ?>">View full</a>
                 </div>
-                <div class="schedule-list">
+                <div>
                     <?php $sched=[['09:00','10:30','CO3210 – Database Systems','Dr. N. De Silva • LT-3','Lecture','pill-green'],['11:00','12:30','CO2220 – Data Structures','Dr. R. Fernando • LT-2','Tutorial','pill-blue'],['14:00','15:30','CO4230 – Software Engineering','Dr. A. Perera • LT-1','Lecture','pill-purple'],['16:00','17:30','CO5310 – AI & Applications','Dr. K. Jayawardena • LT-4','Lecture','pill-orange']]; foreach($sched as $s): ?>
-                    <div class="schedule-row">
-                        <div class="schedule-time"><?= $s[0] ?><br><?= $s[1] ?></div>
-                        <div><strong><?= $s[2] ?></strong><small class="text-muted"><?= $s[3] ?></small></div>
-                        <span class="status-pill <?= $s[5] ?>"><?= $s[4] ?></span>
+                    <div>
+                        <div><?= $s[0] ?><br><?= $s[1] ?></div>
+                        <div><strong><?= $s[2] ?></strong><small><?= $s[3] ?></small></div>
+                        <span><?= $s[4] ?></span>
                     </div>
                     <?php endforeach; ?>
                 </div>
             </div>
         </div>
 
-        <div class="lower-grid">
-            <div class="ui-card lower-card">
-                <div class="dash-card-head">
-                    <h2 class="dash-card-title">Recent Leave Requests</h2>
-                    <a href="<?= app_url('coordinator/leave_records.php') ?>" class="section-link">View all</a>
+        <div>
+            <div>
+                <div>
+                    <h2>Recent Leave Requests</h2>
+                    <a href="<?= app_url('coordinator/leave_records.php') ?>">View all</a>
                 </div>
-                <div class="list-stack">
+                <div>
                     <?php $leaves=[['C','Dr. Chamila Wijesooriya','May 19 – May 21, 2025','Medical Leave','pill-blue','Pending','pill-orange'],['I','Mr. Isuru Madushan','May 16, 2025 (1 day)','Casual Leave','pill-green','Pending','pill-orange'],['H','Dr. Harini Silva','May 23 – May 24, 2025','Medical Leave','pill-blue','Approved','pill-green'],['S','Mr. Sachintha Perera','May 15, 2025 (1 day)','Casual Leave','pill-green','Declined','pill-red']]; foreach($leaves as $l): ?>
-                    <div class="leave-row">
-                        <span class="avatar-sm"><?= $l[0] ?></span>
-                        <div><strong><?= $l[1] ?></strong><small class="text-muted d-block"><?= $l[2] ?></small></div>
-                        <span class="status-pill <?= $l[4] ?>"><?= $l[3] ?></span>
-                        <span class="status-pill <?= $l[6] ?>"><?= $l[5] ?></span>
+                    <div>
+                        <span><?= $l[0] ?></span>
+                        <div><strong><?= $l[1] ?></strong><small><?= $l[2] ?></small></div>
+                        <span><?= $l[3] ?></span>
+                        <span><?= $l[5] ?></span>
                     </div>
                     <?php endforeach; ?>
                 </div>
             </div>
 
-            <div class="ui-card lower-card">
-                <div class="dash-card-head">
-                    <h2 class="dash-card-title">Urgent Replacement Alerts</h2>
-                    <a href="<?= app_url('coordinator/urgency_replacements.php') ?>" class="section-link">View all</a>
+            <div>
+                <div>
+                    <h2>Urgent Replacement Alerts</h2>
+                    <a href="<?= app_url('coordinator/urgency_replacements.php') ?>">View all</a>
                 </div>
-                <div class="list-stack">
+                <div>
                     <?php foreach([['CO3210 – Database Systems','May 14, 10:30 – 12:00 • LT-3'],['CO2220 – Data Structures','May 15, 09:00 – 10:30 • LT-2'],['CO4230 – Software Engineering','May 16, 14:00 – 15:30 • LT-1']] as $a): ?>
-                    <div class="alert-row">
+                    <div>
                         <i class="fas fa-triangle-exclamation"></i>
-                        <div><strong><?= $a[0] ?></strong><small class="text-muted d-block"><?= $a[1] ?></small></div>
-                        <span class="status-pill pill-red">Urgent</span>
+                        <div><strong><?= $a[0] ?></strong><small><?= $a[1] ?></small></div>
+                        <span>Urgent</span>
                     </div>
                     <?php endforeach; ?>
                 </div>
             </div>
 
-            <div class="ui-card lower-card">
-                <div class="dash-card-head">
-                    <h2 class="dash-card-title">Lecture Hall Bookings</h2>
-                    <a href="<?= app_url('rooms/bookings.php') ?>" class="section-link">View all</a>
+            <div>
+                <div>
+                    <h2>Lecture Hall Bookings</h2>
+                    <a href="<?= app_url('rooms/bookings.php') ?>">View all</a>
                 </div>
-                <div class="list-stack">
+                <div>
                     <?php foreach([['LT-1 (120)','72%','6 / 8','72%',''],['LT-2 (80)','65%','5 / 8','65%',''],['LT-3 (60)','83%','5 / 6','83%','orange'],['LT-4 (100)','40%','2 / 5','40%','']] as $b): ?>
-                    <div class="booking-row">
-                        <div><strong><?= $b[0] ?></strong><small class="d-block">Capacity</small></div>
-                        <div><strong><?= $b[1] ?></strong><small class="ms-2">Occupied</small><div class="booking-line <?= $b[4] ?>" style="--w:<?= $b[3] ?>"><span></span></div></div>
-                        <div class="text-end"><small>Today</small><br><strong><?= $b[2] ?></strong></div>
+                    <div>
+                        <div><strong><?= $b[0] ?></strong><small>Capacity</small></div>
+                        <div><strong><?= $b[1] ?></strong><small>Occupied</small><div style="--w:<?= $b[3] ?>"><span></span></div></div>
+                        <div><small>Today</small><br><strong><?= $b[2] ?></strong></div>
                     </div>
                     <?php endforeach; ?>
                 </div>
             </div>
         </div>
 
-        <div class="ui-card activity-card">
-            <div class="dash-card-head">
-                <h2 class="dash-card-title">Recent Activity / Task Allocations</h2>
-                <a href="<?= app_url('reports/workload_report.php') ?>" class="section-link">View all</a>
+        <div>
+            <div>
+                <h2>Recent Activity / Task Allocations</h2>
+                <a href="<?= app_url('reports/workload_report.php') ?>">View all</a>
             </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
+            <div>
+                <div>
+                    <table>
                         <thead><tr><th>Task / Activity</th><th>Course / Module</th><th>Assigned To</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
                         <tbody>
                         <?php if(empty($tasks)): $tasks=[['task_title'=>'Lecture – Week 7','type_name'=>'CO3210 – Database Systems','full_name'=>'Dr. N. De Silva','scheduled_date'=>date('Y-m-d'),'start_time'=>'09:00','end_time'=>'10:30','status'=>'Completed'],['task_title'=>'Tutorial – Week 6','type_name'=>'CO2220 – Data Structures','full_name'=>'Mr. I. Madushan','scheduled_date'=>date('Y-m-d'),'start_time'=>'11:00','end_time'=>'12:30','status'=>'Completed'],['task_title'=>'Lecture – Week 7','type_name'=>'CO4230 – Software Engineering','full_name'=>'Dr. A. Perera','scheduled_date'=>date('Y-m-d'),'start_time'=>'14:00','end_time'=>'15:30','status'=>'In Progress'],['task_title'=>'Marking – Assignment 2','type_name'=>'CO2220 – Data Structures','full_name'=>'Dr. R. Fernando','scheduled_date'=>date('Y-m-d',strtotime('-1 day')),'start_time'=>'','end_time'=>'','status'=>'Pending']]; endif; foreach($tasks as $t): $status=$t['status']??'Pending'; $cls=$status==='Completed'?'pill-green':($status==='In Progress'?'pill-blue':'pill-orange'); ?>
                             <tr>
                                 <td data-label="Task / Activity"><?= htmlspecialchars($t['task_title'] ?? 'Academic Task') ?></td>
                                 <td data-label="Course / Module"><?= htmlspecialchars($t['type_name'] ?? 'Module') ?></td>
-                                <td data-label="Assigned To"><span class="avatar-sm me-2" style="width:30px;height:30px"><?= strtoupper(substr($t['full_name'] ?? 'U',0,1)) ?></span><?= htmlspecialchars($t['full_name'] ?? 'Unassigned') ?></td>
+                                <td data-label="Assigned To"><span style="width:30px;height:30px"><?= strtoupper(substr($t['full_name'] ?? 'U',0,1)) ?></span><?= htmlspecialchars($t['full_name'] ?? 'Unassigned') ?></td>
                                 <td data-label="Date"><?= !empty($t['scheduled_date']) ? date('M d, Y', strtotime($t['scheduled_date'])) : '-' ?></td>
                                 <td data-label="Time"><?= htmlspecialchars(trim(($t['start_time']??'').' – '.($t['end_time']??''),' –')) ?: '-' ?></td>
-                                <td data-label="Status"><span class="status-pill <?= $cls ?>"><?= htmlspecialchars($status) ?></span></td>
+                                <td data-label="Status"><span><?= htmlspecialchars($status) ?></span></td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>

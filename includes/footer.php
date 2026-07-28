@@ -1,13 +1,23 @@
-<?php /** Common Footer */ ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<?php /** Common Footer - no external frameworks */ ?>
     <script src="<?= app_url('assets/js/main.js') ?>"></script>
     <script>
-        function confirmDelete(message = 'Are you sure you want to delete this item? This action cannot be undone.') {
+        function confirmDelete(message) {
+            if (typeof message === 'undefined' || message === null || message === '') {
+                message = 'Are you sure you want to delete this item? This action cannot be undone.';
+            }
             return confirm(message);
         }
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
-                try { new bootstrap.Alert(alert).close(); } catch(e) {}
+
+        // Auto-hide success/error messages after 5 seconds (vanilla JS, no Bootstrap)
+        setTimeout(function () {
+            document.querySelectorAll('.message, .alert').forEach(function (el) {
+                el.style.transition = 'opacity 0.4s ease';
+                el.style.opacity = '0';
+                setTimeout(function () {
+                    if (el.parentNode) {
+                        el.parentNode.removeChild(el);
+                    }
+                }, 400);
             });
         }, 5000);
     </script>
