@@ -39,58 +39,82 @@
 
             <!-- DASHBOARD -->
             <a href="dashboard.php" class="nav-item active">
-                <span class="nav-icon">
-                    <img src="../assets/icons/dashboard.svg" alt="">
-                </span>
-                <span class="nav-label">Dashboard</span>
+
+                <img
+                    src="../assets/icons/dashboard.svg"
+                    alt="Dashboard"
+                >
+
+                <span>Dashboard</span>
+
             </a>
 
 
-            <h4 class="nav-section-label">OPERATIONS</h4>
+            <h4>OPERATIONS</h4>
 
 
             <!-- TIMETABLE -->
             <a href="timetable_management.php" class="nav-item">
-                <span class="nav-icon">
-                    <img src="../assets/icons/timetable.svg" alt="">
-                </span>
-                <span class="nav-label">Timetable Management</span>
+
+                <img
+                    src="../assets/icons/timetable.svg"
+                    alt="Timetable"
+                >
+
+                <span>Timetable Management</span>
+
             </a>
 
 
             <!-- ROOM SCHEDULE -->
             <a href="room_schedules.php" class="nav-item">
-                <span class="nav-icon">
-                    <img src="../assets/icons/room-schedule.svg" alt="">
-                </span>
-                <span class="nav-label">Room Schedules</span>
+
+                <img
+                    src="../assets/icons/room-schedule.svg"
+                    alt="Room Schedules"
+                >
+
+                <span>Room Schedules</span>
+
             </a>
 
 
             <!-- LECTURE HALL -->
             <a href="lecture_hall_booking.php" class="nav-item">
-                <span class="nav-icon">
-                    <img src="../assets/icons/lecture-hall.svg" alt="">
-                </span>
-                <span class="nav-label">Lecture Hall Booking</span>
+
+                <img
+                    src="../assets/icons/lecture-hall.svg"
+                    alt="Lecture Hall"
+                >
+
+                <span>Lecture Hall Booking</span>
+
             </a>
 
 
             <!-- NOTIFICATIONS -->
             <a href="notifications.php" class="nav-item">
-                <span class="nav-icon">
-                    <img src="../assets/icons/zondicons_notification.svg" alt="">
-                </span>
-                <span class="nav-label">Notifications</span>
+
+                <img
+                    src="../assets/icons/zondicons_notification.svg"
+                    alt="Notifications"
+                >
+
+                <span>Notifications</span>
+
             </a>
 
 
             <!-- PROFILE -->
             <a href="profile.php" class="nav-item">
-                <span class="nav-icon">
-                    <img src="../assets/icons/ion_person.svg" alt="">
-                </span>
-                <span class="nav-label">Profile</span>
+
+                <img
+                    src="../assets/icons/ion_person.svg"
+                    alt="Profile"
+                >
+
+                <span>Profile</span>
+
             </a>
 
         </nav>
