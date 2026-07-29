@@ -1,425 +1,373 @@
-/* ==================================================
+/* =========================================
    RESET
-================================================== */
+========================================= */
 
 * {
-
     margin: 0;
-
     padding: 0;
-
     box-sizing: border-box;
+}
 
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
 }
 
 
 body {
-
     font-family: Arial, sans-serif;
-
-    background-color: #ffffff;
-
+    background: #ffffff;
     color: #111111;
-
 }
 
 
-/* ==================================================
+/* =========================================
    MAIN CONTAINER
-================================================== */
+========================================= */
 
 .dashboard-container {
-
-    display: flex;
-
     min-height: 100vh;
-
 }
 
 
-/* ==================================================
+/* =========================================
    SIDEBAR
-================================================== */
+========================================= */
 
 .sidebar {
-
-    width: 282px;
-
-    min-height: 100vh;
-
-    background-color: #05002e;
-
-    color: white;
-
     position: fixed;
-
-    left: 0;
-
     top: 0;
-
+    left: 0;
     bottom: 0;
 
+    width: 282px;
+    height: 100vh;
+
+    background: #05002e;
+    color: #ffffff;
+
+    overflow-y: auto;
+
+    z-index: 1000;
 }
 
 
-/* ==================================================
+/* =========================================
    SIDEBAR LOGO
-================================================== */
+========================================= */
 
 .sidebar-logo {
-
     padding: 20px 16px;
-
     border-bottom: 1px solid #17134d;
-
 }
 
 
 .sidebar-logo img {
-
     width: 65px;
-
     height: 65px;
 
     object-fit: contain;
 
-    background-color: white;
+    background: #ffffff;
 
     margin-bottom: 8px;
-
 }
 
 
 .sidebar-logo h3 {
-
     font-size: 16px;
-
     margin-bottom: 4px;
-
 }
 
 
 .sidebar-logo p {
-
     font-size: 13px;
-
     color: #c7c5d8;
-
     line-height: 1.3;
-
 }
 
 
-/* ==================================================
+/* =========================================
    SIDEBAR NAVIGATION
-================================================== */
+========================================= */
 
 .sidebar-navigation {
-
     padding: 12px 10px;
-
 }
 
 
 .sidebar-navigation h4 {
-
     color: #67647d;
-
     font-size: 17px;
 
     margin: 12px 10px;
-
 }
 
 
-/* ==================================================
+/* =========================================
    NAVIGATION ITEM
-================================================== */
+========================================= */
 
 .nav-item {
-
     display: flex;
-
     align-items: center;
 
     gap: 14px;
 
     width: 100%;
+    min-height: 48px;
 
     padding: 14px 18px;
-
     margin-bottom: 4px;
 
-    color: white;
+    color: #ffffff;
 
     text-decoration: none;
 
     border-radius: 12px;
 
     font-size: 16px;
-
     font-weight: bold;
-
 }
 
+
+/* =========================================
+   SIDEBAR ICONS
+========================================= */
 
 .nav-item img {
+    width: 20px;
+    height: 20px;
 
-    width: 22px;
-
-    height: 22px;
+    min-width: 20px;
 
     object-fit: contain;
-
 }
 
 
-/* ACTIVE ITEM */
+/* =========================================
+   ACTIVE DASHBOARD
+========================================= */
 
 .nav-item.active {
-
-    background-color: #003d4d;
+    background: #003d4d;
 
     border-left: 5px solid #29d8d2;
-
 }
 
 
-/* HOVER */
+/* =========================================
+   HOVER
+========================================= */
 
 .nav-item:hover {
-
-    background-color: #003d4d;
-
+    background: #003d4d;
 }
 
 
-/* ==================================================
+/* =========================================
    MAIN CONTENT
-================================================== */
+========================================= */
 
 .main-content {
-
     margin-left: 282px;
 
     width: calc(100% - 282px);
 
+    min-height: 100vh;
 }
 
 
-/* ==================================================
-   TOP HEADER
-================================================== */
+/* =========================================
+   TOP NAVBAR
+========================================= */
 
 .top-header {
-
     height: 70px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
 
     padding: 0 22px;
 
-    border-bottom: 1px solid #090044;
+    background: #ffffff;
 
+    border-bottom: 1px solid #090044;
 }
 
 
-/* ==================================================
+/* =========================================
    SYSTEM NAME
-================================================== */
+========================================= */
 
 .system-name {
-
     display: flex;
-
     align-items: center;
 
     gap: 12px;
 
     font-size: 20px;
-
-    color: #111111;
-
 }
 
+
+/* Graduation Cap */
 
 .system-name img {
+    width: 24px;
+    height: 24px;
 
-    width: 46px;
-
-    height: 46px;
-
-    background-color: #05002e;
-
-    padding: 10px;
-
-    border-radius: 4px;
-
+    object-fit: contain;
 }
 
 
-/* ==================================================
+/* =========================================
    USER SECTION
-================================================== */
+========================================= */
 
 .user-section {
-
     display: flex;
-
     align-items: center;
 
     gap: 14px;
-
 }
 
+
+/* =========================================
+   TOP NOTIFICATION
+========================================= */
 
 .top-notification {
+    width: 24px;
+    height: 24px;
 
-    width: 30px;
-
-    height: 30px;
+    object-fit: contain;
 
     margin-right: 20px;
-
 }
 
 
+/* =========================================
+   USER AVATAR
+========================================= */
+
 .user-avatar {
-
     width: 46px;
-
     height: 46px;
 
     display: flex;
-
     align-items: center;
-
     justify-content: center;
 
     border: 2px solid #00a86b;
 
     border-radius: 50%;
 
-    background-color: #05002e;
+    background: #05002e;
 
-    color: white;
+    color: #ffffff;
 
     font-size: 22px;
-
     font-weight: bold;
-
 }
 
 
+/* =========================================
+   USER DETAILS
+========================================= */
+
 .user-details {
-
     display: flex;
-
     flex-direction: column;
-
 }
 
 
 .user-details strong {
-
     font-size: 20px;
-
 }
 
 
 .user-details span {
-
     color: #77758c;
-
     font-size: 15px;
-
 }
 
+
+/* =========================================
+   DROPDOWN
+========================================= */
 
 .dropdown-icon {
-
     width: 18px;
-
     height: 18px;
 
+    object-fit: contain;
 }
 
 
-/* ==================================================
+/* =========================================
    CONTENT
-================================================== */
+========================================= */
 
 .content {
-
     padding: 40px 24px;
-
 }
 
 
-/* ==================================================
+/* =========================================
    DASHBOARD TITLE
-================================================== */
+========================================= */
 
 .dashboard-title {
-
     display: flex;
-
-    justify-content: space-between;
-
     align-items: center;
-
-    border: 1px solid #05002e;
-
-    border-radius: 10px;
+    justify-content: space-between;
 
     padding: 14px 18px;
 
     margin-bottom: 22px;
 
+    border: 1px solid #05002e;
+
+    border-radius: 10px;
 }
 
 
 .dashboard-title h1 {
-
     color: #1239b5;
 
     font-size: 40px;
 
     margin-bottom: 2px;
-
 }
 
 
 .dashboard-title p {
-
     color: #707086;
 
     font-size: 20px;
 
     font-weight: bold;
-
 }
 
+
+/* Profile */
 
 .large-profile-icon {
-
     width: 65px;
-
     height: 65px;
 
+    object-fit: contain;
 }
 
 
-/* ==================================================
+/* =========================================
    DASHBOARD GRID
-================================================== */
+========================================= */
 
 .dashboard-grid {
-
     display: grid;
 
     grid-template-columns: 1fr 1fr;
@@ -427,243 +375,192 @@ body {
     gap: 22px;
 
     margin-bottom: 22px;
-
 }
 
 
-/* ==================================================
-   STAT CARD
-================================================== */
+/* =========================================
+   STAT CARDS
+========================================= */
 
 .stat-card {
+    min-height: 154px;
+
+    padding: 14px 12px;
 
     border: 1px solid #05002e;
 
     border-left: 8px solid #05002e;
 
     border-radius: 10px;
-
-    padding: 14px 12px;
-
-    min-height: 154px;
-
 }
 
 
 .stat-card h2,
 .cancellation-card h2 {
-
     font-size: 24px;
 
     margin-bottom: 18px;
-
 }
 
 
 .stat-number {
-
     color: #0961a9;
 
     font-size: 48px;
 
     font-weight: bold;
-
 }
 
 
-/* ==================================================
+/* =========================================
    CANCELLATION CARD
-================================================== */
+========================================= */
 
 .cancellation-card {
-
     grid-column: 2;
-
     grid-row: 1 / span 2;
-
-    border: 1px solid #222;
-
-    border-radius: 10px;
 
     padding: 14px 12px;
 
+    border: 1px solid #222222;
+
+    border-radius: 10px;
 }
 
 
 .cancel-item {
-
     display: flex;
-
     flex-direction: column;
-
-    border: 1px solid red;
-
-    background-color: #fff3f3;
-
-    border-radius: 20px;
 
     padding: 12px 16px;
 
     margin-bottom: 10px;
 
+    border: 1px solid #ff0000;
+
+    background: #fff3f3;
+
+    border-radius: 20px;
 }
 
 
 .cancel-item strong {
-
     font-size: 23px;
-
 }
 
 
 .cancel-item span {
-
     margin-top: 5px;
 
     font-size: 16px;
 
     font-weight: bold;
-
 }
 
 
-/* ==================================================
+/* =========================================
    SCHEDULE SECTION
-================================================== */
+========================================= */
 
 .schedule-section {
-
     border: 1px solid #05002e;
 
     border-radius: 10px;
 
     overflow: hidden;
-
 }
 
 
 .schedule-section h2 {
-
     color: #1239b5;
 
     font-size: 32px;
 
     padding: 18px;
-
 }
 
 
-/* ==================================================
+/* =========================================
    TABLE
-================================================== */
+========================================= */
 
 .table-container {
-
     width: 100%;
 
     overflow-x: auto;
-
 }
 
 
 table {
-
     width: 100%;
 
     border-collapse: collapse;
-
 }
 
 
 thead {
-
-    background-color: #eeeeee;
-
+    background: #eeeeee;
 }
 
 
 th,
 td {
-
-    border: 1px solid #777;
-
     padding: 16px 20px;
+
+    border: 1px solid #777777;
 
     text-align: left;
 
     font-size: 18px;
-
 }
 
 
 th {
-
     font-size: 20px;
-
 }
 
 
-/* ==================================================
+/* =========================================
    STATUS
-================================================== */
+========================================= */
 
 .status {
-
     font-weight: bold;
-
 }
 
 
 .status.confirmed {
-
     color: #008000;
-
 }
 
 
 .status.pending {
-
     color: #d17b00;
-
 }
 
 
-/* ==================================================
-   RESPONSIVE DESIGN
-================================================== */
+/* =========================================
+   RESPONSIVE
+========================================= */
 
 @media screen and (max-width: 1000px) {
 
-
     .sidebar {
-
         width: 220px;
-
     }
-
 
     .main-content {
-
         margin-left: 220px;
-
         width: calc(100% - 220px);
-
     }
-
 
     .dashboard-grid {
-
         grid-template-columns: 1fr;
-
     }
 
-
     .cancellation-card {
-
         grid-column: auto;
-
         grid-row: auto;
-
     }
 
 }
@@ -671,55 +568,33 @@ th {
 
 @media screen and (max-width: 700px) {
 
-
     .sidebar {
-
         display: none;
-
     }
-
 
     .main-content {
-
         margin-left: 0;
-
         width: 100%;
-
     }
-
 
     .content {
-
         padding: 20px 12px;
-
     }
-
 
     .dashboard-title h1 {
-
         font-size: 28px;
-
     }
-
 
     .dashboard-title p {
-
         font-size: 15px;
-
     }
-
 
     .user-details {
-
         display: none;
-
     }
 
-
     .schedule-section h2 {
-
         font-size: 24px;
-
     }
 
 }

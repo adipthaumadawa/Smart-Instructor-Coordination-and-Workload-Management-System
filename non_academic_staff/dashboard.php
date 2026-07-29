@@ -1,41 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Non-Academic Staff Dashboard</title>
 
-    <!-- Non-Academic Staff CSS -->
-    <link
-        rel="stylesheet"
-        href="css/non_academic_dashboard.css"
-    >
-
+    <link rel="stylesheet" href="css/non_acedemic_staff.css">
 </head>
-
 
 <body>
 
-
 <div class="dashboard-container">
 
-
-    <!-- ==================================================
-         SIDEBAR
-    =================================================== -->
-
+    <!-- SIDEBAR -->
     <aside class="sidebar">
 
-
-        <!-- LOGO AREA -->
-
+        <!-- LOGO -->
         <div class="sidebar-logo">
 
             <img
@@ -43,9 +24,7 @@
                 alt="UCSC Logo"
             >
 
-            <h3>
-                Smart Instructor System
-            </h3>
+            <h3>Smart Instructor System</h3>
 
             <p>
                 University of Colombo<br>
@@ -55,185 +34,114 @@
         </div>
 
 
-
-        <!-- SIDEBAR NAVIGATION -->
-
+        <!-- NAVIGATION -->
         <nav class="sidebar-navigation">
 
-
             <!-- DASHBOARD -->
-
-            <a
-                href="dashboard.php"
-                class="nav-item active"
-            >
+            <a href="dashboard.php" class="nav-item active">
 
                 <img
                     src="../assets/icons/dashboard.svg"
                     alt="Dashboard"
                 >
 
-                <span>
-                    Dashboard
-                </span>
+                <span>Dashboard</span>
 
             </a>
 
 
-
-            <!-- SECTION TITLE -->
-
-            <h4>
-                OPERATIONS
-            </h4>
+            <h4>OPERATIONS</h4>
 
 
-
-            <!-- TIMETABLE MANAGEMENT -->
-
-            <a
-                href="timetable_management.php"
-                class="nav-item"
-            >
+            <!-- TIMETABLE -->
+            <a href="timetable_management.php" class="nav-item">
 
                 <img
                     src="../assets/icons/timetable.svg"
-                    alt="Timetable Management"
+                    alt="Timetable"
                 >
 
-                <span>
-                    Timetable Management
-                </span>
+                <span>Timetable Management</span>
 
             </a>
 
 
-
-            <!-- ROOM SCHEDULES -->
-
-            <a
-                href="room_schedules.php"
-                class="nav-item"
-            >
+            <!-- ROOM SCHEDULE -->
+            <a href="room_schedules.php" class="nav-item">
 
                 <img
                     src="../assets/icons/room-schedule.svg"
                     alt="Room Schedules"
                 >
 
-                <span>
-                    Room Schedules
-                </span>
+                <span>Room Schedules</span>
 
             </a>
 
 
-
-            <!-- LECTURE HALL BOOKING -->
-
-            <a
-                href="lecture_hall_booking.php"
-                class="nav-item"
-            >
+            <!-- LECTURE HALL -->
+            <a href="lecture_hall_booking.php" class="nav-item">
 
                 <img
                     src="../assets/icons/lecture-hall.svg"
-                    alt="Lecture Hall Booking"
+                    alt="Lecture Hall"
                 >
 
-                <span>
-                    Lecture Hall Booking
-                </span>
+                <span>Lecture Hall Booking</span>
 
             </a>
 
 
-
             <!-- NOTIFICATIONS -->
-
-            <a
-                href="notifications.php"
-                class="nav-item"
-            >
+            <a href="notifications.php" class="nav-item">
 
                 <img
                     src="../assets/icons/notification.svg"
                     alt="Notifications"
                 >
 
-                <span>
-                    Notifications
-                </span>
+                <span>Notifications</span>
 
             </a>
 
 
-
             <!-- PROFILE -->
-
-            <a
-                href="profile.php"
-                class="nav-item"
-            >
+            <a href="profile.php" class="nav-item">
 
                 <img
                     src="../assets/icons/profile.svg"
                     alt="Profile"
                 >
 
-                <span>
-                    Profile
-                </span>
+                <span>Profile</span>
 
             </a>
 
-
         </nav>
-
 
     </aside>
 
 
-
-
-    <!-- ==================================================
-         MAIN CONTENT
-    =================================================== -->
-
+    <!-- MAIN CONTENT -->
     <main class="main-content">
 
 
-
-        <!-- ==================================================
-             TOP HEADER
-        =================================================== -->
-
+        <!-- TOP NAVBAR -->
         <header class="top-header">
-
-
-            <!-- SYSTEM NAME -->
 
             <div class="system-name">
 
                 <img
                     src="../assets/icons/graduation-cap.svg"
-                    alt="UCSC SIS"
+                    alt="Graduation Cap"
                 >
 
-                <strong>
-                    UCSC SIS
-                </strong>
+                <strong>UCSC SIS</strong>
 
             </div>
 
 
-
-            <!-- USER SECTION -->
-
             <div class="user-section">
-
-
-                <!-- NOTIFICATION -->
 
                 <img
                     src="../assets/icons/notification.svg"
@@ -242,34 +150,19 @@
                 >
 
 
-
-                <!-- USER AVATAR -->
-
                 <div class="user-avatar">
-
                     M
-
                 </div>
 
-
-
-                <!-- USER DETAILS -->
 
                 <div class="user-details">
 
-                    <strong>
-                        Mr. Rizan
-                    </strong>
+                    <strong>Mr. Rizan</strong>
 
-                    <span>
-                        Non-Academic Staff
-                    </span>
+                    <span>Non-Academic Staff</span>
 
                 </div>
 
-
-
-                <!-- DROPDOWN -->
 
                 <img
                     src="../assets/icons/dropdown.svg"
@@ -277,29 +170,17 @@
                     alt="Dropdown"
                 >
 
-
             </div>
-
 
         </header>
 
 
-
-
-        <!-- ==================================================
-             PAGE CONTENT
-        =================================================== -->
-
+        <!-- PAGE CONTENT -->
         <section class="content">
 
 
-
-            <!-- ==================================================
-                 DASHBOARD HEADER
-            =================================================== -->
-
+            <!-- PAGE TITLE -->
             <div class="dashboard-title">
-
 
                 <div>
 
@@ -315,35 +196,24 @@
                 </div>
 
 
-
-                <!-- PROFILE ICON -->
-
                 <img
                     src="../assets/icons/profile.svg"
                     class="large-profile-icon"
                     alt="Profile"
                 >
 
-
             </div>
 
 
-
-
-            <!-- ==================================================
-                 DASHBOARD CARDS
-            =================================================== -->
-
+            <!-- DASHBOARD CARDS -->
             <div class="dashboard-grid">
 
 
-
-                <!-- HALL & LAB OCCUPANCY -->
-
+                <!-- OCCUPANCY -->
                 <div class="stat-card">
 
                     <h2>
-                        Hall & Lab Occupancy
+                        Hall &amp; Lab Occupancy
                     </h2>
 
                     <div class="stat-number">
@@ -353,10 +223,7 @@
                 </div>
 
 
-
-
-                <!-- LEAVE ALERTS -->
-
+                <!-- LEAVE -->
                 <div class="stat-card">
 
                     <h2>
@@ -370,20 +237,13 @@
                 </div>
 
 
-
-
                 <!-- CANCELLATIONS -->
-
                 <div class="cancellation-card">
 
-
                     <h2>
-                        Booking Cancels & Lectures Cancels
+                        Booking Cancels &amp; Lectures Cancels
                     </h2>
 
-
-
-                    <!-- CANCELLATION 1 -->
 
                     <div class="cancel-item">
 
@@ -398,9 +258,6 @@
                     </div>
 
 
-
-                    <!-- CANCELLATION 2 -->
-
                     <div class="cancel-item">
 
                         <strong>
@@ -414,9 +271,6 @@
                     </div>
 
 
-
-                    <!-- CANCELLATION 3 -->
-
                     <div class="cancel-item">
 
                         <strong>
@@ -429,74 +283,43 @@
 
                     </div>
 
-
                 </div>
-
 
             </div>
 
 
-
-
-            <!-- ==================================================
-                 ROOM & LAB SCHEDULE
-            =================================================== -->
-
+            <!-- SCHEDULE -->
             <div class="schedule-section">
 
-
                 <h2>
-                    Today's Room & Lab Schedule Overview
+                    Today's Room &amp; Lab Schedule Overview
                 </h2>
-
 
 
                 <div class="table-container">
 
-
                     <table>
-
 
                         <thead>
 
                             <tr>
 
-                                <th>
-                                    Room/Lab
-                                </th>
-
-                                <th>
-                                    Time
-                                </th>
-
-                                <th>
-                                    Booked By
-                                </th>
-
-                                <th>
-                                    Purpose
-                                </th>
-
-                                <th>
-                                    Status
-                                </th>
+                                <th>Room/Lab</th>
+                                <th>Time</th>
+                                <th>Booked By</th>
+                                <th>Purpose</th>
+                                <th>Status</th>
 
                             </tr>
 
                         </thead>
 
 
-
                         <tbody>
-
-
-                            <!-- ROW 1 -->
 
                             <tr>
 
-                                <td>
-                                    E 401
-                                </td>
+                                <td>E 401</td>
 
                                 <td>
                                     08:00 – 10:00
@@ -511,24 +334,17 @@
                                 </td>
 
                                 <td>
-
                                     <span class="status confirmed">
                                         Confirmed
                                     </span>
-
                                 </td>
 
                             </tr>
 
 
-
-                            <!-- ROW 2 -->
-
                             <tr>
 
-                                <td>
-                                    W002
-                                </td>
+                                <td>W002</td>
 
                                 <td>
                                     10:00 – 12:00
@@ -543,18 +359,13 @@
                                 </td>
 
                                 <td>
-
                                     <span class="status pending">
                                         Pending
                                     </span>
-
                                 </td>
 
                             </tr>
 
-
-
-                            <!-- ROW 3 -->
 
                             <tr>
 
@@ -575,37 +386,26 @@
                                 </td>
 
                                 <td>
-
                                     <span class="status confirmed">
                                         Confirmed
                                     </span>
-
                                 </td>
 
                             </tr>
 
-
                         </tbody>
-
 
                     </table>
 
-
                 </div>
-
 
             </div>
 
-
         </section>
-
 
     </main>
 
-
 </div>
 
-
 </body>
-
 </html>
