@@ -96,7 +96,7 @@
             <a href="notifications.php" class="nav-item">
 
                 <img
-                    src="../assets/icons/notification.svg"
+                    src="../assets/icons/zondicons_notification.svg"
                     alt="Notifications"
                 >
 
@@ -109,7 +109,7 @@
             <a href="profile.php" class="nav-item">
 
                 <img
-                    src="../assets/icons/profile.svg"
+                    src="../assets/icons/ion_person.svg"
                     alt="Profile"
                 >
 
@@ -132,7 +132,7 @@
             <div class="system-name">
 
                 <img
-                    src="../assets/icons/graduation-cap.svg"
+                    src="../assets/icons/boxicons_education.svg"
                     alt="Graduation Cap"
                 >
 
