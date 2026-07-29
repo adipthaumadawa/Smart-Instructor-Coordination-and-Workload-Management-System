@@ -157,7 +157,7 @@
             >
 
                 <img
-                    src="../assets/icons/notification.svg"
+                    src="../assets/icons/notification1.svg"
                     alt="Notifications"
                 >
 
@@ -177,7 +177,7 @@
             >
 
                 <img
-                    src="../assets/icons/profile.svg"
+                    src="../assets/icons/profile1.svg"
                     alt="Profile"
                 >
 
@@ -216,7 +216,7 @@
             <div class="system-name">
 
                 <img
-                    src="../assets/icons/graduation-cap.svg"
+                    src="../assets/icons/education1.svg"
                     alt="UCSC SIS"
                 >
 
