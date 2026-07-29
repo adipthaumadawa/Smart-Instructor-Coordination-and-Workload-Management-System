@@ -19,7 +19,7 @@ if (!empty($_SESSION['user_id']) && !empty($_SESSION['role_id'])) {
     $dashboardMap = [
         ROLE_ADMIN => 'admin/dashboard.php',
         ROLE_INSTRUCTOR => 'instructor/dashboard.php', 
-        ROLE_COORDINATOR => 'coordinator/dashboard.php',
+        ROLE_COORDINATOR => 'instructor_coordinator/dashboard.php',
         ROLE_CHIEF_COORDINATOR => 'chief_coordinator/dashboard.php',
         ROLE_NON_ACADEMIC => 'non_academic/dashboard.php',
         ROLE_PROJECT_COORDINATOR => 'project_coordinator/coordinator_dashboard.php',
