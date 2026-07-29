@@ -1,6 +1,4 @@
-/* =========================================
-   RESET
-========================================= */
+/* ===================== RESET ===================== */
 
 * {
     margin: 0;
@@ -8,593 +6,403 @@
     box-sizing: border-box;
 }
 
-
-html,
 body {
-    width: 100%;
-    min-height: 100%;
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+    background: #f4f6f9;
+    color: #1a1a2e;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+img {
+    display: block;
 }
 
 
-body {
-    font-family: Arial, sans-serif;
-    background: #ffffff;
-    color: #111111;
-}
-
-
-/* =========================================
-   MAIN CONTAINER
-========================================= */
+/* ===================== LAYOUT ===================== */
 
 .dashboard-container {
+    display: flex;
     min-height: 100vh;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 
-/* =========================================
-   SIDEBAR
-========================================= */
+/* ===================== SIDEBAR ===================== */
 
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-
-    width: 282px;
-    height: 100vh;
-
-    background: #05002e;
+    width: 260px;
+    flex-shrink: 0;
+    background: #12123b;
     color: #ffffff;
-
-    overflow-y: auto;
-
-    z-index: 1000;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
 }
-
-
-/* =========================================
-   SIDEBAR LOGO
-========================================= */
 
 .sidebar-logo {
-    padding: 20px 16px;
-    border-bottom: 1px solid #17134d;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0 8px 24px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 16px;
 }
-
 
 .sidebar-logo img {
-    width: 65px;
-    height: 65px;
-
-    object-fit: contain;
-
-    background: #ffffff;
-
-    margin-bottom: 8px;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 10px;
 }
 
-
 .sidebar-logo h3 {
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
     margin-bottom: 4px;
 }
 
-
 .sidebar-logo p {
-    font-size: 13px;
-    color: #c7c5d8;
-    line-height: 1.3;
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.55);
 }
 
-
-/* =========================================
-   SIDEBAR NAVIGATION
-========================================= */
+/* NAVIGATION */
 
 .sidebar-navigation {
-    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-
-.sidebar-navigation h4 {
-    color: #67647d;
-    font-size: 17px;
-
-    margin: 12px 10px;
+.nav-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    margin: 16px 8px 6px 8px;
 }
 
-
-/* =========================================
-   NAVIGATION ITEM
-========================================= */
-
+/* Every nav item is identical in structure: icon + label, own height only */
 .nav-item {
     display: flex;
     align-items: center;
-
-    gap: 14px;
-
-    width: 100%;
-    min-height: 48px;
-
-    padding: 14px 18px;
-    margin-bottom: 4px;
-
-    color: #ffffff;
-
-    text-decoration: none;
-
-    border-radius: 12px;
-
-    font-size: 16px;
-    font-weight: bold;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    align-self: stretch;   /* fills the row width, NOT height */
+    height: auto;          /* sizes to its own padding + content only */
+    transition: background 0.15s ease;
 }
-
-
-/* =========================================
-   SIDEBAR ICONS
-========================================= */
-
-.nav-item img {
-    width: 20px;
-    height: 20px;
-
-    min-width: 20px;
-
-    object-fit: contain;
-}
-
-
-/* =========================================
-   ACTIVE DASHBOARD
-========================================= */
-
-.nav-item.active {
-    background: #003d4d;
-
-    border-left: 5px solid #29d8d2;
-}
-
-
-/* =========================================
-   HOVER
-========================================= */
 
 .nav-item:hover {
-    background: #003d4d;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.nav-item.active {
+    background: rgba(45, 212, 191, 0.15);
+    border: 1px solid #2dd4bf;
+    color: #ffffff;
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-icon img {
+    width: 18px;
+    height: 18px;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+}
+
+.nav-label {
+    white-space: nowrap;
 }
 
 
-/* =========================================
-   MAIN CONTENT
-========================================= */
-
-.main-content {
-    margin-left: 282px;
-
-    width: calc(100% - 282px);
-
-    min-height: 100vh;
-}
-
-
-/* =========================================
-   TOP NAVBAR
-========================================= */
+/* ===================== TOP HEADER ===================== */
 
 .top-header {
-    height: 70px;
-
     display: flex;
     align-items: center;
     justify-content: space-between;
-
-    padding: 0 22px;
-
+    padding: 14px 32px;
     background: #ffffff;
-
-    border-bottom: 1px solid #090044;
+    border-bottom: 1px solid #e5e7eb;
 }
-
-
-/* =========================================
-   SYSTEM NAME
-========================================= */
 
 .system-name {
     display: flex;
     align-items: center;
-
-    gap: 12px;
-
-    font-size: 20px;
+    gap: 10px;
 }
-
-
-/* Graduation Cap */
 
 .system-name img {
-    width: 24px;
-    height: 24px;
-
-    object-fit: contain;
+    width: 20px;
+    height: 20px;
 }
 
-
-/* =========================================
-   USER SECTION
-========================================= */
+.system-name strong {
+    font-size: 16px;
+    font-weight: 700;
+}
 
 .user-section {
     display: flex;
     align-items: center;
-
     gap: 14px;
 }
 
-
-/* =========================================
-   TOP NOTIFICATION
-========================================= */
-
 .top-notification {
-    width: 24px;
-    height: 24px;
-
-    object-fit: contain;
-
-    margin-right: 20px;
+    width: 20px;
+    height: 20px;
 }
 
-
-/* =========================================
-   USER AVATAR
-========================================= */
-
 .user-avatar {
-    width: 46px;
-    height: 46px;
-
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #12123b;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    border: 2px solid #00a86b;
-
-    border-radius: 50%;
-
-    background: #05002e;
-
-    color: #ffffff;
-
-    font-size: 22px;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 14px;
 }
-
-
-/* =========================================
-   USER DETAILS
-========================================= */
 
 .user-details {
     display: flex;
     flex-direction: column;
+    line-height: 1.3;
 }
-
 
 .user-details strong {
-    font-size: 20px;
+    font-size: 14px;
 }
-
 
 .user-details span {
-    color: #77758c;
-    font-size: 15px;
+    font-size: 12px;
+    color: #6b7280;
 }
-
-
-/* =========================================
-   DROPDOWN
-========================================= */
 
 .dropdown-icon {
-    width: 18px;
-    height: 18px;
-
-    object-fit: contain;
+    width: 12px;
+    height: 12px;
 }
 
 
-/* =========================================
-   CONTENT
-========================================= */
+/* ===================== CONTENT ===================== */
 
 .content {
-    padding: 40px 24px;
+    padding: 28px 32px 48px 32px;
 }
-
-
-/* =========================================
-   DASHBOARD TITLE
-========================================= */
 
 .dashboard-title {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-
-    padding: 14px 18px;
-
-    margin-bottom: 22px;
-
-    border: 1px solid #05002e;
-
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
 }
-
 
 .dashboard-title h1 {
-    color: #1239b5;
-
-    font-size: 40px;
-
-    margin-bottom: 2px;
+    font-size: 26px;
+    font-weight: 800;
+    color: #1e3a8a;
+    margin-bottom: 6px;
 }
-
 
 .dashboard-title p {
-    color: #707086;
-
-    font-size: 20px;
-
-    font-weight: bold;
+    font-size: 14px;
+    color: #6b7280;
+    max-width: 560px;
 }
-
-
-/* Profile */
 
 .large-profile-icon {
-    width: 65px;
-    height: 65px;
-
-    object-fit: contain;
+    width: 36px;
+    height: 36px;
+    opacity: 0.85;
 }
 
 
-/* =========================================
-   DASHBOARD GRID
-========================================= */
+/* ===================== GRID CARDS ===================== */
 
 .dashboard-grid {
     display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 22px;
-
-    margin-bottom: 22px;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 20px;
+    margin-bottom: 20px;
 }
 
-
-/* =========================================
-   STAT CARDS
-========================================= */
-
-.stat-card {
-    min-height: 154px;
-
-    padding: 14px 12px;
-
-    border: 1px solid #05002e;
-
-    border-left: 8px solid #05002e;
-
-    border-radius: 10px;
-}
-
-
-.stat-card h2,
-.cancellation-card h2 {
-    font-size: 24px;
-
-    margin-bottom: 18px;
-}
-
-
-.stat-number {
-    color: #0961a9;
-
-    font-size: 48px;
-
-    font-weight: bold;
-}
-
-
-/* =========================================
-   CANCELLATION CARD
-========================================= */
-
-.cancellation-card {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-
-    padding: 14px 12px;
-
-    border: 1px solid #222222;
-
-    border-radius: 10px;
-}
-
-
-.cancel-item {
+.dashboard-grid > div:first-child {
     display: flex;
     flex-direction: column;
-
-    padding: 12px 16px;
-
-    margin-bottom: 10px;
-
-    border: 1px solid #ff0000;
-
-    background: #fff3f3;
-
-    border-radius: 20px;
+    gap: 20px;
 }
 
+.stat-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #12123b;
+    border-radius: 10px;
+    padding: 18px 20px;
+}
+
+.stat-card h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 800;
+    color: #2563eb;
+}
+
+.cancellation-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cancellation-card h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+}
+
+.cancel-item {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 
 .cancel-item strong {
-    font-size: 23px;
+    font-size: 14px;
+    color: #1a1a2e;
 }
-
 
 .cancel-item span {
-    margin-top: 5px;
-
-    font-size: 16px;
-
-    font-weight: bold;
+    font-size: 12.5px;
+    color: #b91c1c;
 }
 
 
-/* =========================================
-   SCHEDULE SECTION
-========================================= */
+/* ===================== SCHEDULE TABLE ===================== */
 
 .schedule-section {
-    border: 1px solid #05002e;
-
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
     border-radius: 10px;
-
-    overflow: hidden;
+    padding: 20px 24px 8px 24px;
 }
-
 
 .schedule-section h2 {
-    color: #1239b5;
-
-    font-size: 32px;
-
-    padding: 18px;
+    font-size: 17px;
+    font-weight: 800;
+    color: #1e3a8a;
+    margin-bottom: 14px;
 }
 
-
-/* =========================================
-   TABLE
-========================================= */
-
 .table-container {
-    width: 100%;
-
     overflow-x: auto;
 }
 
-
 table {
     width: 100%;
-
     border-collapse: collapse;
 }
 
-
-thead {
-    background: #eeeeee;
-}
-
-
-th,
-td {
-    padding: 16px 20px;
-
-    border: 1px solid #777777;
-
+thead th {
     text-align: left;
-
-    font-size: 18px;
+    background: #f3f4f6;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+    padding: 12px 14px;
 }
 
-
-th {
-    font-size: 20px;
+tbody td {
+    font-size: 13.5px;
+    color: #1a1a2e;
+    padding: 14px;
+    border-bottom: 1px solid #f0f1f3;
 }
-
-
-/* =========================================
-   STATUS
-========================================= */
 
 .status {
-    font-weight: bold;
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
 }
-
 
 .status.confirmed {
-    color: #008000;
+    background: #dcfce7;
+    color: #15803d;
 }
-
 
 .status.pending {
-    color: #d17b00;
+    background: #fef3c7;
+    color: #b45309;
 }
 
 
-/* =========================================
-   RESPONSIVE
-========================================= */
+/* ===================== RESPONSIVE ===================== */
 
-@media screen and (max-width: 1000px) {
-
-    .sidebar {
-        width: 220px;
-    }
-
-    .main-content {
-        margin-left: 220px;
-        width: calc(100% - 220px);
-    }
-
+@media (max-width: 1024px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
-
-    .cancellation-card {
-        grid-column: auto;
-        grid-row: auto;
-    }
-
 }
 
-
-@media screen and (max-width: 700px) {
-
-    .sidebar {
-        display: none;
+@media (max-width: 768px) {
+    .dashboard-container {
+        flex-direction: column;
     }
 
-    .main-content {
-        margin-left: 0;
+    .sidebar {
         width: 100%;
     }
 
     .content {
-        padding: 20px 12px;
+        padding: 20px;
     }
-
-    .dashboard-title h1 {
-        font-size: 28px;
-    }
-
-    .dashboard-title p {
-        font-size: 15px;
-    }
-
-    .user-details {
-        display: none;
-    }
-
-    .schedule-section h2 {
-        font-size: 24px;
-    }
-
 }
