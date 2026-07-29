@@ -12,24 +12,6 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/auth.php';
 
 /**
- * Helper function to return complete application URLs
- */
-function app_url($path = '') {
-    $path = ltrim((string)$path, '/');
-
-    if (defined('APP_URL')) {
-        $base = APP_URL;
-    } elseif (defined('SITE_URL')) {
-        $base = SITE_URL;
-    } else {
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $base = $protocol . $host . '/Smart-Instructor-Coordination-and-Workload-Management-System';
-    }
-
-    return rtrim($base, '/') . ($path !== '' ? '/' . $path : '');
-}
-/**
  * Sanitize user input (prevent XSS)
  */
 function sanitize($data) {
@@ -393,28 +375,24 @@ function formatTime($time) {
 }
 
 /**
- * Get status badge HTML (no Bootstrap frameworks)
+ * Get status badge HTML (Bootstrap)
  */
 function getStatusBadge($status) {
     $status = strtolower($status);
     
     $badges = [
-        'active' => '<span>Active</span>',
-        'inactive' => '<span>Inactive</span>',
-        'pending' => '<span>Pending</span>',
-        'approved' => '<span>Approved</span>',
-        'rejected' => '<span>Rejected</span>',
-        'assigned' => '<span>Assigned</span>',
-        'completed' => '<span>Completed</span>',
-        'confirmed' => '<span>Confirmed</span>',
-        'cancelled' => '<span>Cancelled</span>',
-        'scheduled' => '<span>Scheduled</span>',
+        'active' => '<span class="badge bg-success">Active</span>',
+        'inactive' => '<span class="badge bg-secondary">Inactive</span>',
+        'pending' => '<span class="badge bg-warning text-dark">Pending</span>',
+        'approved' => '<span class="badge bg-success">Approved</span>',
+        'rejected' => '<span class="badge bg-danger">Rejected</span>',
+        'assigned' => '<span class="badge bg-primary">Assigned</span>',
+        'completed' => '<span class="badge bg-info">Completed</span>',
+        'confirmed' => '<span class="badge bg-success">Confirmed</span>',
+        'cancelled' => '<span class="badge bg-danger">Cancelled</span>',
+        'scheduled' => '<span class="badge bg-primary">Scheduled</span>',
     ];
     
-    return $badges[$status] ?? '<span>' . ucfirst($status) . '</span>';
+    return $badges[$status] ?? '<span class="badge bg-secondary">' . ucfirst($status) . '</span>';
 }
-/**
- * Helper function to generate full application URLs
- */
-
 ?>

@@ -1,114 +1,16 @@
-/**
- * Main JavaScript
- * Smart Instructor Coordination and Workload Management System
- * Framework-free (vanilla JS only)
- */
-
-document.addEventListener('DOMContentLoaded', function () {
-
-  // ----- Confirm before delete -----
-  document.querySelectorAll('.btn-delete, [data-confirm]').forEach(function (element) {
-    element.addEventListener('click', function (e) {
-      var message = this.getAttribute('data-confirm') || 'Are you sure you want to delete this item?';
-      if (!confirm(message)) {
-        e.preventDefault();
-        return false;
-      }
-    });
-  });
-
-  // ----- Dropdown menus (topbar) -----
-  document.querySelectorAll('.menu-toggle').forEach(function (btn) {
-    btn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      var list = btn.nextElementSibling;
-      if (!list || !list.classList.contains('menu-list')) return;
-
-      var isOpen = !list.hidden;
-
-      // Close all menus first
-      document.querySelectorAll('.menu-list').forEach(function (el) {
-        el.hidden = true;
-      });
-
-      list.hidden = isOpen;
-    });
-  });
-
-  // Close menus when clicking outside
-  document.addEventListener('click', function () {
-    document.querySelectorAll('.menu-list').forEach(function (el) {
-      el.hidden = true;
-    });
-  });
-
-  // ----- Mobile topbar panel -----
-  var toggle = document.getElementById('topbarToggle');
-  var panel = document.getElementById('topbarPanel');
-  if (toggle && panel) {
-    toggle.addEventListener('click', function (e) {
-      e.stopPropagation();
-      panel.classList.toggle('open');
-    });
-  }
-
+(function(){
+'use strict';
+const body=document.body;
+function closeMenus(except){document.querySelectorAll('.dropdown-menu').forEach(m=>{if(m!==except){m.hidden=true;const b=document.querySelector('[data-menu-button="'+m.id+'"]');if(b)b.setAttribute('aria-expanded','false')}})}
+document.addEventListener('click',e=>{
+ const menuButton=e.target.closest('[data-menu-button]');
+ if(menuButton){e.preventDefault();e.stopPropagation();const menu=document.getElementById(menuButton.dataset.menuButton);const open=menu&&menu.hidden;closeMenus(menu);if(menu){menu.hidden=!open;menuButton.setAttribute('aria-expanded',String(open))}return}
+ if(!e.target.closest('.menu-wrap'))closeMenus(null);
+ const dismiss=e.target.closest('.btn-close,[data-dismiss="alert"]');if(dismiss){const alert=dismiss.closest('.alert');if(alert)alert.remove()}
+ const toggle=e.target.closest('[data-sidebar-toggle]');if(toggle){const open=!body.classList.contains('sidebar-open');body.classList.toggle('sidebar-open',open);document.querySelectorAll('[data-sidebar-toggle]').forEach(b=>b.setAttribute('aria-expanded',String(open)))}
 });
-
-/**
- * Simple form validation helper
- */
-function validateForm(formId) {
-  var form = document.getElementById(formId);
-  if (!form) return true;
-
-  var isValid = true;
-  var requiredFields = form.querySelectorAll('[required]');
-
-  requiredFields.forEach(function (field) {
-    if (!field.value.trim()) {
-      field.classList.add('is-invalid');
-      isValid = false;
-    } else {
-      field.classList.remove('is-invalid');
-    }
-  });
-
-  return isValid;
-}
-
-/**
- * Show loading state on button (no icon fonts)
- */
-function showLoading(button) {
-  if (!button) return;
-  button.disabled = true;
-  button.setAttribute('data-original-html', button.innerHTML);
-  button.innerHTML = 'Processing...';
-}
-
-/**
- * Restore button after loading (optional)
- */
-function hideLoading(button) {
-  if (!button) return;
-  button.disabled = false;
-  var original = button.getAttribute('data-original-html');
-  if (original) {
-    button.innerHTML = original;
-  }
-}
-
-/**
- * Format date helper (YYYY-MM-DD for input[type=date])
- */
-function formatDateForInput(date) {
-  var d = new Date(date);
-  var month = '' + (d.getMonth() + 1);
-  var day = '' + d.getDate();
-  var year = d.getFullYear();
-
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-
-  return [year, month, day].join('-');
-}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenus(null);body.classList.remove('sidebar-open')}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();document.getElementById('globalSearch')?.focus()}});
+const search=document.getElementById('globalSearch');if(search)search.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();document.querySelectorAll('main table tbody tr, main .card, main .ui-card').forEach(el=>{if(el.closest('.topbar,.sidebar'))return;el.style.display=!q||el.textContent.toLowerCase().includes(q)?'':''})});
+window.confirmDelete=function(message='Are you sure you want to continue?'){return window.confirm(message)};
+setTimeout(()=>document.querySelectorAll('.alert.auto-dismiss,.alert-dismissible').forEach(a=>a.remove()),6000);
+})();

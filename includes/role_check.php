@@ -23,11 +23,11 @@ function getDashboardPath($roleId) {
     switch ((int)$roleId) {
         case ROLE_ADMIN: return app_url('admin/dashboard.php');
         case ROLE_INSTRUCTOR: return app_url('instructor/dashboard.php');
-        case ROLE_COORDINATOR: return app_url('coordinator/dashboard.php');
-        case ROLE_CHIEF_COORDINATOR: return app_url('chief_coordinator/dashboard.php');
+        case ROLE_COORDINATOR: return project_file_exists('coordinator/dashboard.php') ? app_url('coordinator/dashboard.php') : app_url('auth/login.php');
+        case ROLE_CHIEF_COORDINATOR: return project_file_exists('chief_coordinator/dashboard.php') ? app_url('chief_coordinator/dashboard.php') : app_url('auth/login.php');
         case ROLE_NON_ACADEMIC: return app_url('non_academic/dashboard.php');
-        case ROLE_PROJECT_COORDINATOR: return app_url('project_coordinator/dashboard.php');
-        case ROLE_DIRECTOR: return app_url('director/dashboard.php');
+        case ROLE_PROJECT_COORDINATOR: return app_url('project_coordinator/coordinator_dashboard.php');
+        case ROLE_DIRECTOR: return project_file_exists('director/dashboard.php') ? app_url('director/dashboard.php') : app_url('auth/login.php');
         default: return app_url('auth/login.php');
     }
 }
