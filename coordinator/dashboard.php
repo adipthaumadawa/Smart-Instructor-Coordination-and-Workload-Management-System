@@ -6,18 +6,18 @@ require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/dashboard_ui.php';
 
-// Only instructors can access this dashboard.
-checkRole(ROLE_INSTRUCTOR);
+// Only instructor coordinators can access this dashboard.
+checkRole(ROLE_COORDINATOR);
 
-$pageTitle = 'Instructor Dashboard';
+$pageTitle = 'Instructor Coordinator Dashboard';
 include __DIR__ . '/../includes/header.php';
 
 sic_render_dashboard(
-    'Instructor Dashboard',
-    'View today\'s tasks, weekly workload, replacement requests, and notifications.',
-    sic_dashboard_cards('instructor'),
-    app_url('instructor/replacement_request.php'),
-    'Request Replacement'
+    'Instructor Coordinator Dashboard',
+    'Manage instructor availability, additional task requests, urgent replacements, workload, and schedules.',
+    sic_dashboard_cards('coordinator'),
+    app_url('coordinator/additional_tasks.php'),
+    'New Task'
 );
 
 include __DIR__ . '/../includes/footer.php';
