@@ -1,13 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/role_check.php';
-require_once __DIR__ . '/../includes/functions.php';
 
-checkRole(ROLE_COORDINATOR);
-
-$pageTitle = "Instructor Coordinator Dashboard · Academia Pro";
+$pageTitle = "Instructor Coordinator Dashboard";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -507,8 +500,7 @@ $pageTitle = "Instructor Coordinator Dashboard · Academia Pro";
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <h1>Academia Pro</h1>
-      <p>Coordinator Portal</p>
+      <h1>Coordinator Portal</h1>
     </div>
     <nav class="sidebar-nav">
       <a href="#" class="active"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
@@ -560,7 +552,7 @@ $pageTitle = "Instructor Coordinator Dashboard · Academia Pro";
         <p>Instructor availability, task requests, urgent replacements, workload monitoring, and reports.</p>
       </div>
       <div class="action-btns">
-        <a href="/smart-instructor-system/coordinator/additional_tasks.php" class="primary-btn">
+        <a href="/smart-instructor-system/instructor_coordinator/additional_tasks.php" class="primary-btn">
           <span class="material-symbols-outlined" style="font-size:18px;">add</span> New Task
         </a>
       </div>
