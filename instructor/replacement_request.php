@@ -1,655 +1,291 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Replacement Requests · Academia Pro</title>
-  <!-- fonts & icons (only external assets) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-  <style>
-    /* ---------- reset & base ---------- */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #f7f9fb;
-      color: #191c1e;
-      display: flex;
-      min-height: 100vh;
-    }
-    /* ---------- design tokens ---------- */
-    :root {
-      --sidebar-width: 260px;
-      --primary: #00236f;
-      --primary-container: #1e3a8a;
-      --on-primary: #ffffff;
-      --on-primary-container: #90a8ff;
-      --secondary: #0051d5;
-      --secondary-container: #316bf3;
-      --on-secondary: #ffffff;
-      --secondary-fixed: #dbe1ff;
-      --secondary-fixed-dim: #b4c5ff;
-      --surface: #f7f9fb;
-      --surface-container-lowest: #ffffff;
-      --surface-container-low: #f2f4f6;
-      --surface-container: #eceef0;
-      --surface-container-high: #e6e8ea;
-      --surface-container-highest: #e0e3e5;
-      --surface-dim: #d8dadc;
-      --on-surface: #191c1e;
-      --on-surface-variant: #444651;
-      --outline: #757682;
-      --outline-variant: #c5c5d3;
-      --error: #ba1a1a;
-      --error-container: #ffdad6;
-      --tertiary: #1b2b3f;
-      --tertiary-container: #314156;
-      --tertiary-fixed: #d3e4fe;
-      --radius-xl: 0.75rem;
-      --radius-lg: 0.5rem;
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
-    }
-    /* ---------- sidebar ---------- */
-    .sidebar {
-      position: fixed; left: 0; top: 0;
-      width: var(--sidebar-width); height: 100vh;
-      background: var(--primary);
-      color: var(--on-primary);
-      padding: 24px 16px;
-      display: flex; flex-direction: column;
-      z-index: 50;
-      border-right: 1px solid var(--outline-variant);
-      overflow-y: auto;
-    }
-    .sidebar-brand { margin-bottom: 24px; padding-left: 8px; }
-    .sidebar-brand h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; color: white; }
-    .sidebar-brand p { font-size: 14px; font-weight: 500; opacity: 0.7; color: var(--on-primary-container); }
-    .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
-    .sidebar-nav a {
-      display: flex; align-items: center; gap: 16px;
-      padding: 12px 16px;
-      border-radius: var(--radius-lg);
-      font-weight: 500; font-size: 14px;
-      color: rgba(255,255,255,0.75);
-      text-decoration: none;
-      transition: background 0.2s, color 0.2s;
-      cursor: pointer;
-    }
-    .sidebar-nav a:hover { background: var(--primary-container); color: white; }
-    .sidebar-nav a.active {
-      background: rgba(30,58,138,0.25);
-      color: white;
-      border-left: 4px solid var(--secondary-container);
-      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
-      font-weight: 600;
-    }
-    .sidebar-nav .material-symbols-outlined { font-size: 22px; }
-    .sidebar-footer { margin-top: auto; padding-top: 16px; }
+<?php
+/**
+ * Instructor - Replacement Requests
+ * Smart Instructor Coordination and Workload Management System
+ */
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/role_check.php';
+require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/dashboard_ui.php';
 
-    /* ---------- topbar ---------- */
-    .topbar {
-      position: fixed; left: var(--sidebar-width); right: 0; top: 0;
-      height: 64px;
-      background: var(--surface-container-lowest);
-      border-bottom: 1px solid var(--surface-container-highest);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 24px;
-      z-index: 40;
-      box-shadow: var(--shadow-sm);
-    }
-    .topbar-left { display: flex; align-items: center; gap: 16px; flex: 1; }
-    .search-wrapper {
-      position: relative;
-      max-width: 320px; width: 100%;
-    }
-    .search-wrapper .material-symbols-outlined {
-      position: absolute; left: 12px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--outline);
-      font-size: 20px;
-    }
-    .search-wrapper input {
-      width: 100%; padding: 8px 12px 8px 40px;
-      background: var(--surface-container-low);
-      border: none;
-      border-radius: 999px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-    }
-    .search-wrapper input:focus { outline: none; box-shadow: 0 0 0 2px rgba(49,107,243,0.15); }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .topbar-right .icon-btn {
-      background: transparent; border: none;
-      padding: 8px; border-radius: 50%;
-      color: var(--on-surface-variant);
-      cursor: pointer;
-      transition: background 0.2s;
-      position: relative;
-    }
-    .topbar-right .icon-btn:hover { background: var(--surface-container-low); }
-    .badge-dot {
-      position: absolute; top: 6px; right: 6px;
-      width: 8px; height: 8px;
-      background: var(--error); border-radius: 50%;
-    }
-    .divider { width: 1px; height: 32px; background: var(--outline-variant); margin: 0 8px; }
-    .profile-wrap {
-      display: flex; align-items: center; gap: 12px;
-      padding-left: 8px;
-    }
-    .profile-text { text-align: right; line-height: 1.3; }
-    .profile-text .name { font-weight: 600; font-size: 14px; }
-    .profile-text .role { font-size: 12px; color: var(--outline); }
-    .avatar {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      border: 1px solid var(--outline-variant);
-      object-fit: cover;
-    }
+checkRole(ROLE_INSTRUCTOR);
 
-    /* ---------- main ---------- */
-    .main {
-      margin-left: var(--sidebar-width);
-      margin-top: 64px;
-      padding: 24px;
-      flex: 1;
-      min-height: calc(100vh - 64px);
-      max-width: 1440px;
-      width: 100%;
-    }
+$instructorId = sic_current_instructor_id();
+if (!$instructorId) {
+    $_SESSION['error'] = 'No instructor profile is linked to your account. Please contact the administrator.';
+    header('Location: ' . app_url('instructor/dashboard.php'));
+    exit;
+}
 
-    /* page header */
-    .page-header {
-      display: flex; flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .page-header h2 {
-      font-size: 32px; font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--primary);
-    }
-    .page-header p { font-size: 16px; color: var(--on-surface-variant); }
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: var(--radius-lg);
-      font-weight: 600;
-      font-size: 14px;
-      display: flex; align-items: center; gap: 8px;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      box-shadow: var(--shadow-md);
-    }
-    .btn-primary:hover { opacity: 0.9; }
-    .btn-primary:active { transform: scale(0.97); }
+$error = '';
 
-    /* stats */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: var(--surface-container-lowest);
-      border: 1px solid var(--outline-variant);
-      padding: 20px;
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-sm);
-      transition: box-shadow 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-    .stat-card:hover { box-shadow: var(--shadow-md); }
-    .stat-card .top {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      margin-bottom: 12px;
-    }
-    .stat-card .icon-wrap {
-      padding: 8px; border-radius: var(--radius-lg);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .stat-card .icon-wrap.blue { background: rgba(0,81,213,0.1); color: var(--secondary); }
-    .stat-card .icon-wrap.green { background: rgba(46,125,50,0.12); color: #2e7d32; }
-    .stat-card .icon-wrap.gray { background: rgba(68,70,81,0.08); color: var(--on-surface-variant); }
-    .stat-card .badge {
-      font-size: 12px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .stat-card .badge.blue { color: var(--secondary); }
-    .stat-card .badge.green { color: #2e7d32; }
-    .stat-card .badge.gray { color: var(--on-surface-variant); }
-    .stat-card .value { font-size: 32px; font-weight: 700; }
-    .stat-card .label { font-size: 14px; color: var(--on-surface-variant); }
-    .stat-card .bg-icon {
-      position: absolute; right: -16px; bottom: -16px;
-      font-size: 120px; opacity: 0.04;
-      pointer-events: none;
-      transition: transform 0.25s;
-    }
-    .stat-card:hover .bg-icon { transform: scale(1.08); }
+// Handle Accept / Reject of a request where I am the suggested instructor
+if (isset($_GET['respond'], $_GET['action']) && is_numeric($_GET['respond'])) {
+    $reqId = (int)$_GET['respond'];
+    $action = $_GET['action'] === 'accept' ? 'Accepted' : ($_GET['action'] === 'reject' ? 'Rejected' : null);
 
-    /* table card */
-    .table-card {
-      background: var(--surface-container-lowest);
-      border: 1px solid var(--outline-variant);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-      margin-bottom: 24px;
-    }
-    .table-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--outline-variant);
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(236,238,240,0.15);
-    }
-    .table-header h3 { font-size: 20px; font-weight: 600; color: var(--primary); }
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th {
-      text-align: left; padding: 14px 20px;
-      font-size: 12px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--on-surface-variant);
-      background: var(--surface-container-low);
-      border-bottom: 1px solid var(--outline-variant);
-    }
-    td {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--outline-variant);
-      font-size: 14px;
-    }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(242,244,246,0.4); }
-    .course-code { font-weight: 600; color: var(--primary); }
-    .course-name { font-size: 12px; color: var(--outline); }
-    .replacement-pill {
-      display: inline-flex; align-items: center; gap: 4px;
-      padding: 2px 12px; border-radius: 20px;
-      font-size: 12px; font-weight: 700;
-    }
-    .replacement-pill.pending { background: #fff3e0; color: #e65100; }
-    .replacement-pill.approved { background: #e8f5e9; color: #2e7d32; }
-    .replacement-pill.declined { background: var(--error-container); color: var(--error); }
-    .status-dot {
-      display: inline-block; width: 8px; height: 8px;
-      border-radius: 50%; margin-right: 4px;
-    }
-    .status-dot.pending { background: #e65100; }
-    .status-dot.approved { background: #2e7d32; }
-    .status-dot.declined { background: var(--error); }
-    .action-btn {
-      background: transparent; border: none;
-      padding: 6px; border-radius: var(--radius-lg);
-      cursor: pointer;
-      transition: background 0.15s;
-      color: var(--on-surface-variant);
-    }
-    .action-btn:hover { background: rgba(0,81,213,0.08); color: var(--secondary); }
-    .action-btn.danger:hover { background: rgba(186,26,26,0.08); color: var(--error); }
+    if ($action) {
+        $chk = $pdo->prepare("SELECT * FROM replacement_requests WHERE id = ? AND suggested_instructor_id = ? AND status = 'Pending'");
+        $chk->execute([$reqId, $instructorId]);
+        $reqRow = $chk->fetch();
 
-    /* history */
-    .history-section { margin-top: 24px; }
-    .history-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px;
-    }
-    .history-header h3 { font-size: 20px; font-weight: 600; }
-    .history-header a { color: var(--primary); font-weight: 500; font-size: 14px; text-decoration: none; }
-    .history-header a:hover { text-decoration: underline; }
-    .history-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-    }
-    .history-item {
-      display: flex; align-items: center;
-      padding: 12px 16px;
-      background: rgba(242,244,246,0.4);
-      border: 1px solid var(--outline-variant);
-      border-radius: var(--radius-lg);
-      gap: 12px;
-    }
-    .history-item .h-icon {
-      padding: 6px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .history-item .h-icon.green { background: #e8f5e9; color: #2e7d32; }
-    .history-item .h-icon.red { background: var(--error-container); color: var(--error); }
-    .history-item .h-content { flex: 1; }
-    .history-item .h-content .title { font-weight: 600; font-size: 14px; }
-    .history-item .h-content .meta { font-size: 12px; color: var(--outline); }
-    .history-item .h-status { font-size: 12px; font-weight: 500; color: var(--on-surface-variant); }
+        if ($reqRow) {
+            $upd = $pdo->prepare("UPDATE replacement_requests SET status = ?, responded_by = ?, responded_at = NOW() WHERE id = ?");
+            $upd->execute([$action, $_SESSION['user_id'], $reqId]);
 
-    /* modal */
-    .modal-overlay {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.3);
-      backdrop-filter: blur(4px);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 60;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.25s;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: auto; }
-    .modal {
-      background: var(--surface-container-lowest);
-      width: 100%; max-width: 640px;
-      border-radius: 24px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-      transform: scale(0.96);
-      transition: transform 0.25s;
-      overflow: hidden;
-    }
-    .modal-overlay.open .modal { transform: scale(1); }
-    .modal-header {
-      background: var(--primary); color: white;
-      padding: 20px 24px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .modal-header h3 { font-size: 20px; font-weight: 600; }
-    .modal-header button {
-      background: transparent; border: none;
-      color: white; padding: 6px;
-      border-radius: 50%; cursor: pointer;
-      transition: background 0.15s;
-    }
-    .modal-header button:hover { background: rgba(255,255,255,0.12); }
-    .modal-body { padding: 24px; }
-    .modal-body form { display: flex; flex-direction: column; gap: 20px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .form-group label {
-      display: block; font-weight: 600; font-size: 14px;
-      color: var(--on-surface-variant); margin-bottom: 4px;
-    }
-    .form-group select, .form-group input, .form-group textarea {
-      width: 100%; padding: 10px 14px;
-      background: var(--surface-container-low);
-      border: 1px solid var(--outline-variant);
-      border-radius: var(--radius-lg);
-      font-size: 14px; font-family: 'Inter', sans-serif;
-    }
-    .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
-      outline: none; border-color: var(--secondary);
-      box-shadow: 0 0 0 3px rgba(49,107,243,0.12);
-    }
-    .form-group textarea { resize: vertical; min-height: 80px; }
-    .info-banner {
-      display: flex; align-items: center; gap: 8px;
-      padding: 12px 16px;
-      background: rgba(0,81,213,0.04);
-      border: 1px solid rgba(0,81,213,0.12);
-      border-radius: var(--radius-lg);
-    }
-    .info-banner .material-symbols-outlined { color: var(--secondary); }
-    .info-banner p { font-size: 13px; color: var(--on-surface-variant); font-style: italic; }
-    .modal-actions {
-      display: flex; justify-content: flex-end; gap: 12px;
-      padding-top: 12px;
-    }
-    .modal-actions .btn-outline {
-      background: transparent; border: none;
-      padding: 10px 20px; border-radius: var(--radius-lg);
-      font-weight: 600; font-size: 14px;
-      color: var(--on-surface-variant);
-      cursor: pointer; transition: background 0.15s;
-    }
-    .modal-actions .btn-outline:hover { background: var(--surface-container-high); }
-    .modal-actions .btn-submit {
-      background: var(--primary); color: white;
-      border: none; padding: 10px 32px;
-      border-radius: var(--radius-lg);
-      font-weight: 600; font-size: 14px;
-      cursor: pointer; transition: opacity 0.15s;
-    }
-    .modal-actions .btn-submit:hover { opacity: 0.9; }
+            // If accepted, reassign the task to this instructor; coordinator finalizes any further changes.
+            if ($action === 'Accepted') {
+                $reassign = $pdo->prepare("UPDATE task_assignments SET instructor_id = ? WHERE id = ?");
+                $reassign->execute([$instructorId, $reqRow['task_assignment_id']]);
+            }
 
-    /* responsive */
-    @media (max-width: 1024px) {
-      .history-grid { grid-template-columns: 1fr; }
+            logActivity($_SESSION['user_id'], 'Respond Replacement', "Replacement request #{$reqId} {$action}");
+
+            // Notify coordinators of the outcome
+            $notifyUsers = $pdo->prepare("SELECT id FROM users WHERE role_id IN (:coord, :chief) AND status = 'active'");
+            $notifyUsers->execute([':coord' => ROLE_COORDINATOR, ':chief' => ROLE_CHIEF_COORDINATOR]);
+            foreach ($notifyUsers->fetchAll(PDO::FETCH_COLUMN) as $uid) {
+                createNotification($uid, 'Replacement Response', "Replacement request #{$reqId} was {$action} by " . ($_SESSION['full_name'] ?? 'an instructor') . ".", 'replacement', $reqId);
+            }
+
+            $_SESSION['success'] = "Replacement request {$action}.";
+        } else {
+            $_SESSION['error'] = 'Request not found or already handled.';
+        }
     }
-    @media (max-width: 768px) {
-      :root { --sidebar-width: 0px; }
-      .sidebar { transform: translateX(-100%); }
-      .topbar { left: 0; }
-      .main { margin-left: 0; }
-      .page-header h2 { font-size: 24px; }
-      .stats-grid { grid-template-columns: 1fr 1fr; }
-      .form-row { grid-template-columns: 1fr; }
-      .profile-text { display: none; }
-      .search-wrapper { display: none; }
+    header('Location: ' . app_url('instructor/replacement_request.php'));
+    exit;
+}
+
+// Handle new replacement request submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
+    $taskId = (int)($_POST['task_assignment_id'] ?? 0);
+    $reason = sanitize($_POST['reason'] ?? '');
+    $suggestedId = (int)($_POST['suggested_instructor_id'] ?? 0);
+    $suggestedId = $suggestedId > 0 ? $suggestedId : null;
+
+    // Confirm the task belongs to this instructor and is still active
+    $taskChk = $pdo->prepare("SELECT * FROM task_assignments WHERE id = ? AND instructor_id = ? AND status IN ('Assigned','Accepted')");
+    $taskChk->execute([$taskId, $instructorId]);
+    $taskRow = $taskChk->fetch();
+
+    if (!$taskRow) {
+        $error = 'Please select a valid, upcoming task of yours.';
+    } elseif ($reason === '') {
+        $error = 'Please provide a reason for the replacement request.';
+    } elseif ($suggestedId === $instructorId) {
+        $error = 'You cannot suggest yourself as the replacement.';
+    } else {
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO replacement_requests (task_assignment_id, requested_by_instructor_id, reason, suggested_instructor_id, status, created_at)
+                VALUES (?, ?, ?, ?, 'Pending', NOW())
+            ");
+            $stmt->execute([$taskId, $instructorId, $reason, $suggestedId]);
+            $newId = (int)$pdo->lastInsertId();
+
+            logActivity($_SESSION['user_id'], 'Request Replacement', "Requested replacement for task assignment #{$taskId}");
+
+            if ($suggestedId) {
+                // Notify the suggested instructor directly
+                $userStmt = $pdo->prepare("SELECT user_id FROM instructors WHERE id = ?");
+                $userStmt->execute([$suggestedId]);
+                $suggestedUserId = $userStmt->fetchColumn();
+                if ($suggestedUserId) {
+                    createNotification($suggestedUserId, 'Replacement Request', "You have been suggested as a replacement for a task on " . formatDate($taskRow['scheduled_date']) . ".", 'replacement', $newId);
+                }
+            } else {
+                // Notify coordinators to find a suitable replacement
+                $notifyUsers = $pdo->prepare("SELECT id FROM users WHERE role_id IN (:coord, :chief) AND status = 'active'");
+                $notifyUsers->execute([':coord' => ROLE_COORDINATOR, ':chief' => ROLE_CHIEF_COORDINATOR]);
+                foreach ($notifyUsers->fetchAll(PDO::FETCH_COLUMN) as $uid) {
+                    createNotification($uid, 'Replacement Needed', ($_SESSION['full_name'] ?? 'An instructor') . " needs a replacement for a task on " . formatDate($taskRow['scheduled_date']) . ".", 'replacement', $newId);
+                }
+            }
+
+            $_SESSION['success'] = 'Replacement request submitted successfully.';
+            header('Location: ' . app_url('instructor/replacement_request.php'));
+            exit;
+        } catch (PDOException $e) {
+            $error = 'Database error: ' . $e->getMessage();
+        }
     }
-  </style>
-</head>
-<body>
+}
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <h1>Academia Pro</h1>
-      <p>Instructor Portal</p>
-    </div>
-    <nav class="sidebar-nav">
-      <a href="#"><span class="material-symbols-outlined">dashboard</span> Dashboard</a>
-      <a href="#"><span class="material-symbols-outlined">calendar_today</span> Timetable</a>
-      <a href="#"><span class="material-symbols-outlined">assignment</span> My Tasks</a>
-      <a href="#" class="active"><span class="material-symbols-outlined">swap_horiz</span> Replacement Requests</a>
-      <a href="#"><span class="material-symbols-outlined">group</span> Student Records</a>
-      <div style="margin-top:auto;"><a href="#"><span class="material-symbols-outlined">settings</span> Settings</a></div>
-    </nav>
-  </aside>
+// My upcoming tasks eligible for replacement
+$eligibleStmt = $pdo->prepare("
+    SELECT ta.id, ta.scheduled_date, ta.start_time, ta.end_time, COALESCE(atr.title, tt.name, 'Academic Task') AS task_title
+    FROM task_assignments ta
+    LEFT JOIN task_types tt ON ta.task_type_id = tt.id
+    LEFT JOIN additional_task_requests atr ON ta.additional_task_request_id = atr.id
+    WHERE ta.instructor_id = :iid AND ta.status IN ('Assigned','Accepted') AND ta.scheduled_date >= CURDATE()
+    ORDER BY ta.scheduled_date ASC
+");
+$eligibleStmt->execute([':iid' => $instructorId]);
+$eligibleTasks = $eligibleStmt->fetchAll();
 
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <div class="search-wrapper">
-        <span class="material-symbols-outlined">search</span>
-        <input type="text" placeholder="Search requests, instructors...">
-      </div>
-    </div>
-    <div class="topbar-right">
-      <button class="icon-btn"><span class="material-symbols-outlined">notifications</span><span class="badge-dot"></span></button>
-      <button class="icon-btn"><span class="material-symbols-outlined">help_outline</span></button>
-      <div class="divider"></div>
-      <div class="profile-wrap">
-        <div class="profile-text">
-          <div class="name">Dr. Sarah Jenkins</div>
-          <div class="role">Senior Lecturer</div>
-        </div>
-        <img class="avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEoiqm2exV4u2OTi3qNZOX3kEzaE-mREp4MpY9HYo-2DolRAtEsnxqUfAoAln7SUy4IjqHySt-BRJctPiGHPDM4kk10FQqJeZA_8wjRe75j6VdYNgilmlAcSa3kFq9Kzs_KlNII-YEzIjrTJR4RemcEzSfjxJ6gCB6ev-zPS5fP1C3xW4pC_G8ipo33QUC96jKE5drt955METhPBdRQVT4sMwP-iwPQ0yTlIpbCQiCKL7g602YOTgKMQ" alt="Dr. Sarah Jenkins">
-      </div>
-    </div>
-  </header>
+// Other active instructors (for the suggestion dropdown)
+$otherInstructors = array_values(array_filter(getAllActiveInstructors(), fn($i) => (int)$i['id'] !== $instructorId));
 
-  <!-- MAIN -->
-  <main class="main">
+// My submitted requests
+$myReqStmt = $pdo->prepare("
+    SELECT rr.*, ta.scheduled_date, ta.start_time, ta.end_time,
+           COALESCE(atr.title, tt.name, 'Academic Task') AS task_title,
+           su.full_name AS suggested_name
+    FROM replacement_requests rr
+    JOIN task_assignments ta ON rr.task_assignment_id = ta.id
+    LEFT JOIN task_types tt ON ta.task_type_id = tt.id
+    LEFT JOIN additional_task_requests atr ON ta.additional_task_request_id = atr.id
+    LEFT JOIN instructors si ON rr.suggested_instructor_id = si.id
+    LEFT JOIN users su ON si.user_id = su.id
+    WHERE rr.requested_by_instructor_id = :iid
+    ORDER BY rr.created_at DESC
+");
+$myReqStmt->execute([':iid' => $instructorId]);
+$myRequests = $myReqStmt->fetchAll();
 
-    <!-- page header -->
-    <div class="page-header">
-      <div>
-        <h2>Replacement Requests</h2>
-        <p>Manage and track your session swap requests with colleagues.</p>
-      </div>
-      <button class="btn-primary" onclick="openModal()">
-        <span class="material-symbols-outlined">add</span> New Request
-      </button>
-    </div>
+// Requests where I am the suggested replacement
+$forMeStmt = $pdo->prepare("
+    SELECT rr.*, ta.scheduled_date, ta.start_time, ta.end_time,
+           COALESCE(atr.title, tt.name, 'Academic Task') AS task_title,
+           ru.full_name AS requester_name
+    FROM replacement_requests rr
+    JOIN task_assignments ta ON rr.task_assignment_id = ta.id
+    LEFT JOIN task_types tt ON ta.task_type_id = tt.id
+    LEFT JOIN additional_task_requests atr ON ta.additional_task_request_id = atr.id
+    JOIN instructors ri ON rr.requested_by_instructor_id = ri.id
+    JOIN users ru ON ri.user_id = ru.id
+    WHERE rr.suggested_instructor_id = :iid
+    ORDER BY rr.created_at DESC
+");
+$forMeStmt->execute([':iid' => $instructorId]);
+$requestsForMe = $forMeStmt->fetchAll();
 
-    <!-- stats -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="top">
-          <div class="icon-wrap blue"><span class="material-symbols-outlined">pending_actions</span></div>
-          <span class="badge blue">Active</span>
-        </div>
-        <div class="value">04</div>
-        <div class="label">Pending Approvals</div>
-        <span class="bg-icon material-symbols-outlined">hourglass_empty</span>
-      </div>
-      <div class="stat-card">
-        <div class="top">
-          <div class="icon-wrap green"><span class="material-symbols-outlined">check_circle</span></div>
-          <span class="badge green">Success</span>
-        </div>
-        <div class="value">12</div>
-        <div class="label">Approved Swaps (Monthly)</div>
-        <span class="bg-icon material-symbols-outlined">verified</span>
-      </div>
-      <div class="stat-card">
-        <div class="top">
-          <div class="icon-wrap gray"><span class="material-symbols-outlined">history</span></div>
-          <span class="badge gray">Archived</span>
-        </div>
-        <div class="value">38</div>
-        <div class="label">Total History</div>
-        <span class="bg-icon material-symbols-outlined">folder_shared</span>
-      </div>
-    </div>
+$preselectTask = isset($_GET['task_id']) ? (int)$_GET['task_id'] : 0;
 
-    <!-- active requests table -->
-    <div class="table-card">
-      <div class="table-header">
-        <h3>Active Requests</h3>
-        <button class="action-btn"><span class="material-symbols-outlined">filter_list</span></button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Course</th><th>Date &amp; Time</th><th>Replacement</th><th>Reason</th><th>Status</th><th style="text-align:right;">Actions</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><div class="course-code">IS1205</div><div class="course-name">Advanced Algorithms</div></td>
-              <td><div>Oct 24, 2023</div><div style="font-size:12px;color:var(--outline);">10:00 AM - 12:00 PM</div></td>
-              <td><div style="display:flex;align-items:center;gap:8px;"><span style="width:32px;height:32px;border-radius:50%;background:rgba(0,81,213,0.12);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--secondary);">RM</span> Prof. Robert Miller</div></td>
-              <td>Medical Appointment</td>
-              <td><span class="replacement-pill pending"><span class="status-dot pending"></span> Pending</span></td>
-              <td style="text-align:right;">
-                <button class="action-btn" title="View"><span class="material-symbols-outlined">visibility</span></button>
-                <button class="action-btn danger" title="Cancel"><span class="material-symbols-outlined">cancel</span></button>
-              </td>
-            </tr>
-            <tr>
-              <td><div class="course-code">CS3302</div><div class="course-name">Database Systems</div></td>
-              <td><div>Oct 26, 2023</div><div style="font-size:12px;color:var(--outline);">02:00 PM - 04:00 PM</div></td>
-              <td><div style="display:flex;align-items:center;gap:8px;"><span style="width:32px;height:32px;border-radius:50%;background:rgba(30,58,138,0.12);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--primary);">EL</span> Dr. Emily Low</div></td>
-              <td>Conference Attendance</td>
-              <td><span class="replacement-pill approved"><span class="status-dot approved"></span> Approved</span></td>
-              <td style="text-align:right;">
-                <button class="action-btn" title="View"><span class="material-symbols-outlined">visibility</span></button>
-              </td>
-            </tr>
-            <tr>
-              <td><div class="course-code">MA1001</div><div class="course-name">Calculus I</div></td>
-              <td><div>Oct 21, 2023</div><div style="font-size:12px;color:var(--outline);">08:00 AM - 10:00 AM</div></td>
-              <td><div style="display:flex;align-items:center;gap:8px;"><span style="width:32px;height:32px;border-radius:50%;background:rgba(68,70,81,0.12);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--on-surface-variant);">JW</span> Mr. James Wong</div></td>
-              <td>Personal Emergency</td>
-              <td><span class="replacement-pill declined"><span class="status-dot declined"></span> Declined</span></td>
-              <td style="text-align:right;">
-                <button class="action-btn" title="Info"><span class="material-symbols-outlined">info</span></button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+$pageTitle = 'Replacement Requests';
+include __DIR__ . '/../includes/header.php';
+?>
 
-    <!-- history -->
-    <div class="history-section">
-      <div class="history-header">
-        <h3>Recent History</h3>
-        <a href="#">View All History</a>
-      </div>
-      <div class="history-grid">
-        <div class="history-item">
-          <div class="h-icon green"><span class="material-symbols-outlined">swap_horizontal_circle</span></div>
-          <div class="h-content">
-            <div class="title">CS4401 Class Swapped</div>
-            <div class="meta">With Prof. Alan Turing • 2 days ago</div>
-          </div>
-          <div class="h-status">Completed</div>
-        </div>
-        <div class="history-item">
-          <div class="h-icon red"><span class="material-symbols-outlined">close</span></div>
-          <div class="h-content">
-            <div class="title">IS2203 Request Rejected</div>
-            <div class="meta">Session: Oct 15 • 1 week ago</div>
-          </div>
-          <div class="h-status">Closed</div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- MODAL -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Submit Replacement Request</h3>
-        <button onclick="closeModal()"><span class="material-symbols-outlined">close</span></button>
-      </div>
-      <div class="modal-body">
-        <form>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Session Course</label>
-              <select><option>Select a Course</option><option>IS1205 - Advanced Algorithms</option><option>CS3302 - Database Systems</option><option>MA1001 - Calculus I</option></select>
+            <div class="page-toolbar">
+                <div>
+                    <h1>Replacement Requests</h1>
+                    <p>Request a replacement for a task you cannot perform, and respond to requests directed to you.</p>
+                </div>
             </div>
-            <div class="form-group">
-              <label>Preferred Replacement</label>
-              <select><option>Select Faculty Member</option><option>Dr. Emily Low</option><option>Prof. Robert Miller</option><option>Mr. James Wong</option></select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Date</label>
-              <input type="date">
-            </div>
-            <div class="form-group">
-              <label>Time Slot</label>
-              <input type="time">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Reason for Request</label>
-            <textarea placeholder="Briefly explain the reason for the replacement..."></textarea>
-          </div>
-          <div class="info-banner">
-            <span class="material-symbols-outlined">info</span>
-            <p>Requests must be submitted at least 48 hours before the scheduled session start time.</p>
-          </div>
-          <div class="modal-actions">
-            <button class="btn-outline" type="button" onclick="closeModal()">Cancel</button>
-            <button class="btn-submit" type="button" onclick="closeModal()">Send Request</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 
-  <script>
-    function openModal() {
-      document.getElementById('modalOverlay').classList.add('open');
-    }
-    function closeModal() {
-      document.getElementById('modalOverlay').classList.remove('open');
-    }
-    // close on escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
-    // close on overlay click
-    document.getElementById('modalOverlay').addEventListener('click', (e) => {
-      if (e.target === e.currentTarget) closeModal();
-    });
-  </script>
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="alert alert-success"><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
+            <?php endif; ?>
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
+            <?php endif; ?>
+            <?php if ($error): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+            <?php endif; ?>
 
-</body>
-</html>
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-header"><h5>New Replacement Request</h5></div>
+                <div class="card-body">
+                    <?php if (empty($eligibleTasks)): ?>
+                        <p class="text-muted mb-0">You have no upcoming tasks eligible for a replacement request.</p>
+                    <?php else: ?>
+                        <form method="POST" action="">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Select Task <span class="text-danger">*</span></label>
+                                    <select name="task_assignment_id" class="form-select" required>
+                                        <option value="">Choose a task</option>
+                                        <?php foreach ($eligibleTasks as $et): ?>
+                                            <option value="<?= (int)$et['id'] ?>" <?= $preselectTask === (int)$et['id'] ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($et['task_title']) ?> — <?= formatDate($et['scheduled_date']) ?>, <?= formatTime($et['start_time']) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Suggest a Replacement (optional)</label>
+                                    <select name="suggested_instructor_id" class="form-select">
+                                        <option value="">Let the coordinator decide</option>
+                                        <?php foreach ($otherInstructors as $oi): ?>
+                                            <option value="<?= (int)$oi['id'] ?>"><?= htmlspecialchars($oi['display_name']) ?> — <?= htmlspecialchars($oi['stream_name']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Reason <span class="text-danger">*</span></label>
+                                    <textarea name="reason" class="form-control" rows="3" required placeholder="Explain why you need a replacement"></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" name="submit_request" class="btn btn-primary mt-3">
+                                <span class="ui-dot" aria-hidden="true"></span>
+                                Submit Request
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <?php if (!empty($requestsForMe)): ?>
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-header">
+                    <h5>Requests Suggesting You as Replacement</h5>
+                    <span class="text-muted small"><?= count($requestsForMe) ?> request(s)</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>Task</th><th>Date</th><th>Requested By</th><th>Reason</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                            <tbody>
+                                <?php foreach ($requestsForMe as $r): ?>
+                                    <tr>
+                                        <td data-label="Task"><?= htmlspecialchars($r['task_title']) ?></td>
+                                        <td data-label="Date"><?= formatDate($r['scheduled_date']) ?></td>
+                                        <td data-label="Requested By"><?= htmlspecialchars($r['requester_name']) ?></td>
+                                        <td data-label="Reason"><?= htmlspecialchars($r['reason']) ?></td>
+                                        <td data-label="Status"><?= getStatusBadge($r['status']) ?></td>
+                                        <td data-label="Actions" class="text-end action-cell">
+                                            <?php if ($r['status'] === 'Pending'): ?>
+                                                <a href="?respond=<?= (int)$r['id'] ?>&action=accept" class="btn btn-sm btn-success">Accept</a>
+                                                <a href="?respond=<?= (int)$r['id'] ?>&action=reject" class="btn btn-sm btn-outline-danger">Reject</a>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5>My Submitted Requests</h5>
+                    <span class="text-muted small"><?= count($myRequests) ?> request(s)</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead><tr><th>Task</th><th>Date</th><th>Suggested Instructor</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <?php if (empty($myRequests)): ?>
+                                    <tr><td colspan="4" class="text-muted">No replacement requests submitted yet.</td></tr>
+                                <?php endif; ?>
+                                <?php foreach ($myRequests as $r): ?>
+                                    <tr>
+                                        <td data-label="Task"><?= htmlspecialchars($r['task_title']) ?></td>
+                                        <td data-label="Date"><?= formatDate($r['scheduled_date']) ?></td>
+                                        <td data-label="Suggested"><?= htmlspecialchars($r['suggested_name'] ?? 'Coordinator to decide') ?></td>
+                                        <td data-label="Status"><?= getStatusBadge($r['status']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+<?php include __DIR__ . '/../includes/footer.php'; ?>
