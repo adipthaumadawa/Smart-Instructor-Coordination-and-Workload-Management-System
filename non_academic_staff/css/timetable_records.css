@@ -688,30 +688,65 @@ body {
 .room-field input {
     width: 110px;
 }
-.success-message{
+.toast{
 
-    background:#d4edda;
-    color:#155724;
-    padding:20px;
-    margin:20px 0;
-    border-radius:10px;
-    font-size:20px;
-    font-weight:bold;
-    text-align:center;
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding: 18px 35px;
+
+    border-radius: 10px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    z-index: 9999;
+
+    animation: fadeOut 5s forwards;
+
+}
+
+
+/* Green success */
+
+.success-toast{
+
+    background:#28a745;
+
+    color:white;
 
 }
 
 
 
-.error-message{
+/* Red error */
 
-    background:#f8d7da;
-    color:#721c24;
-    padding:20px;
-    margin:20px 0;
-    border-radius:10px;
-    font-size:20px;
-    font-weight:bold;
-    text-align:center;
+.error-toast{
+
+    background:#dc3545;
+
+    color:white;
+
+}
+
+
+
+@keyframes fadeOut{
+
+    0%{
+        opacity:1;
+    }
+
+    80%{
+        opacity:1;
+    }
+
+    100%{
+        opacity:0;
+        display:none;
+    }
 
 }

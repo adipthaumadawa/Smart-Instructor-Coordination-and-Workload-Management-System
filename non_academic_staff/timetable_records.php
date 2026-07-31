@@ -242,32 +242,22 @@ session_start();
 
         <section class="content">
 
-            <?php if(isset($_SESSION['success'])) { ?>
+                    <?php if(isset($_SESSION['success'])) { ?>
 
-            <div class="success-message">
-
+            <div class="toast success-toast">
                 <?php echo $_SESSION['success']; ?>
-
             </div>
 
-            <?php 
-            unset($_SESSION['success']); 
-            } 
-            ?>
+            <?php unset($_SESSION['success']); } ?>
 
 
             <?php if(isset($_SESSION['error'])) { ?>
 
-            <div class="error-message">
-
-                 <?php echo $_SESSION['error']; ?>
-
+            <div class="toast error-toast">
+                <?php echo $_SESSION['error']; ?>
             </div>
 
-            <?php 
-            unset($_SESSION['error']); 
-            } 
-            ?>
+            <?php unset($_SESSION['error']); } ?>
             <!-- PAGE TITLE -->
 
             <div class="page-heading">
