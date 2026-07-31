@@ -1,0 +1,453 @@
+/* =========================================
+   TIMETABLE RECORDS PAGE
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+/* Main content */
+
+.main-area {
+    background: #ffffff;
+    min-height: 100vh;
+}
+
+
+/* =========================================
+   TOP BAR
+========================================= */
+
+.top-bar {
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 28px;
+
+    border-bottom: 1px solid #1A0670;
+
+    background: #ffffff;
+}
+
+
+.brand {
+    display: flex;
+    align-items: center;
+
+    gap: 19px;
+
+    color: #02011E;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+.brand img {
+    width: 34px;
+    height: 34px;
+}
+
+
+/* =========================================
+   USER AREA
+========================================= */
+
+.user-area {
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+}
+
+
+.top-notification {
+    width: 22px;
+    height: 22px;
+
+    margin-right: 8px;
+}
+
+
+.avatar {
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #03012D;
+
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 800;
+}
+
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 155px;
+}
+
+
+.user-info strong {
+    color: #03012D;
+
+    font-size: 18px;
+}
+
+
+.user-info span {
+    color: #03012D;
+
+    opacity: 0.60;
+
+    font-size: 16px;
+}
+
+
+.arrow {
+    color: #03012D;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.content {
+    padding: 20px 20px 60px 34px;
+}
+
+
+/* =========================================
+   PAGE TITLE
+========================================= */
+
+.page-title {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 58px;
+}
+
+
+.page-title-icon {
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.page-title-icon img {
+    width: 50px;
+    height: 50px;
+
+    filter: brightness(0) saturate(100%)
+            invert(18%) sepia(100%)
+            saturate(3000%);
+}
+
+
+.page-title h1 {
+    color: #001495;
+
+    opacity: 0.80;
+
+    font-size: 36px;
+    font-weight: 800;
+}
+
+
+/* =========================================
+   RECORD SECTION
+========================================= */
+
+.record-section {
+    position: relative;
+
+    width: 100%;
+
+    min-height: 208px;
+
+    margin-bottom: 54px;
+
+    padding: 12px;
+
+    border: 1px solid #000000;
+
+    border-radius: 20px;
+}
+
+
+.record-section h2 {
+    margin: 0;
+
+    color: #000000;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+.section-line {
+    height: 1px;
+
+    width: calc(100% + 24px);
+
+    margin-left: -12px;
+    margin-top: 16px;
+
+    background: #000000;
+
+    opacity: 0.50;
+}
+
+
+/* =========================================
+   INPUT / DISPLAY FIELDS
+========================================= */
+
+.fields-row {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+
+    margin-top: 18px;
+
+    padding-left: 24px;
+}
+
+
+.field {
+    height: 39px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 18px;
+
+    border: 1px solid #030023;
+
+    border-radius: 10px;
+
+    color: #000000;
+
+    opacity: 0.60;
+
+    font-size: 18px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+
+.small-field {
+    min-width: 83px;
+}
+
+
+.field:nth-child(1) {
+    min-width: 100px;
+}
+
+
+.field:nth-child(3) {
+    min-width: 109px;
+}
+
+
+.field:nth-child(4) {
+    min-width: 101px;
+}
+
+
+.field:nth-child(5) {
+    min-width: 120px;
+}
+
+
+.field:nth-child(6) {
+    min-width: 110px;
+}
+
+
+.field:nth-child(7) {
+    min-width: 117px;
+}
+
+
+.field:nth-child(8) {
+    min-width: 144px;
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.action-button {
+    display: block;
+
+    width: 135px;
+    height: 39px;
+
+    margin: 18px auto 0;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #12009C;
+
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.action-button:hover {
+    opacity: 0.90;
+}
+
+
+/* =========================================
+   UPDATE SECTION
+========================================= */
+
+.update-section {
+    min-height: 377px;
+
+    margin-bottom: 54px;
+}
+
+
+.update-section h3 {
+    text-align: center;
+
+    margin: 7px 0 14px;
+
+    color: #000000;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+.second-line {
+    margin-top: 18px;
+}
+
+
+/* =========================================
+   VIEW SECTION
+========================================= */
+
+.view-section {
+    width: 390px;
+
+    min-height: 208px;
+
+    margin: 0 auto;
+
+    padding: 12px;
+
+    border: 1px solid #000000;
+
+    border-radius: 20px;
+}
+
+
+.view-section h2 {
+    text-align: center;
+
+    color: #000000;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+.view-fields {
+    display: flex;
+    justify-content: center;
+
+    gap: 24px;
+
+    margin-top: 30px;
+}
+
+
+.view-fields .field {
+    width: 144px;
+}
+
+
+/* =========================================
+   VIEW BUTTON
+========================================= */
+
+.view-section .action-button {
+    margin-top: 26px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1200px) {
+
+    .fields-row {
+        flex-wrap: wrap;
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .content {
+        padding: 20px;
+    }
+
+    .page-title h1 {
+        font-size: 28px;
+    }
+
+    .record-section {
+        overflow-x: auto;
+    }
+
+    .fields-row {
+        min-width: 1000px;
+    }
+
+    .view-section {
+        width: 100%;
+        max-width: 390px;
+    }
+
+}
