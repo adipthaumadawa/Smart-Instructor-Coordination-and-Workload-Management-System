@@ -82,7 +82,7 @@ if(isset($_POST['subject_name'])){
     echo "
             <script>
             alert('Slot already filled!');
-            window.location='timetable_management.php';
+            window.location='timetable_records.php';.php';
             </script>
 ";
     
@@ -158,13 +158,10 @@ VALUES
 
         // Success redirect
 
-        echo "
-            <script>
-            alert('Timetable saved!');
-            window.location='timetable_management.php';
-            </script>
-            ";
+        
+            header("Location: timetable_records.php");
             exit();
+            
 
 
     }
