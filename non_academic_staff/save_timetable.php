@@ -82,7 +82,7 @@ if(isset($_POST['subject_name'])){
     echo "
             <script>
             alert('Slot already filled!');
-            window.location='timetable_records.php';.php';
+            window.location='timetable_records.php';
             </script>
 ";
     
