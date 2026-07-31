@@ -284,6 +284,7 @@
                                 type="text"
                                 name="subject_name"
                                 placeholder="Subject"
+                                required
                             >
 
                         </div>
@@ -295,7 +296,7 @@
                                 IS/CS
                             </label>
 
-                            <select name="course">
+                            <select name="course" required>
 
                                 <option value="" selected disabled>
                                     IS/CS
@@ -356,6 +357,7 @@
                             <input
                                 type="time"
                                 name="start_time"
+                                required
                             >
 
                         </div>
@@ -370,6 +372,7 @@
                             <input
                                 type="time"
                                 name="end_time"
+                                required
                             >
 
                         </div>
@@ -385,6 +388,7 @@
                                 type="text"
                                 name="room"
                                 placeholder="Room / Lab"
+                                required
                             >
 
                         </div>
@@ -396,7 +400,7 @@
                                 Semester
                             </label>
 
-                            <select name="semester">
+                            <select name="semester" required>
 
                                 <option value=""selected disabled>
                                     Semester
@@ -475,6 +479,7 @@
                                 type="text"
                                 name="subject_name"
                                 placeholder="Subject"
+                                required
                             >
 
                         </div>
@@ -486,7 +491,7 @@
                                 IS/CS
                             </label>
 
-                            <select name="course">
+                            <select name="course" required>
 
                                 <option selected disabled>
                                     IS/CS
@@ -511,7 +516,7 @@
                                 Day
                             </label>
 
-                            <select name="day_name">
+                            <select name="day_name" required>
 
                                 <option value="">
                                     Monday
@@ -547,6 +552,7 @@
                             <input
                                 name="start_time"
                                 type="time"
+                                required
                             >
 
                         </div>
@@ -561,6 +567,7 @@
                             <input
                                 name="end_time"
                                 type="time"
+                                required
                             >
 
                         </div>
@@ -576,6 +583,7 @@
                                 type="text"
                                 placeholder="Room / Lab"
                                 name="room"
+                                required
                             >
 
                         </div>
@@ -587,7 +595,7 @@
                                 Semester
                             </label>
 
-                            <select name="semester">
+                            <select name="semester" required>
 
                                 <option selected disabled>
                                     Semester
@@ -671,6 +679,7 @@
                                 type="text"
                                 placeholder="Subject"
                                 name="old_subject"
+                                
                             >
 
                         </div>
@@ -684,7 +693,7 @@
 
                               <select name="old_course">
 
-                                <option selected disabled>
+                                <option selected>
                                     IS/CS
                                 </option>
 
@@ -709,7 +718,7 @@
                                 Day
                             </label>
 
-                            <select name="old_day">
+                            <select name="old_day" required>
 
                                 <option value="">
                                     Monday
@@ -742,7 +751,7 @@
                                 Start Time
                             </label>
 
-                            <input type="time" name="old_start">
+                            <input type="time" name="old_start" required>
 
                         </div>
 
@@ -753,7 +762,7 @@
                                 End Time
                             </label>
 
-                            <input type="time" name="old_end">
+                            <input type="time" name="old_end" required>
 
                         </div>
 
@@ -768,6 +777,7 @@
                                 type="text"
                                 placeholder="Room / Lab"
                                 name="old_room"
+                                required
                             >
 
                         </div>
@@ -778,7 +788,7 @@
                             </label>
 
                             <select name="old_semester">
-                            <option selected disabled>
+                            <option selected>
                             Semester
                             </option>
 
@@ -802,7 +812,7 @@
                             </label>
 
                             <select name="old_year">
-                            <option selected disabled>
+                            <option selected>
                             Select Year
                             </option>
 
@@ -849,6 +859,7 @@
                                 type="text"
                                 placeholder="Subject"
                                 name="new_subject"
+                                required
                             >
 
                         </div>
@@ -860,7 +871,7 @@
                                 IS/CS
                             </label>
 
-                              <select name="new_course">
+                              <select name="new_course" required>
 
                                 <option selected disabled>
                                     IS/CS
@@ -889,7 +900,7 @@
                                 Day
                             </label>
 
-                            <select name="new_day">
+                            <select name="new_day" required>
 
                                 <option value="">
                                     Monday
@@ -922,7 +933,7 @@
                                 Start Time
                             </label>
 
-                            <input type="time" name="new_start">
+                            <input type="time" name="new_start" required>
 
                         </div>
 
@@ -933,7 +944,7 @@
                                 End Time
                             </label>
 
-                            <input type="time" name="new_end">
+                            <input type="time" name="new_end" required>
 
                         </div>
 
@@ -948,6 +959,7 @@
                                 type="text"
                                 placeholder="Room / Lab"
                                 name="new_room"
+                                required
                             >
 
                         </div>
@@ -957,7 +969,7 @@
                             Semester
                             </label>
 
-                            <select name="new_semester">
+                            <select name="new_semester" required>
                             <option selected disabled>
                             Semester
                             </option>
@@ -981,7 +993,7 @@
                             Year
                             </label>
 
-                            <select name="new_year">
+                            <select name="new_year" required>
                             <option selected disabled>
                             Select Year
                             </option>
@@ -1046,7 +1058,7 @@
                                 Semester
                             </label>
 
-                            <select name="semester">
+                            <select name="semester" required>
 
                                 <option selected disabled>
                                     Semester
