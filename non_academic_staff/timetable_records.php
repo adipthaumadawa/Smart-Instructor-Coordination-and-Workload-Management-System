@@ -297,7 +297,7 @@
 
                             <select name="course_type">
 
-                                <option value="">
+                                <option value="" selected disabled>
                                     IS/CS
                                 </option>
 
@@ -398,7 +398,7 @@
 
                             <select name="semester">
 
-                                <option value="">
+                                <option value=""selected disabled>
                                     Semester
                                 </option>
 
@@ -421,11 +421,13 @@
                                 Year
                             </label>
 
-                            <input
-                                type="number"
-                                name="year"
-                                placeholder="Year"
-                            >
+                           <select id="year" name="year" required>
+                            <option value="" selected disabled>Select Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
 
                         </div>
 
@@ -485,7 +487,7 @@
 
                             <select>
 
-                                <option>
+                                <option selected disabled>
                                     IS/CS
                                 </option>
 
@@ -508,9 +510,9 @@
                                 Day
                             </label>
 
-                            <select>
+                            <select name="day">
 
-                                <option>
+                                <option value="">
                                     Monday
                                 </option>
 
@@ -520,6 +522,14 @@
 
                                 <option>
                                     Wednesday
+                                </option>
+
+                                <option>
+                                    Thursday
+                                </option>
+
+                                <option>
+                                    Friday
                                 </option>
 
                             </select>
@@ -575,7 +585,7 @@
 
                             <select>
 
-                                <option>
+                                <option selected disabled>
                                     Semester
                                 </option>
 
@@ -598,10 +608,13 @@
                                 Year
                             </label>
 
-                            <input
-                                type="number"
-                                placeholder="Year"
-                            >
+                            <select id="year" name="year" required>
+                            <option value="" selected disabled>Select Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
 
                         </div>
 
@@ -664,13 +677,19 @@
                                 IS/CS
                             </label>
 
-                            <select>
+                             <option value="" selected disabled>
+                                IS/CS
+                            </option>
 
-                                <option>
-                                    IS/CS
-                                </option>
+                            <option value="IS">
+                                IS
+                            </option>
 
-                            </select>
+                            <option value="CS">
+                                CS
+                            </option>
+
+                        </select>
 
                         </div>
 
@@ -681,10 +700,26 @@
                                 Day
                             </label>
 
-                            <select>
+                            <select name="day">
+
+                                <option value=""selected disabled>
+                                    Monday
+                                </option>
 
                                 <option>
-                                    Monday
+                                    Tuesday
+                                </option>
+
+                                <option>
+                                    Wednesday
+                                </option>
+
+                                <option>
+                                    Thursday
+                                </option>
+
+                                <option>
+                                    Friday
                                 </option>
 
                             </select>
@@ -760,13 +795,19 @@
                                 IS/CS
                             </label>
 
-                            <select>
+                             <option value="" selected disabled>
+                                IS/CS
+                            </option>
 
-                                <option>
-                                    IS/CS
-                                </option>
+                            <option value="IS">
+                                IS
+                            </option>
 
-                            </select>
+                            <option value="CS">
+                                CS
+                            </option>
+
+                        </select>
 
                         </div>
 
@@ -777,10 +818,26 @@
                                 Day
                             </label>
 
-                            <select>
+                            <select name="day">
+
+                                <option value="">
+                                    Monday
+                                </option>
 
                                 <option>
-                                    Monday
+                                    Tuesday
+                                </option>
+
+                                <option>
+                                    Wednesday
+                                </option>
+
+                                <option>
+                                    Thursday
+                                </option>
+
+                                <option>
+                                    Friday
                                 </option>
 
                             </select>
@@ -865,7 +922,7 @@
 
                             <select>
 
-                                <option>
+                                <option selected disabled>
                                     Semester
                                 </option>
 
@@ -888,11 +945,15 @@
                                 Year
                             </label>
 
-                            <input
-                                type="number"
-                                placeholder="Year"
-                            >
+                            <label for="year">Year</label>
 
+                        <select id="year" name="year" required>
+                            <option value="" selected disabled>Select Year</option>
+                            <option value="1">1st Year</option>
+                            <option value="2">2nd Year</option>
+                            <option value="3">3rd Year</option>
+                            <option value="4">4th Year</option>
+                        </select>
                         </div>
 
                     </div>
