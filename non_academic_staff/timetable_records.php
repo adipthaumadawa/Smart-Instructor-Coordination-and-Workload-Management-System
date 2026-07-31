@@ -377,6 +377,7 @@ session_start();
                                 type="time"
                                 name="start_time"
                                 required
+                                step="3600"
                             >
 
                         </div>
@@ -392,6 +393,7 @@ session_start();
                                 type="time"
                                 name="end_time"
                                 required
+                                step="3600"
                             >
 
                         </div>
@@ -572,6 +574,7 @@ session_start();
                                 name="start_time"
                                 type="time"
                                 required
+                                step="3600"
                             >
 
                         </div>
@@ -587,6 +590,7 @@ session_start();
                                 name="end_time"
                                 type="time"
                                 required
+                                step="3600"
                             >
 
                         </div>
@@ -770,7 +774,7 @@ session_start();
                                 Start Time
                             </label>
 
-                            <input type="time" name="old_start" required>
+                            <input type="time" name="old_start" required step="3600">
 
                         </div>
 
@@ -781,7 +785,7 @@ session_start();
                                 End Time
                             </label>
 
-                            <input type="time" name="old_end" required>
+                            <input type="time" name="old_end" required step="3600">
 
                         </div>
 
@@ -952,7 +956,7 @@ session_start();
                                 Start Time
                             </label>
 
-                            <input type="time" name="new_start" required>
+                            <input type="time" name="new_start" required step="3600">
 
                         </div>
 
@@ -963,7 +967,7 @@ session_start();
                                 End Time
                             </label>
 
-                            <input type="time" name="new_end" required>
+                            <input type="time" name="new_end" required step="3600">
 
                         </div>
 
