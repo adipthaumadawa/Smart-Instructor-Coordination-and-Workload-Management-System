@@ -322,8 +322,8 @@
                             </label>
 
                             <select name="day_name">
-
-                                <option value="">
+                                <option value="" selected disabled>Select Day</option>
+                                <option>
                                     Monday
                                 </option>
 
@@ -517,8 +517,8 @@
                             </label>
 
                             <select name="day_name" required>
-
-                                <option value="">
+                                <option value="" selected disabled>Select Day</option>
+                                <option >
                                     Monday
                                 </option>
 
@@ -719,8 +719,8 @@
                             </label>
 
                             <select name="old_day" required>
-
-                                <option value="">
+                             <option value="" selected disabled>Select Day</option>
+                                <option>
                                     Monday
                                 </option>
 
@@ -901,8 +901,8 @@
                             </label>
 
                             <select name="new_day" required>
-
-                                <option value="">
+                                <option value="" selected disabled>Select Day</option>
+                                <option>
                                     Monday
                                 </option>
 
