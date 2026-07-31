@@ -7,8 +7,8 @@
 
     <title>Timetable Records</title>
 
-    <link rel="stylesheet" href="css/non_acedemic_staff.css">
-    <link rel="stylesheet" href="css/timetable_records.css">
+    <link rel="stylesheet" href="css/non_academic_staff.css">
+<link rel="stylesheet" href="css/timetable_records.css">
 </head>
 
 <body>
