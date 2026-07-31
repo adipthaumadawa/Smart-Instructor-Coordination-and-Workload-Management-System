@@ -1,467 +1,918 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440, initial-scale=1.0">
 
-    <title>Timetable Records - UCSC SIS</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Timetable Records - Non-Academic Staff</title>
 
     <link rel="stylesheet" href="css/timetable_records.css">
+
 </head>
 
 <body>
 
-<div class="page">
+<div class="dashboard-container">
 
-    <!-- =========================
-         TOP BAR
-    ========================== -->
-
-    <div class="top-bar">
-
-        <!-- Graduation Cap -->
-        <div class="graduation-cap">
-            <img src="../assets/icons/graduation-cap.svg" alt="Graduation Cap">
-        </div>
-
-        <div class="system-name">
-            UCSC SIS
-        </div>
-
-
-        <!-- User Area -->
-
-        <div class="top-notification">
-            <img src="../assets/icons/notification.svg" alt="Notifications">
-        </div>
-
-        <div class="profile-circle">
-            M
-        </div>
-
-        <div class="profile-name">
-            Mr. Rizan
-        </div>
-
-        <div class="profile-role">
-            Non-Academic Staff
-        </div>
-
-        <div class="profile-arrow">
-            ▼
-        </div>
-
-    </div>
-
-
-    <!-- =========================
+    <!-- ==================================================
          SIDEBAR
-    ========================== -->
+    ================================================== -->
 
     <aside class="sidebar">
 
-        <!-- UCSC Logo -->
-
-        <img
-            class="ucsc-logo"
-            src="../assets/images/ucsc-logo.png"
-            alt="UCSC"
-        >
-
-        <div class="system-title">
-            Smart Instructor System
-        </div>
-
-        <div class="university-name">
-            University of Colombo<br>
-            School of Computing
-        </div>
-
-
-        <div class="sidebar-divider"></div>
-
-
-        <!-- Dashboard -->
-
-        <a href="dashboard.php" class="sidebar-item dashboard-item">
+        <div class="sidebar-logo">
 
             <img
-                src="../assets/icons/dashboard.svg"
-                alt="Dashboard"
+                src="../assets/images/ucsc-logo.png"
+                alt="UCSC Logo"
             >
 
-            <span>Dashboard</span>
+            <h3>
+                Smart Instructor System
+            </h3>
 
-        </a>
+            <p>
+                University of Colombo<br>
+                School of Computing
+            </p>
 
-
-        <!-- Operations -->
-
-        <div class="operations-title">
-            OPERATIONS
         </div>
 
 
-        <!-- Timetable -->
+        <nav class="sidebar-navigation">
 
-        <a
-            href="timetable_records.php"
-            class="sidebar-item timetable-item active"
-        >
+            <!-- DASHBOARD -->
 
-            <img
-                src="../assets/icons/timetable.svg"
-                alt="Timetable"
+            <a
+                href="dashboard.php"
+                class="nav-item"
             >
 
-            <span>Timetable Management</span>
+                <img
+                    src="../assets/icons/dashboard.svg"
+                    alt="Dashboard"
+                >
 
-        </a>
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
 
 
-        <!-- Room Schedules -->
+            <h4>
+                OPERATIONS
+            </h4>
 
-        <a
-            href="room_schedules.php"
-            class="sidebar-item room-item"
-        >
 
-            <img
-                src="../assets/icons/room-schedule.svg"
-                alt="Room Schedules"
+            <!-- TIMETABLE MANAGEMENT -->
+
+            <a
+                href="timetable_management.php"
+                class="nav-item active"
             >
 
-            <span>Room Schedules</span>
+                <img
+                    src="../assets/icons/timetable.svg"
+                    alt="Timetable Management"
+                >
 
-        </a>
+                <span>
+                    Timetable Management
+                </span>
+
+            </a>
 
 
-        <!-- Lecture Hall -->
+            <!-- ROOM SCHEDULES -->
 
-        <a
-            href="lecture_hall_booking.php"
-            class="sidebar-item lecture-item"
-        >
-
-            <img
-                src="../assets/icons/lecture-hall.svg"
-                alt="Lecture Hall"
+            <a
+                href="room_schedules.php"
+                class="nav-item"
             >
 
-            <span>Lecture Hall Booking</span>
+                <img
+                    src="../assets/icons/room-schedule.svg"
+                    alt="Room Schedules"
+                >
 
-        </a>
+                <span>
+                    Room Schedules
+                </span>
+
+            </a>
 
 
-        <!-- Notifications -->
+            <!-- LECTURE HALL BOOKING -->
 
-        <a
-            href="notifications.php"
-            class="sidebar-item notification-item"
-        >
-
-            <img
-                src="../assets/icons/notification.svg"
-                alt="Notifications"
+            <a
+                href="lecture_hall_booking.php"
+                class="nav-item"
             >
 
-            <span>Notifications</span>
+                <img
+                    src="../assets/icons/lecture-hall.svg"
+                    alt="Lecture Hall Booking"
+                >
 
-        </a>
+                <span>
+                    Lecture Hall Booking
+                </span>
+
+            </a>
 
 
-        <!-- Profile -->
+            <!-- NOTIFICATIONS -->
 
-        <a
-            href="profile.php"
-            class="sidebar-item profile-item"
-        >
-
-            <img
-                src="../assets/icons/profile.svg"
-                alt="Profile"
+            <a
+                href="notifications.php"
+                class="nav-item"
             >
 
-            <span>Profile</span>
+                <img
+                    src="../assets/icons/notification1.svg"
+                    alt="Notifications"
+                >
 
-        </a>
+                <span>
+                    Notifications
+                </span>
+
+            </a>
+
+
+            <!-- PROFILE -->
+
+            <a
+                href="profile.php"
+                class="nav-item"
+            >
+
+                <img
+                    src="../assets/icons/profile1.svg"
+                    alt="Profile"
+                >
+
+                <span>
+                    Profile
+                </span>
+
+            </a>
+
+        </nav>
 
     </aside>
 
 
-    <!-- =========================
+    <!-- ==================================================
          MAIN CONTENT
-    ========================== -->
+    ================================================== -->
 
     <main class="main-content">
 
 
-        <!-- PAGE TITLE -->
+        <!-- ==================================================
+             TOP HEADER
+        ================================================== -->
 
-        <div class="page-title-icon">
+        <header class="top-header">
 
-            <img
-                src="../assets/icons/timetable.svg"
-                alt="Timetable"
-            >
+            <div class="system-name">
 
-        </div>
+                <img
+                    src="../assets/icons/education1.svg"
+                    alt="UCSC SIS"
+                >
 
-        <div class="page-title">
-            Timetable Records
-        </div>
-
-
-        <!-- =========================
-             ADD TIMETABLE
-        ========================== -->
-
-        <section class="add-section">
-
-            <div class="section-title">
-                Add Timetable Slot
-            </div>
-
-            <div class="section-box">
-
-                <div class="section-line"></div>
-
-
-                <div class="field subject-add">
-                    Subject
-                </div>
-
-                <div class="field course-add">
-                    IS/CS
-                </div>
-
-                <div class="field day-add">
-                    Monday
-                </div>
-
-                <div class="field start-add">
-                    Start Time
-                </div>
-
-                <div class="field end-add">
-                    End Time
-                </div>
-
-                <div class="field room-add">
-                    Room / Lab
-                </div>
-
-                <div class="field semester-add">
-                    Semester
-                </div>
-
-                <div class="field year-add">
-                    Year
-                </div>
-
-
-                <button class="save-button">
-                    Save
-                </button>
+                <strong>
+                    UCSC SIS
+                </strong>
 
             </div>
 
-        </section>
+
+            <div class="user-section">
+
+                <img
+                    src="../assets/icons/notification.svg"
+                    class="top-notification"
+                    alt="Notifications"
+                >
 
 
-        <!-- =========================
-             DELETE TIMETABLE
-        ========================== -->
-
-        <section class="delete-section">
-
-            <div class="section-title">
-                Delete Timetable Slot
-            </div>
-
-            <div class="section-box">
-
-                <div class="section-line"></div>
-
-
-                <div class="field subject-delete">
-                    Subject
-                </div>
-
-                <div class="field course-delete">
-                    IS/CS
-                </div>
-
-                <div class="field day-delete">
-                    Monday
-                </div>
-
-                <div class="field start-delete">
-                    Start Time
-                </div>
-
-                <div class="field end-delete">
-                    End Time
-                </div>
-
-                <div class="field room-delete">
-                    Room / Lab
-                </div>
-
-                <div class="field semester-delete">
-                    Semester
-                </div>
-
-                <div class="field year-delete">
-                    Year
+                <div class="user-avatar">
+                    M
                 </div>
 
 
-                <button class="delete-button">
-                    Delete
-                </button>
+                <div class="user-details">
+
+                    <strong>
+                        Mr. Rizan
+                    </strong>
+
+                    <span>
+                        Non-Academic Staff
+                    </span>
+
+                </div>
+
+
+                <img
+                    src="../assets/icons/dropdown.svg"
+                    class="dropdown-icon"
+                    alt="Dropdown"
+                >
 
             </div>
 
-        </section>
+        </header>
 
 
-        <!-- =========================
-             UPDATE TIMETABLE
-        ========================== -->
+        <!-- ==================================================
+             TIMETABLE RECORDS CONTENT
+        ================================================== -->
 
-        <section class="update-section">
-
-            <div class="section-title">
-                Update Timetable Slot
-            </div>
-
-            <div class="update-box">
-
-                <div class="section-line"></div>
+        <section class="content">
 
 
-                <!-- OLD -->
+            <!-- PAGE TITLE -->
 
-                <div class="update-heading old-heading">
-                    Old Timetable Slot
+            <div class="page-heading">
+
+                <div class="page-heading-icon">
+
+                    <img
+                        src="../assets/icons/timetable.svg"
+                        alt="Timetable"
+                    >
+
                 </div>
 
-
-                <div class="field subject-old">
-                    Subject
-                </div>
-
-                <div class="field course-old">
-                    IS/CS
-                </div>
-
-                <div class="field day-old">
-                    Monday
-                </div>
-
-                <div class="field start-old">
-                    Start Time
-                </div>
-
-                <div class="field end-old">
-                    End Time
-                </div>
-
-                <div class="field room-old">
-                    Room / Lab
-                </div>
-
-                <div class="field semester-old">
-                    Semester
-                </div>
-
-                <div class="field year-old">
-                    Year
-                </div>
-
-
-                <div class="second-section-line"></div>
-
-
-                <!-- NEW -->
-
-                <div class="update-heading new-heading">
-                    New Timetable Slot
-                </div>
-
-
-                <div class="field subject-new">
-                    Subject
-                </div>
-
-                <div class="field course-new">
-                    IS/CS
-                </div>
-
-                <div class="field day-new">
-                    Monday
-                </div>
-
-                <div class="field start-new">
-                    Start Time
-                </div>
-
-                <div class="field end-new">
-                    End Time
-                </div>
-
-                <div class="field room-new">
-                    Room / Lab
-                </div>
-
-                <div class="field semester-new">
-                    Semester
-                </div>
-
-                <div class="field year-new">
-                    Year
-                </div>
-
-
-                <button class="update-button">
-                    Update
-                </button>
+                <h1>
+                    Timetable Records
+                </h1>
 
             </div>
 
-        </section>
 
+            <!-- ==================================================
+                 ADD TIMETABLE SLOT
+            ================================================== -->
 
-        <!-- =========================
-             VIEW TIMETABLE
-        ========================== -->
+            <div class="record-card">
 
-        <section class="view-section">
-
-            <div class="view-title">
-                View Timetable Slot
-            </div>
-
-            <div class="view-box">
-
-                <div class="section-line"></div>
-
-
-                <div class="field view-semester">
-                    Semester
-                </div>
-
-                <div class="field view-year">
-                    Year
+                <div class="card-title">
+                    Add Timetable Slot
                 </div>
 
 
-                <button class="view-button">
-                    View
-                </button>
+                <div class="card-body">
+
+                    <div class="form-row">
+
+                        <div class="form-group subject-field">
+
+                            <label>
+                                Subject
+                            </label>
+
+                            <input
+                                type="text"
+                                name="subject"
+                                placeholder="Subject"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                IS/CS
+                            </label>
+
+                            <select name="course_type">
+
+                                <option value="">
+                                    IS/CS
+                                </option>
+
+                                <option value="IS">
+                                    IS
+                                </option>
+
+                                <option value="CS">
+                                    CS
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Day
+                            </label>
+
+                            <select name="day">
+
+                                <option value="">
+                                    Monday
+                                </option>
+
+                                <option>
+                                    Tuesday
+                                </option>
+
+                                <option>
+                                    Wednesday
+                                </option>
+
+                                <option>
+                                    Thursday
+                                </option>
+
+                                <option>
+                                    Friday
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Start Time
+                            </label>
+
+                            <input
+                                type="time"
+                                name="start_time"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                End Time
+                            </label>
+
+                            <input
+                                type="time"
+                                name="end_time"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Room / Lab
+                            </label>
+
+                            <input
+                                type="text"
+                                name="room"
+                                placeholder="Room / Lab"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Semester
+                            </label>
+
+                            <select name="semester">
+
+                                <option value="">
+                                    Semester
+                                </option>
+
+                                <option>
+                                    Semester 1
+                                </option>
+
+                                <option>
+                                    Semester 2
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Year
+                            </label>
+
+                            <input
+                                type="number"
+                                name="year"
+                                placeholder="Year"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="button-area">
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                        >
+                            Save
+                        </button>
+
+                    </div>
+
+                </div>
 
             </div>
+
+
+            <!-- ==================================================
+                 DELETE TIMETABLE SLOT
+            ================================================== -->
+
+            <div class="record-card">
+
+                <div class="card-title">
+                    Delete Timetable Slot
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label>
+                                Subject
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Subject"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                IS/CS
+                            </label>
+
+                            <select>
+
+                                <option>
+                                    IS/CS
+                                </option>
+
+                                <option>
+                                    IS
+                                </option>
+
+                                <option>
+                                    CS
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Day
+                            </label>
+
+                            <select>
+
+                                <option>
+                                    Monday
+                                </option>
+
+                                <option>
+                                    Tuesday
+                                </option>
+
+                                <option>
+                                    Wednesday
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Start Time
+                            </label>
+
+                            <input
+                                type="time"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                End Time
+                            </label>
+
+                            <input
+                                type="time"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Room / Lab
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Room / Lab"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Semester
+                            </label>
+
+                            <select>
+
+                                <option>
+                                    Semester
+                                </option>
+
+                                <option>
+                                    Semester 1
+                                </option>
+
+                                <option>
+                                    Semester 2
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Year
+                            </label>
+
+                            <input
+                                type="number"
+                                placeholder="Year"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="button-area">
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 UPDATE TIMETABLE SLOT
+            ================================================== -->
+
+            <div class="record-card update-card">
+
+                <div class="card-title">
+                    Update Timetable Slot
+                </div>
+
+
+                <div class="update-section">
+
+                    <h2>
+                        Old Timetable Slot
+                    </h2>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label>
+                                Subject
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Subject"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                IS/CS
+                            </label>
+
+                            <select>
+
+                                <option>
+                                    IS/CS
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Day
+                            </label>
+
+                            <select>
+
+                                <option>
+                                    Monday
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Start Time
+                            </label>
+
+                            <input type="time">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                End Time
+                            </label>
+
+                            <input type="time">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Room / Lab
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Room / Lab"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="update-divider"></div>
+
+
+                    <h2>
+                        New Timetable Slot
+                    </h2>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label>
+                                Subject
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Subject"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                IS/CS
+                            </label>
+
+                            <select>
+
+                                <option>
+                                    IS/CS
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Day
+                            </label>
+
+                            <select>
+
+                                <option>
+                                    Monday
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Start Time
+                            </label>
+
+                            <input type="time">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                End Time
+                            </label>
+
+                            <input type="time">
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Room / Lab
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Room / Lab"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="button-area">
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                        >
+                            Update
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 VIEW TIMETABLE SLOT
+            ================================================== -->
+
+            <div class="record-card view-card">
+
+                <div class="card-title">
+                    View Timetable Slot
+                </div>
+
+
+                <div class="view-body">
+
+                    <div class="view-fields">
+
+                        <div class="form-group">
+
+                            <label>
+                                Semester
+                            </label>
+
+                            <select>
+
+                                <option>
+                                    Semester
+                                </option>
+
+                                <option>
+                                    Semester 1
+                                </option>
+
+                                <option>
+                                    Semester 2
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Year
+                            </label>
+
+                            <input
+                                type="number"
+                                placeholder="Year"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="button-area">
+
+                        <button
+                            type="button"
+                            class="primary-button"
+                        >
+                            View
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
 
         </section>
 
@@ -470,4 +921,5 @@
 </div>
 
 </body>
+
 </html>
