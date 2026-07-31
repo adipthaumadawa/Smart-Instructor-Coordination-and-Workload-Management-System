@@ -101,55 +101,32 @@ window.location='non_academic_staff/timetable_management.php';
         // ===============================
 
 
-        $sql = "
+        
 
-        INSERT INTO timetables
+        $sql = "INSERT INTO timetables
+(
+    subject_name,
+    course,
+    day_name,
+    start_time,
+    end_time,
+    room,
+    semester,
+    academic_year
+)
 
-        (
+VALUES
 
-        subject_name,
-
-        course,
-
-        day_name,
-
-        start_time,
-
-        end_time,
-
-        room,
-
-        semester,
-
-        academic_year
-
-        )
-
-
-        VALUES
-
-
-        (
-
-        :subject_name,
-
-        :course,
-
-        :day_name,
-
-        :start_time,
-
-        :end_time,
-
-        :room,
-
-        :semester,
-
-        :academic_year
-
-        )
-
-        ";
+(
+    :subject_name,
+    :course,
+    :day_name,
+    :start_time,
+    :end_time,
+    :room,
+    :semester,
+    :academic_year
+)";
 
 
 
