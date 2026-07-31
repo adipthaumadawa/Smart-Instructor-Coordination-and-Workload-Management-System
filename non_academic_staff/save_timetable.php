@@ -28,46 +28,49 @@ if(isset($_POST['subject_name'])){
         // CHECK ROOM TIME CONFLICT
         // ===============================
 
+$check_sql = "
 
-        $check_sql = "
-        SELECT COUNT(*) 
-        FROM timetables
+SELECT COUNT(*) 
 
-        WHERE
+FROM timetables
 
-        day_name = :day_name
+WHERE 
 
-        AND
+day_name = ?
 
-        room = :room
+AND
 
-        AND
+room = ?
 
-        (
-            :start_time < end_time
+AND
 
-            AND
+(
+    start_time < ?
 
-            :end_time > start_time
-        )
-        ";
+    AND
 
+    end_time > ?
 
+)
 
-        $check_stmt = $pdo->prepare($check_sql);
+";
 
 
-        $check_stmt->execute([
 
-            ':day_name' => $day_name,
+       $check_stmt = $pdo->prepare($check_sql);
 
-            ':room' => $room,
 
-            ':start_time' => $start_time,
+$check_stmt->execute([
 
-            ':end_time' => $end_time
+    $day_name,
 
-        ]);
+    $room,
+
+    $end_time,
+
+    $start_time
+
+]);
 
 
 

@@ -501,3 +501,5 @@ CREATE TABLE timetables (
     semester VARCHAR(20) NOT NULL,
     academic_year INT NOT NULL
 );
+
+DELETE FROM timetables;
