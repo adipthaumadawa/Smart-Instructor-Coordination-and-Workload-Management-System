@@ -79,14 +79,9 @@ if(isset($_POST['subject_name'])){
 {
 
     
-    echo "
-            <script>
-            alert('Slot already filled!');
-            window.location='timetable_records.php';
-            </script>
-";
-    
-    exit();
+  $_SESSION['error'] = "Timetable Slot Already Filled! Please select another time or room.";
+header("Location: timetable_records.php");
+exit();
 
 }
 
@@ -158,10 +153,9 @@ VALUES
 
         // Success redirect
 
-        
-            header("Location: timetable_records.php");
-            exit();
-            
+        $_SESSION['success'] = "Timetable Added Successfully!";
+header("Location: timetable_records.php");
+exit();
 
 
     }
