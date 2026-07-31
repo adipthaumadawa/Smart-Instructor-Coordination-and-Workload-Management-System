@@ -271,7 +271,7 @@
 
 
                 <div class="card-body">
-
+                <form action="save_timetable.php" method="POST">
                     <div class="form-row">
 
                         <div class="form-group subject-field">
@@ -282,7 +282,7 @@
 
                             <input
                                 type="text"
-                                name="subject"
+                                name="subject_name"
                                 placeholder="Subject"
                             >
 
@@ -295,7 +295,7 @@
                                 IS/CS
                             </label>
 
-                            <select name="course_type">
+                            <select name="course">
 
                                 <option value="" selected disabled>
                                     IS/CS
@@ -320,7 +320,7 @@
                                 Day
                             </label>
 
-                            <select name="day">
+                            <select name="day_name">
 
                                 <option value="">
                                     Monday
@@ -421,7 +421,7 @@
                                 Year
                             </label>
 
-                           <select id="year" name="year" required>
+                           <select id="year" name="academic_year" required>
                             <option value="" selected disabled>Select Year</option>
                             <option value="1">1st Year</option>
                             <option value="2">2nd Year</option>
@@ -437,14 +437,14 @@
                     <div class="button-area">
 
                         <button
-                            type="button"
+                            type="submit"
                             class="primary-button"
                         >
                             Save
                         </button>
 
                     </div>
-
+                </form>
                 </div>
 
             </div>
@@ -462,7 +462,7 @@
 
 
                 <div class="card-body">
-
+                <form action="delete_timetable.php" method="POST">
                     <div class="form-row">
 
                         <div class="form-group subject-field">
@@ -473,6 +473,7 @@
 
                             <input
                                 type="text"
+                                name="subject_name"
                                 placeholder="Subject"
                             >
 
@@ -485,7 +486,7 @@
                                 IS/CS
                             </label>
 
-                            <select>
+                            <select name="course">
 
                                 <option selected disabled>
                                     IS/CS
@@ -510,7 +511,7 @@
                                 Day
                             </label>
 
-                            <select name="day">
+                            <select name="day_name">
 
                                 <option value="">
                                     Monday
@@ -544,6 +545,7 @@
                             </label>
 
                             <input
+                                name="start_time"
                                 type="time"
                             >
 
@@ -557,6 +559,7 @@
                             </label>
 
                             <input
+                                name="end_time"
                                 type="time"
                             >
 
@@ -572,6 +575,7 @@
                             <input
                                 type="text"
                                 placeholder="Room / Lab"
+                                name="room"
                             >
 
                         </div>
@@ -583,7 +587,7 @@
                                 Semester
                             </label>
 
-                            <select>
+                            <select name="semester">
 
                                 <option selected disabled>
                                     Semester
@@ -608,7 +612,7 @@
                                 Year
                             </label>
 
-                            <select id="year" name="year" required>
+                            <select id="year" name="academic_year" required>
                             <option value="" selected disabled>Select Year</option>
                             <option value="1">1st Year</option>
                             <option value="2">2nd Year</option>
@@ -631,7 +635,7 @@
                         </button>
 
                     </div>
-
+                </form>
                 </div>
 
             </div>
@@ -666,6 +670,7 @@
                             <input
                                 type="text"
                                 placeholder="Subject"
+                                name="old_subject"
                             >
 
                         </div>
@@ -677,7 +682,7 @@
                                 IS/CS
                             </label>
 
-                              <select>
+                              <select name="old_course">
 
                                 <option selected disabled>
                                     IS/CS
@@ -691,7 +696,7 @@
                                     CS
                                 </option>
 
-                            </select>
+                            
 
                         </select>
 
@@ -704,7 +709,7 @@
                                 Day
                             </label>
 
-                            <select name="day">
+                            <select name="old_day">
 
                                 <option value="">
                                     Monday
@@ -737,7 +742,7 @@
                                 Start Time
                             </label>
 
-                            <input type="time">
+                            <input type="time" name="old_start">
 
                         </div>
 
@@ -748,7 +753,7 @@
                                 End Time
                             </label>
 
-                            <input type="time">
+                            <input type="time" name="old_end">
 
                         </div>
 
@@ -762,6 +767,7 @@
                             <input
                                 type="text"
                                 placeholder="Room / Lab"
+                                name="old_room"
                             >
 
                         </div>
@@ -771,7 +777,7 @@
                             Semester
                             </label>
 
-                            <select>
+                            <select name="old_semester">
                             <option selected disabled>
                             Semester
                             </option>
@@ -795,7 +801,7 @@
                             Year
                             </label>
 
-                            <select>
+                            <select name="old_year">
                             <option selected disabled>
                             Select Year
                             </option>
@@ -842,6 +848,7 @@
                             <input
                                 type="text"
                                 placeholder="Subject"
+                                name="new_subject"
                             >
 
                         </div>
@@ -853,7 +860,7 @@
                                 IS/CS
                             </label>
 
-                              <select>
+                              <select name="new_course">
 
                                 <option selected disabled>
                                     IS/CS
@@ -882,7 +889,7 @@
                                 Day
                             </label>
 
-                            <select name="day">
+                            <select name="new_day">
 
                                 <option value="">
                                     Monday
@@ -915,7 +922,7 @@
                                 Start Time
                             </label>
 
-                            <input type="time">
+                            <input type="time" name="new_start">
 
                         </div>
 
@@ -926,7 +933,7 @@
                                 End Time
                             </label>
 
-                            <input type="time">
+                            <input type="time" name="new_end">
 
                         </div>
 
@@ -940,6 +947,7 @@
                             <input
                                 type="text"
                                 placeholder="Room / Lab"
+                                name="new_room"
                             >
 
                         </div>
@@ -949,7 +957,7 @@
                             Semester
                             </label>
 
-                            <select>
+                            <select name="new_semester">
                             <option selected disabled>
                             Semester
                             </option>
@@ -973,7 +981,7 @@
                             Year
                             </label>
 
-                            <select>
+                            <select name="new_year">
                             <option selected disabled>
                             Select Year
                             </option>
@@ -1004,7 +1012,7 @@
                     <div class="button-area">
 
                         <button
-                            type="button"
+                            type="submit"
                             class="primary-button"
                         >
                             Update
@@ -1029,7 +1037,7 @@
 
 
                 <div class="view-body">
-
+                <form action="view_timetable.php" method="POST">
                     <div class="view-fields">
 
                         <div class="form-group">
@@ -1038,7 +1046,7 @@
                                 Semester
                             </label>
 
-                            <select>
+                            <select name="semester">
 
                                 <option selected disabled>
                                     Semester
@@ -1065,7 +1073,7 @@
 
                     
 
-                        <select id="year" name="year" required>
+                        <select id="year" name="academic_year" required>
                             <option value="" selected disabled>Select Year</option>
                             <option value="1">1st Year</option>
                             <option value="2">2nd Year</option>
@@ -1080,14 +1088,14 @@
                     <div class="button-area">
 
                         <button
-                            type="button"
+                            type="submit"
                             class="primary-button"
                         >
                             View
                         </button>
 
                     </div>
-
+                </form>       
                 </div>
 
             </div>
