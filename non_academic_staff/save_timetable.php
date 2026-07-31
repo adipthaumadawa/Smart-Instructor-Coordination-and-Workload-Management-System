@@ -76,22 +76,18 @@ if(isset($_POST['subject_name'])){
 
 
         if($conflict > 0)
-        {
+{
 
+    echo "
+    <script>
+    alert('This lecture hall slot is already filled. Please select another time or room.');
+    window.location='timetable_management.php';
+    </script>
+    ";
 
-            
-           echo "
-<script>
-alert('Timetable Added Successfully');
-window.location='non_academic_staff/timetable_management.php';
-</script>
-";
-            
+    exit();
 
-
-            exit();
-
-        }
+}
 
 
 
