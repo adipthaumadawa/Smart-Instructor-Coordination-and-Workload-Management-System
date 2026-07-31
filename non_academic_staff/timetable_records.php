@@ -465,7 +465,7 @@
 
                     <div class="form-row">
 
-                        <div class="form-group">
+                        <div class="form-group subject-field">
 
                             <label>
                                 Subject
@@ -657,7 +657,7 @@
 
                     <div class="form-row">
 
-                        <div class="form-group">
+                        <div class="form-group subject-field">
 
                             <label>
                                 Subject
@@ -833,7 +833,7 @@
 
                     <div class="form-row">
 
-                        <div class="form-group">
+                        <div class="form-group subject-field">
 
                             <label>
                                 Subject
