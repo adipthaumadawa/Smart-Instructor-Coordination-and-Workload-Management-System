@@ -1,459 +1,467 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=1440, initial-scale=1.0">
 
-    <title>Timetable Records</title>
+    <title>Timetable Records - UCSC SIS</title>
 
-    <link rel="stylesheet" href="css/non_academic_staff.css">
-<link rel="stylesheet" href="css/timetable_records.css">
+    <link rel="stylesheet" href="css/timetable_records.css">
 </head>
 
 <body>
 
 <div class="page">
 
-    <!-- ================= SIDEBAR ================= -->
+    <!-- =========================
+         TOP BAR
+    ========================== -->
+
+    <div class="top-bar">
+
+        <!-- Graduation Cap -->
+        <div class="graduation-cap">
+            <img src="../assets/icons/graduation-cap.svg" alt="Graduation Cap">
+        </div>
+
+        <div class="system-name">
+            UCSC SIS
+        </div>
+
+
+        <!-- User Area -->
+
+        <div class="top-notification">
+            <img src="../assets/icons/notification.svg" alt="Notifications">
+        </div>
+
+        <div class="profile-circle">
+            M
+        </div>
+
+        <div class="profile-name">
+            Mr. Rizan
+        </div>
+
+        <div class="profile-role">
+            Non-Academic Staff
+        </div>
+
+        <div class="profile-arrow">
+            ▼
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
 
     <aside class="sidebar">
 
-        <div class="sidebar-logo">
+        <!-- UCSC Logo -->
 
-            <img
-                src="../assets/images/ucsc-logo.png"
-                alt="UCSC Logo"
-            >
+        <img
+            class="ucsc-logo"
+            src="../assets/images/ucsc-logo.png"
+            alt="UCSC"
+        >
 
-            <div class="system-title">
-                Smart Instructor System
-            </div>
+        <div class="system-title">
+            Smart Instructor System
+        </div>
 
-            <div class="university-name">
-                University of Colombo<br>
-                School of Computing
-            </div>
-
+        <div class="university-name">
+            University of Colombo<br>
+            School of Computing
         </div>
 
 
         <div class="sidebar-divider"></div>
 
 
-        <nav class="sidebar-menu">
+        <!-- Dashboard -->
 
-            <a href="dashboard.php" class="menu-item">
+        <a href="dashboard.php" class="sidebar-item dashboard-item">
 
-                <img
-                    src="../assets/icons/dashboard.svg"
-                    alt="Dashboard"
-                >
-
-                <span>Dashboard</span>
-
-            </a>
-
-
-            <div class="menu-heading">
-                OPERATIONS
-            </div>
-
-
-            <a
-                href="timetable_records.php"
-                class="menu-item active"
+            <img
+                src="../assets/icons/dashboard.svg"
+                alt="Dashboard"
             >
 
-                <img
-                    src="../assets/icons/timetable.svg"
-                    alt="Timetable"
-                >
+            <span>Dashboard</span>
 
-                <span>Timetable Management</span>
-
-            </a>
+        </a>
 
 
-            <a href="room_schedules.php" class="menu-item">
+        <!-- Operations -->
 
-                <img
-                    src="../assets/icons/room-schedule.svg"
-                    alt="Room Schedules"
-                >
-
-                <span>Room Schedules</span>
-
-            </a>
+        <div class="operations-title">
+            OPERATIONS
+        </div>
 
 
-            <a href="lecture_hall_booking.php" class="menu-item">
+        <!-- Timetable -->
 
-                <img
-                    src="../assets/icons/lecture-hall.svg"
-                    alt="Lecture Hall"
-                >
+        <a
+            href="timetable_records.php"
+            class="sidebar-item timetable-item active"
+        >
 
-                <span>Lecture Hall Booking</span>
+            <img
+                src="../assets/icons/timetable.svg"
+                alt="Timetable"
+            >
 
-            </a>
+            <span>Timetable Management</span>
 
-
-            <a href="notifications.php" class="menu-item">
-
-                <img
-                    src="../assets/icons/notification1.svg"
-                    alt="Notifications"
-                >
-
-                <span>Notifications</span>
-
-            </a>
+        </a>
 
 
-            <a href="profile.php" class="menu-item">
+        <!-- Room Schedules -->
 
-                <img
-                    src="../assets/icons/profile1.svg"
-                    alt="Profile"
-                >
+        <a
+            href="room_schedules.php"
+            class="sidebar-item room-item"
+        >
 
-                <span>Profile</span>
+            <img
+                src="../assets/icons/room-schedule.svg"
+                alt="Room Schedules"
+            >
 
-            </a>
+            <span>Room Schedules</span>
 
-        </nav>
+        </a>
+
+
+        <!-- Lecture Hall -->
+
+        <a
+            href="lecture_hall_booking.php"
+            class="sidebar-item lecture-item"
+        >
+
+            <img
+                src="../assets/icons/lecture-hall.svg"
+                alt="Lecture Hall"
+            >
+
+            <span>Lecture Hall Booking</span>
+
+        </a>
+
+
+        <!-- Notifications -->
+
+        <a
+            href="notifications.php"
+            class="sidebar-item notification-item"
+        >
+
+            <img
+                src="../assets/icons/notification.svg"
+                alt="Notifications"
+            >
+
+            <span>Notifications</span>
+
+        </a>
+
+
+        <!-- Profile -->
+
+        <a
+            href="profile.php"
+            class="sidebar-item profile-item"
+        >
+
+            <img
+                src="../assets/icons/profile.svg"
+                alt="Profile"
+            >
+
+            <span>Profile</span>
+
+        </a>
 
     </aside>
 
 
-    <!-- ================= MAIN AREA ================= -->
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
 
-    <main class="main-area">
+    <main class="main-content">
 
 
-        <!-- TOP BAR -->
+        <!-- PAGE TITLE -->
 
-        <header class="top-bar">
+        <div class="page-title-icon">
 
-            <div class="brand">
+            <img
+                src="../assets/icons/timetable.svg"
+                alt="Timetable"
+            >
 
-                <img
-                    src="../assets/icons/education1.svg"
-                    alt="Graduation Cap"
-                >
+        </div>
 
-                <span>UCSC SIS</span>
+        <div class="page-title">
+            Timetable Records
+        </div>
 
+
+        <!-- =========================
+             ADD TIMETABLE
+        ========================== -->
+
+        <section class="add-section">
+
+            <div class="section-title">
+                Add Timetable Slot
             </div>
 
-
-            <div class="user-area">
-
-                <img
-                    src="../assets/icons/notification.svg"
-                    class="top-notification"
-                    alt="Notifications"
-                >
-
-
-                <div class="avatar">
-                    M
-                </div>
-
-
-                <div class="user-info">
-
-                    <strong>Mr. Rizan</strong>
-
-                    <span>Non-Academic Staff</span>
-
-                </div>
-
-
-                <span class="arrow">
-                    ▼
-                </span>
-
-            </div>
-
-        </header>
-
-
-        <!-- ================= CONTENT ================= -->
-
-        <section class="content">
-
-
-            <!-- PAGE TITLE -->
-
-            <div class="page-title">
-
-                <div class="page-title-icon">
-
-                    <img
-                        src="../assets/icons/timetable.svg"
-                        alt="Timetable"
-                    >
-
-                </div>
-
-                <h1>
-                    Timetable Records
-                </h1>
-
-            </div>
-
-
-            <!-- ================= ADD ================= -->
-
-            <section class="record-section">
-
-                <h2>
-                    Add Timetable Slot
-                </h2>
-
+            <div class="section-box">
 
                 <div class="section-line"></div>
 
 
-                <div class="fields-row">
+                <div class="field subject-add">
+                    Subject
+                </div>
 
-                    <div class="field">
-                        Subject
-                    </div>
+                <div class="field course-add">
+                    IS/CS
+                </div>
 
-                    <div class="field small-field">
-                        IS/CS
-                    </div>
+                <div class="field day-add">
+                    Monday
+                </div>
 
-                    <div class="field">
-                        Monday
-                    </div>
+                <div class="field start-add">
+                    Start Time
+                </div>
 
-                    <div class="field">
-                        Start Time
-                    </div>
+                <div class="field end-add">
+                    End Time
+                </div>
 
-                    <div class="field">
-                        End Time
-                    </div>
+                <div class="field room-add">
+                    Room / Lab
+                </div>
 
-                    <div class="field">
-                        Room / Lab
-                    </div>
+                <div class="field semester-add">
+                    Semester
+                </div>
 
-                    <div class="field">
-                        Semester
-                    </div>
-
-                    <div class="field">
-                        Year
-                    </div>
-
+                <div class="field year-add">
+                    Year
                 </div>
 
 
-                <button class="action-button">
+                <button class="save-button">
                     Save
                 </button>
 
-            </section>
+            </div>
+
+        </section>
 
 
-            <!-- ================= DELETE ================= -->
+        <!-- =========================
+             DELETE TIMETABLE
+        ========================== -->
 
-            <section class="record-section">
+        <section class="delete-section">
 
-                <h2>
-                    Delete Timetable Slot
-                </h2>
+            <div class="section-title">
+                Delete Timetable Slot
+            </div>
 
+            <div class="section-box">
 
                 <div class="section-line"></div>
 
 
-                <div class="fields-row">
+                <div class="field subject-delete">
+                    Subject
+                </div>
 
-                    <div class="field">
-                        Subject
-                    </div>
+                <div class="field course-delete">
+                    IS/CS
+                </div>
 
-                    <div class="field small-field">
-                        IS/CS
-                    </div>
+                <div class="field day-delete">
+                    Monday
+                </div>
 
-                    <div class="field">
-                        Monday
-                    </div>
+                <div class="field start-delete">
+                    Start Time
+                </div>
 
-                    <div class="field">
-                        Start Time
-                    </div>
+                <div class="field end-delete">
+                    End Time
+                </div>
 
-                    <div class="field">
-                        End Time
-                    </div>
+                <div class="field room-delete">
+                    Room / Lab
+                </div>
 
-                    <div class="field">
-                        Room / Lab
-                    </div>
+                <div class="field semester-delete">
+                    Semester
+                </div>
 
-                    <div class="field">
-                        Semester
-                    </div>
-
-                    <div class="field">
-                        Year
-                    </div>
-
+                <div class="field year-delete">
+                    Year
                 </div>
 
 
-                <button class="action-button">
+                <button class="delete-button">
                     Delete
                 </button>
 
-            </section>
+            </div>
+
+        </section>
 
 
-            <!-- ================= UPDATE ================= -->
+        <!-- =========================
+             UPDATE TIMETABLE
+        ========================== -->
 
-            <section class="record-section update-section">
+        <section class="update-section">
 
-                <h2>
-                    Update Timetable Slot
-                </h2>
+            <div class="section-title">
+                Update Timetable Slot
+            </div>
 
+            <div class="update-box">
 
                 <div class="section-line"></div>
 
 
-                <h3>
+                <!-- OLD -->
+
+                <div class="update-heading old-heading">
                     Old Timetable Slot
-                </h3>
-
-
-                <div class="fields-row">
-
-                    <div class="field">
-                        Subject
-                    </div>
-
-                    <div class="field small-field">
-                        IS/CS
-                    </div>
-
-                    <div class="field">
-                        Monday
-                    </div>
-
-                    <div class="field">
-                        Start Time
-                    </div>
-
-                    <div class="field">
-                        End Time
-                    </div>
-
-                    <div class="field">
-                        Room / Lab
-                    </div>
-
-                    <div class="field">
-                        Semester
-                    </div>
-
-                    <div class="field">
-                        Year
-                    </div>
-
                 </div>
 
 
-                <div class="section-line second-line"></div>
+                <div class="field subject-old">
+                    Subject
+                </div>
+
+                <div class="field course-old">
+                    IS/CS
+                </div>
+
+                <div class="field day-old">
+                    Monday
+                </div>
+
+                <div class="field start-old">
+                    Start Time
+                </div>
+
+                <div class="field end-old">
+                    End Time
+                </div>
+
+                <div class="field room-old">
+                    Room / Lab
+                </div>
+
+                <div class="field semester-old">
+                    Semester
+                </div>
+
+                <div class="field year-old">
+                    Year
+                </div>
 
 
-                <h3>
+                <div class="second-section-line"></div>
+
+
+                <!-- NEW -->
+
+                <div class="update-heading new-heading">
                     New Timetable Slot
-                </h3>
-
-
-                <div class="fields-row">
-
-                    <div class="field">
-                        Subject
-                    </div>
-
-                    <div class="field small-field">
-                        IS/CS
-                    </div>
-
-                    <div class="field">
-                        Monday
-                    </div>
-
-                    <div class="field">
-                        Start Time
-                    </div>
-
-                    <div class="field">
-                        End Time
-                    </div>
-
-                    <div class="field">
-                        Room / Lab
-                    </div>
-
-                    <div class="field">
-                        Semester
-                    </div>
-
-                    <div class="field">
-                        Year
-                    </div>
-
                 </div>
 
 
-                <button class="action-button">
+                <div class="field subject-new">
+                    Subject
+                </div>
+
+                <div class="field course-new">
+                    IS/CS
+                </div>
+
+                <div class="field day-new">
+                    Monday
+                </div>
+
+                <div class="field start-new">
+                    Start Time
+                </div>
+
+                <div class="field end-new">
+                    End Time
+                </div>
+
+                <div class="field room-new">
+                    Room / Lab
+                </div>
+
+                <div class="field semester-new">
+                    Semester
+                </div>
+
+                <div class="field year-new">
+                    Year
+                </div>
+
+
+                <button class="update-button">
                     Update
                 </button>
 
-            </section>
+            </div>
+
+        </section>
 
 
-            <!-- ================= VIEW ================= -->
+        <!-- =========================
+             VIEW TIMETABLE
+        ========================== -->
 
-            <section class="view-section">
+        <section class="view-section">
 
-                <h2>
-                    View Timetable Slot
-                </h2>
+            <div class="view-title">
+                View Timetable Slot
+            </div>
 
+            <div class="view-box">
 
                 <div class="section-line"></div>
 
 
-                <div class="view-fields">
+                <div class="field view-semester">
+                    Semester
+                </div>
 
-                    <div class="field">
-                        Semester
-                    </div>
-
-                    <div class="field">
-                        Year
-                    </div>
-
+                <div class="field view-year">
+                    Year
                 </div>
 
 
-                <button class="action-button">
+                <button class="view-button">
                     View
                 </button>
 
-            </section>
-
+            </div>
 
         </section>
 

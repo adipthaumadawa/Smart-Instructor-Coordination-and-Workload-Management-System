@@ -1,44 +1,69 @@
-/* =========================================
-   TIMETABLE RECORDS PAGE
-========================================= */
+
 
 * {
     box-sizing: border-box;
 }
 
+html,
+body {
+    margin: 0;
+    padding: 0;
 
-/* Main content */
+    width: 100%;
+    min-width: 1440px;
 
-.main-area {
     background: #ffffff;
-    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+    overflow-x: auto;
 }
 
 
-/* =========================================
+/* =========================================================
+   MAIN PAGE
+========================================================= */
+
+.page {
+    position: relative;
+
+    width: 1440px;
+    height: 1453px;
+
+    background: #ffffff;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
    TOP BAR
-========================================= */
+========================================================= */
 
 .top-bar {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 1440px;
     height: 70px;
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 28px;
+    background: #ffffff;
 
     border-bottom: 1px solid #1A0670;
-
-    background: #ffffff;
 }
 
 
-.brand {
-    display: flex;
-    align-items: center;
+/* UCSC SIS */
 
-    gap: 19px;
+.system-name {
+    position: absolute;
+
+    left: 81px;
+    top: 25px;
 
     color: #02011E;
 
@@ -47,39 +72,63 @@
 }
 
 
-.brand img {
+/* Graduation cap */
+
+.graduation-cap {
+    position: absolute;
+
+    left: 28px;
+    top: 18px;
+
     width: 34px;
     height: 34px;
-}
-
-
-/* =========================================
-   USER AREA
-========================================= */
-
-.user-area {
-    display: flex;
-    align-items: center;
-
-    gap: 14px;
-}
-
-
-.top-notification {
-    width: 22px;
-    height: 22px;
-
-    margin-right: 8px;
-}
-
-
-.avatar {
-    width: 45px;
-    height: 45px;
 
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.graduation-cap img {
+    width: 30px;
+    height: 30px;
+
+    filter: brightness(0) saturate(100%)
+            invert(8%)
+            sepia(29%)
+            saturate(2907%)
+            hue-rotate(238deg)
+            brightness(74%);
+}
+
+
+/* Notification */
+
+.top-notification {
+    position: absolute;
+
+    left: 1243px;
+    top: 24px;
+
+    width: 22px;
+    height: 22px;
+}
+
+.top-notification img {
+    width: 22px;
+    height: 22px;
+}
+
+
+/* Profile circle */
+
+.profile-circle {
+    position: absolute;
+
+    left: 1194px;
+    top: 12px;
+
+    width: 45px;
+    height: 45px;
 
     border-radius: 50%;
 
@@ -87,86 +136,427 @@
 
     color: #ffffff;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     font-size: 24px;
     font-weight: 800;
 }
 
 
-.user-info {
-    display: flex;
-    flex-direction: column;
+/* User name */
 
-    min-width: 155px;
-}
+.profile-name {
+    position: absolute;
 
+    left: 1254px;
+    top: 11px;
 
-.user-info strong {
     color: #03012D;
 
-    font-size: 18px;
+    font-size: 24px;
+    font-weight: 800;
 }
 
 
-.user-info span {
+/* User role */
+
+.profile-role {
+    position: absolute;
+
+    left: 1254px;
+    top: 39px;
+
     color: #03012D;
 
     opacity: 0.60;
 
     font-size: 16px;
+    font-weight: 400;
 }
 
 
-.arrow {
-    color: #03012D;
+/* Arrow */
 
-    font-size: 14px;
+.profile-arrow {
+    position: absolute;
+
+    left: 1425px;
+    top: 27px;
+
+    color: #000000;
+
+    font-size: 12px;
 }
 
 
-/* =========================================
-   CONTENT
-========================================= */
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
-.content {
-    padding: 20px 20px 60px 34px;
+.sidebar {
+    position: absolute;
+
+    left: 0;
+    top: 70px;
+
+    width: 282px;
+    height: 1383px;
+
+    background: #03012D;
 }
 
 
-/* =========================================
-   PAGE TITLE
-========================================= */
+/* UCSC logo */
 
-.page-title {
+.ucsc-logo {
+    position: absolute;
+
+    left: 16px;
+    top: 21px;
+
+    width: 65px;
+    height: 65px;
+
+    object-fit: contain;
+}
+
+
+/* System title */
+
+.system-title {
+    position: absolute;
+
+    left: 16px;
+    top: 92px;
+
+    width: 250px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+
+/* University */
+
+.university-name {
+    position: absolute;
+
+    left: 16px;
+    top: 114px;
+
+    color: #ffffff;
+
+    opacity: 0.70;
+
+    font-size: 13px;
+    font-weight: 400;
+
+    line-height: 17px;
+}
+
+
+/* Divider */
+
+.sidebar-divider {
+    position: absolute;
+
+    left: 0;
+    top: 158px;
+
+    width: 282px;
+    height: 2px;
+
+    background: #001E37;
+}
+
+
+/* =========================================================
+   SIDEBAR MENU
+========================================================= */
+
+.sidebar-item {
+    position: absolute;
+
+    left: 9px;
+
+    width: 267px;
+    height: 48px;
+
     display: flex;
     align-items: center;
 
-    gap: 12px;
+    text-decoration: none;
 
-    margin-bottom: 58px;
+    color: #ffffff;
+
+    border-radius: 12px;
 }
 
+
+.sidebar-item img {
+    position: absolute;
+
+    object-fit: contain;
+}
+
+
+/* Dashboard */
+
+.dashboard-item {
+    top: 173px;
+
+    background: transparent;
+}
+
+.dashboard-item img {
+    left: 27px;
+
+    width: 24px;
+    height: 24px;
+}
+
+.dashboard-item span {
+    position: absolute;
+
+    left: 63px;
+    top: 13px;
+
+    font-size: 18px;
+    font-weight: 500;
+}
+
+
+/* Operations */
+
+.operations-title {
+    position: absolute;
+
+    left: 19px;
+    top: 230px;
+
+    color: #ffffff;
+
+    opacity: 0.30;
+
+    font-size: 19px;
+    font-weight: 800;
+}
+
+
+/* Timetable active */
+
+.timetable-item {
+    top: 260px;
+
+    background: #003040;
+}
+
+
+/* Active indicator */
+
+.timetable-item::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 23px;
+    height: 48px;
+
+    background: #5DE6E0;
+
+    border-radius: 10px;
+}
+
+
+.timetable-item img {
+    left: 27px;
+
+    width: 24px;
+    height: 24px;
+
+    z-index: 1;
+}
+
+.timetable-item span {
+    position: absolute;
+
+    left: 63px;
+    top: 13px;
+
+    opacity: 0.80;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* Room */
+
+.room-item {
+    top: 308px;
+
+    background: transparent;
+}
+
+.room-item img {
+    left: 29px;
+
+    width: 22px;
+    height: 22px;
+}
+
+.room-item span {
+    position: absolute;
+
+    left: 63px;
+    top: 13px;
+
+    opacity: 0.80;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* Lecture hall */
+
+.lecture-item {
+    top: 353px;
+}
+
+.lecture-item img {
+    left: 29px;
+
+    width: 24px;
+    height: 24px;
+}
+
+.lecture-item span {
+    position: absolute;
+
+    left: 63px;
+    top: 13px;
+
+    opacity: 0.80;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* Notifications */
+
+.notification-item {
+    top: 398px;
+}
+
+.notification-item img {
+    left: 32px;
+
+    width: 20px;
+    height: 20px;
+}
+
+.notification-item span {
+    position: absolute;
+
+    left: 63px;
+    top: 13px;
+
+    opacity: 0.80;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* Profile */
+
+.profile-item {
+    top: 443px;
+}
+
+.profile-item img {
+    left: 34px;
+
+    width: 20px;
+    height: 20px;
+}
+
+.profile-item span {
+    position: absolute;
+
+    left: 63px;
+    top: 13px;
+
+    opacity: 0.80;
+
+    font-size: 18px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.main-content {
+    position: absolute;
+
+    left: 282px;
+    top: 70px;
+
+    width: 1158px;
+    height: 1383px;
+
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   PAGE TITLE
+========================================================= */
 
 .page-title-icon {
+    position: absolute;
+
+    left: 34px;
+    top: 20px;
+
     width: 60px;
     height: 60px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
-
 
 .page-title-icon img {
     width: 50px;
     height: 50px;
 
+    margin: 5px;
+
     filter: brightness(0) saturate(100%)
-            invert(18%) sepia(100%)
-            saturate(3000%);
+            invert(17%)
+            sepia(97%)
+            saturate(3118%)
+            hue-rotate(238deg)
+            brightness(74%);
 }
 
 
-.page-title h1 {
+.page-title {
+    position: absolute;
+
+    left: 106px;
+    top: 29px;
+
+    width: 400px;
+
     color: #001495;
 
     opacity: 0.80;
@@ -176,29 +566,15 @@
 }
 
 
-/* =========================================
-   RECORD SECTION
-========================================= */
+/* =========================================================
+   COMMON SECTION TITLE
+========================================================= */
 
-.record-section {
-    position: relative;
+.section-title {
+    position: absolute;
 
-    width: 100%;
-
-    min-height: 208px;
-
-    margin-bottom: 54px;
-
-    padding: 12px;
-
-    border: 1px solid #000000;
-
-    border-radius: 20px;
-}
-
-
-.record-section h2 {
-    margin: 0;
+    left: 14px;
+    top: 15px;
 
     color: #000000;
 
@@ -207,13 +583,60 @@
 }
 
 
-.section-line {
+/* =========================================================
+   COMMON SECTION BOX
+========================================================= */
+
+.section-box {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 1099px;
+    height: 208px;
+
+    border: 1px solid #000000;
+
+    border-radius: 20px;
+}
+
+
+/* =========================================================
+   ADD SECTION
+========================================================= */
+
+.add-section {
+    position: absolute;
+
+    left: 39px;
+    top: 150px;
+
+    width: 1099px;
+    height: 208px;
+}
+
+
+.add-section .section-box {
+    top: 0;
+}
+
+
+.add-section .section-title {
+    top: 15px;
+
+    z-index: 2;
+}
+
+
+.add-section .section-line {
+    position: absolute;
+
+    left: 0;
+    top: 56px;
+
+    width: 1099px;
     height: 1px;
-
-    width: calc(100% + 24px);
-
-    margin-left: -12px;
-    margin-top: 16px;
 
     background: #000000;
 
@@ -221,30 +644,18 @@
 }
 
 
-/* =========================================
-   INPUT / DISPLAY FIELDS
-========================================= */
-
-.fields-row {
-    display: flex;
-    align-items: center;
-
-    gap: 18px;
-
-    margin-top: 18px;
-
-    padding-left: 24px;
-}
-
+/* =========================================================
+   FIELDS
+========================================================= */
 
 .field {
+    position: absolute;
+
     height: 39px;
 
     display: flex;
     align-items: center;
     justify-content: center;
-
-    padding: 0 18px;
 
     border: 1px solid #030023;
 
@@ -261,57 +672,67 @@
 }
 
 
-.small-field {
-    min-width: 83px;
+/* ADD FIELDS */
+
+.subject-add {
+    left: 36px;
+    top: 73px;
+    width: 100px;
+}
+
+.course-add {
+    left: 155px;
+    top: 73px;
+    width: 83px;
+}
+
+.day-add {
+    left: 256px;
+    top: 73px;
+    width: 109px;
+}
+
+.start-add {
+    left: 385px;
+    top: 73px;
+    width: 101px;
+}
+
+.end-add {
+    left: 505px;
+    top: 73px;
+    width: 120px;
+}
+
+.room-add {
+    left: 644px;
+    top: 73px;
+    width: 110px;
+}
+
+.semester-add {
+    left: 773px;
+    top: 73px;
+    width: 117px;
+}
+
+.year-add {
+    left: 909px;
+    top: 73px;
+    width: 144px;
 }
 
 
-.field:nth-child(1) {
-    min-width: 100px;
-}
+/* SAVE */
 
+.save-button {
+    position: absolute;
 
-.field:nth-child(3) {
-    min-width: 109px;
-}
-
-
-.field:nth-child(4) {
-    min-width: 101px;
-}
-
-
-.field:nth-child(5) {
-    min-width: 120px;
-}
-
-
-.field:nth-child(6) {
-    min-width: 110px;
-}
-
-
-.field:nth-child(7) {
-    min-width: 117px;
-}
-
-
-.field:nth-child(8) {
-    min-width: 144px;
-}
-
-
-/* =========================================
-   BUTTONS
-========================================= */
-
-.action-button {
-    display: block;
+    left: 485px;
+    top: 147px;
 
     width: 135px;
     height: 39px;
-
-    margin: 18px auto 0;
 
     border: none;
 
@@ -323,56 +744,156 @@
 
     font-size: 24px;
     font-weight: 800;
-
-    cursor: pointer;
 }
 
 
-.action-button:hover {
-    opacity: 0.90;
+/* =========================================================
+   DELETE SECTION
+========================================================= */
+
+.delete-section {
+    position: absolute;
+
+    left: 39px;
+    top: 412px;
+
+    width: 1099px;
+    height: 208px;
 }
 
 
-/* =========================================
-   UPDATE SECTION
-========================================= */
+.delete-section .section-title {
+    top: 0;
 
-.update-section {
-    min-height: 377px;
-
-    margin-bottom: 54px;
+    z-index: 2;
 }
 
 
-.update-section h3 {
-    text-align: center;
+.delete-section .section-box {
+    top: 0;
+}
 
-    margin: 7px 0 14px;
 
-    color: #000000;
+.delete-section .section-line {
+    position: absolute;
+
+    left: 0;
+    top: 56px;
+
+    width: 1099px;
+    height: 1px;
+
+    background: #000000;
+
+    opacity: 0.50;
+}
+
+
+/* DELETE FIELDS */
+
+.subject-delete {
+    left: 36px;
+    top: 81px;
+    width: 100px;
+}
+
+.course-delete {
+    left: 155px;
+    top: 81px;
+    width: 83px;
+}
+
+.day-delete {
+    left: 256px;
+    top: 81px;
+    width: 109px;
+}
+
+.start-delete {
+    left: 385px;
+    top: 81px;
+    width: 101px;
+}
+
+.end-delete {
+    left: 505px;
+    top: 81px;
+    width: 120px;
+}
+
+.room-delete {
+    left: 644px;
+    top: 81px;
+    width: 110px;
+}
+
+.semester-delete {
+    left: 773px;
+    top: 81px;
+    width: 117px;
+}
+
+.year-delete {
+    left: 909px;
+    top: 81px;
+    width: 144px;
+}
+
+
+/* DELETE BUTTON */
+
+.delete-button {
+    position: absolute;
+
+    left: 485px;
+    top: 147px;
+
+    width: 135px;
+    height: 39px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #12009C;
+
+    color: #ffffff;
 
     font-size: 24px;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 
-.second-line {
-    margin-top: 18px;
+/* =========================================================
+   UPDATE SECTION
+========================================================= */
+
+.update-section {
+    position: absolute;
+
+    left: 39px;
+    top: 674px;
+
+    width: 1099px;
+    height: 377px;
 }
 
 
-/* =========================================
-   VIEW SECTION
-========================================= */
+.update-section .section-title {
+    top: 0;
 
-.view-section {
-    width: 390px;
+    z-index: 3;
+}
 
-    min-height: 208px;
 
-    margin: 0 auto;
+.update-box {
+    position: absolute;
 
-    padding: 12px;
+    left: 0;
+    top: 0;
+
+    width: 1099px;
+    height: 377px;
 
     border: 1px solid #000000;
 
@@ -380,8 +901,28 @@
 }
 
 
-.view-section h2 {
-    text-align: center;
+.update-box > .section-line {
+    position: absolute;
+
+    left: 0;
+    top: 56px;
+
+    width: 1099px;
+    height: 1px;
+
+    background: #000000;
+
+    opacity: 0.50;
+}
+
+
+/* Old heading */
+
+.old-heading {
+    position: absolute;
+
+    left: 455px;
+    top: 65px;
 
     color: #000000;
 
@@ -390,64 +931,288 @@
 }
 
 
-.view-fields {
-    display: flex;
-    justify-content: center;
+/* Old fields */
 
-    gap: 24px;
-
-    margin-top: 30px;
+.subject-old {
+    left: 35px;
+    top: 107px;
+    width: 100px;
 }
 
+.course-old {
+    left: 154px;
+    top: 107px;
+    width: 83px;
+}
 
-.view-fields .field {
+.day-old {
+    left: 255px;
+    top: 107px;
+    width: 109px;
+}
+
+.start-old {
+    left: 384px;
+    top: 107px;
+    width: 101px;
+}
+
+.end-old {
+    left: 505px;
+    top: 107px;
+    width: 120px;
+}
+
+.room-old {
+    left: 644px;
+    top: 107px;
+    width: 110px;
+}
+
+.semester-old {
+    left: 773px;
+    top: 107px;
+    width: 117px;
+}
+
+.year-old {
+    left: 909px;
+    top: 107px;
     width: 144px;
 }
 
 
-/* =========================================
-   VIEW BUTTON
-========================================= */
+/* Second divider */
 
-.view-section .action-button {
-    margin-top: 26px;
+.second-section-line {
+    position: absolute;
+
+    left: 0;
+    top: 171px;
+
+    width: 1099px;
+    height: 1px;
+
+    background: #000000;
+
+    opacity: 0.50;
 }
 
 
-/* =========================================
-   RESPONSIVE
-========================================= */
+/* New heading */
 
-@media (max-width: 1200px) {
+.new-heading {
+    position: absolute;
 
-    .fields-row {
-        flex-wrap: wrap;
-    }
+    left: 455px;
+    top: 186px;
 
+    color: #000000;
+
+    font-size: 24px;
+    font-weight: 700;
 }
 
 
-@media (max-width: 800px) {
+/* New fields */
 
-    .content {
-        padding: 20px;
-    }
+.subject-new {
+    left: 35px;
+    top: 242px;
+    width: 100px;
+}
 
-    .page-title h1 {
-        font-size: 28px;
-    }
+.course-new {
+    left: 154px;
+    top: 242px;
+    width: 83px;
+}
 
-    .record-section {
-        overflow-x: auto;
-    }
+.day-new {
+    left: 255px;
+    top: 242px;
+    width: 109px;
+}
 
-    .fields-row {
-        min-width: 1000px;
-    }
+.start-new {
+    left: 384px;
+    top: 242px;
+    width: 101px;
+}
 
-    .view-section {
-        width: 100%;
-        max-width: 390px;
-    }
+.end-new {
+    left: 505px;
+    top: 242px;
+    width: 120px;
+}
 
+.room-new {
+    left: 644px;
+    top: 242px;
+    width: 110px;
+}
+
+.semester-new {
+    left: 773px;
+    top: 242px;
+    width: 117px;
+}
+
+.year-new {
+    left: 909px;
+    top: 242px;
+    width: 144px;
+}
+
+
+/* Update button */
+
+.update-button {
+    position: absolute;
+
+    left: 485px;
+    top: 303px;
+
+    width: 135px;
+    height: 39px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #12009C;
+
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   VIEW SECTION
+========================================================= */
+
+.view-section {
+    position: absolute;
+
+    left: 405px;
+    top: 1114px;
+
+    width: 390px;
+    height: 208px;
+}
+
+
+.view-title {
+    position: absolute;
+
+    left: 14px;
+    top: 15px;
+
+    width: 360px;
+
+    text-align: center;
+
+    color: #000000;
+
+    font-size: 24px;
+    font-weight: 700;
+
+    z-index: 2;
+}
+
+
+.view-box {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 390px;
+    height: 208px;
+
+    border: 1px solid #000000;
+
+    border-radius: 20px;
+}
+
+
+/* View divider */
+
+.view-box .section-line {
+    position: absolute;
+
+    left: 0;
+    top: 54px;
+
+    width: 389px;
+    height: 1px;
+
+    background: #000000;
+
+    opacity: 0.50;
+}
+
+
+/* Semester */
+
+.view-semester {
+    left: 39px;
+    top: 85px;
+
+    width: 144px;
+}
+
+
+/* Year */
+
+.view-year {
+    left: 207px;
+    top: 85px;
+
+    width: 144px;
+}
+
+
+/* View button */
+
+.view-button {
+    position: absolute;
+
+    left: 114px;
+    top: 150px;
+
+    width: 135px;
+    height: 39px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #12009C;
+
+    color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   BUTTON HOVER
+========================================================= */
+
+.save-button,
+.delete-button,
+.update-button,
+.view-button {
+    cursor: pointer;
+}
+
+.save-button:hover,
+.delete-button:hover,
+.update-button:hover,
+.view-button:hover {
+    opacity: 0.90;
 }
