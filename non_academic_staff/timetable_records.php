@@ -677,17 +677,21 @@
                                 IS/CS
                             </label>
 
-                             <option value="" selected disabled>
-                                IS/CS
-                            </option>
+                              <select>
 
-                            <option value="IS">
-                                IS
-                            </option>
+                                <option selected disabled>
+                                    IS/CS
+                                </option>
 
-                            <option value="CS">
-                                CS
-                            </option>
+                                <option>
+                                    IS
+                                </option>
+
+                                <option>
+                                    CS
+                                </option>
+
+                            </select>
 
                         </select>
 
@@ -702,7 +706,7 @@
 
                             <select name="day">
 
-                                <option value=""selected disabled>
+                                <option value="">
                                     Monday
                                 </option>
 
@@ -795,19 +799,25 @@
                                 IS/CS
                             </label>
 
-                             <option value="" selected disabled>
-                                IS/CS
-                            </option>
+                              <select>
 
-                            <option value="IS">
-                                IS
-                            </option>
+                                <option selected disabled>
+                                    IS/CS
+                                </option>
 
-                            <option value="CS">
-                                CS
-                            </option>
+                                <option>
+                                    IS
+                                </option>
 
-                        </select>
+                                <option>
+                                    CS
+                                </option>
+
+                            </select>
+
+                           
+
+                        
 
                         </div>
 
@@ -945,7 +955,7 @@
                                 Year
                             </label>
 
-                            <label for="year">Year</label>
+                    
 
                         <select id="year" name="year" required>
                             <option value="" selected disabled>Select Year</option>
