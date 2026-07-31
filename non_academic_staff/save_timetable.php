@@ -78,13 +78,14 @@ if(isset($_POST['subject_name'])){
         if($conflict > 0)
 {
 
+    
     echo "
-    <script>
-    alert('This lecture hall slot is already filled. Please select another time or room.');
-    window.location='timetable_management.php';
-    </script>
-    ";
-
+            <script>
+            alert('Slot already filled!');
+            window.location='timetable_management.php';
+            </script>
+";
+    
     exit();
 
 }
@@ -157,10 +158,13 @@ VALUES
 
         // Success redirect
 
-        header("Location: timetable_management.php");
-
-        exit();
-
+        echo "
+            <script>
+            alert('Timetable saved!');
+            window.location='timetable_management.php';
+            </script>
+            ";
+            exit();
 
 
     }
