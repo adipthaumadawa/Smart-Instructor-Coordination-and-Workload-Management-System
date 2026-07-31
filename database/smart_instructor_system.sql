@@ -502,4 +502,5 @@ CREATE TABLE timetables (
     academic_year INT NOT NULL
 );
 
+
 DELETE FROM timetables;
