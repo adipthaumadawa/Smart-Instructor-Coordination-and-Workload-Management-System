@@ -86,7 +86,7 @@ alert('Timetable Added Successfully');
 window.location='non_academic_staff/timetable_management.php';
 </script>
 ";
-            ";
+            
 
 
             exit();
