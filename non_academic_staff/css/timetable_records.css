@@ -386,9 +386,9 @@ body {
 
     align-items: flex-end;
 
-    gap: 14px;
+    gap: 8px;
 
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
 
 
@@ -453,7 +453,7 @@ body {
 ================================================== */
 
 .subject-field input {
-    width: 120px;
+    width: 90px;
 }
 
 
@@ -681,4 +681,10 @@ body {
         width: 100%;
     }
 
+}
+
+
+/* Room/Lab box size - all sections */
+.room-field input {
+    width: 90px;
 }

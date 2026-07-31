@@ -375,7 +375,7 @@
                         </div>
 
 
-                        <div class="form-group">
+                        <div class="form-group room-field">
 
                             <label>
                                 Room / Lab
@@ -563,7 +563,7 @@
                         </div>
 
 
-                        <div class="form-group">
+                        <div class="form-group room-field">
 
                             <label>
                                 Room / Lab
@@ -753,7 +753,7 @@
                         </div>
 
 
-                        <div class="form-group">
+                        <div class="form-group room-field">
 
                             <label>
                                 Room / Lab
@@ -765,6 +765,60 @@
                             >
 
                         </div>
+                        <div class="form-group semester-field">
+
+                            <label>
+                            Semester
+                            </label>
+
+                            <select>
+                            <option selected disabled>
+                            Semester
+                            </option>
+
+                            <option>
+                            Semester 1
+                            </option>
+
+                            <option>
+                            Semester 2
+                            </option>
+
+                            </select>
+
+                            </div>
+
+
+                            <div class="form-group year-field">
+
+                            <label>
+                            Year
+                            </label>
+
+                            <select>
+                            <option selected disabled>
+                            Select Year
+                            </option>
+
+                            <option>
+                            1st Year
+                            </option>
+
+                            <option>
+                            2nd Year
+                            </option>
+
+                            <option>
+                            3rd Year
+                            </option>
+
+                            <option>
+                            4th Year
+                            </option>
+
+                            </select>
+
+                            </div>
 
                     </div>
 
@@ -877,7 +931,7 @@
                         </div>
 
 
-                        <div class="form-group">
+                        <div class="form-group room-field">
 
                             <label>
                                 Room / Lab
@@ -889,6 +943,60 @@
                             >
 
                         </div>
+                        <div class="form-group semester-field">
+
+                            <label>
+                            Semester
+                            </label>
+
+                            <select>
+                            <option selected disabled>
+                            Semester
+                            </option>
+
+                            <option>
+                            Semester 1
+                            </option>
+
+                            <option>
+                            Semester 2
+                            </option>
+
+                            </select>
+
+                            </div>
+
+
+                            <div class="form-group year-field">
+
+                            <label>
+                            Year
+                            </label>
+
+                            <select>
+                            <option selected disabled>
+                            Select Year
+                            </option>
+
+                            <option>
+                            1st Year
+                            </option>
+
+                            <option>
+                            2nd Year
+                            </option>
+
+                            <option>
+                            3rd Year
+                            </option>
+
+                            <option>
+                            4th Year
+                            </option>
+
+                            </select>
+
+                            </div>
 
                     </div>
 
