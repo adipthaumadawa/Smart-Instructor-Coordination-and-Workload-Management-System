@@ -659,7 +659,7 @@ session_start();
                     <div class="button-area">
 
                         <button
-                            type="button"
+                            type="submit"
                             class="primary-button"
                         >
                             Delete
