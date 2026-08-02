@@ -30,10 +30,8 @@ ORDER BY start_time
 $stmt = $pdo->prepare($sql);
 
 $stmt->execute([
-
     ':semester'=>$semester,
     ':year'=>$academic_year
-
 ]);
 
 
@@ -43,9 +41,7 @@ $records=[];
 
 while($row=$stmt->fetch(PDO::FETCH_ASSOC)){
 
-
     $records[$row['day_name']][]=$row;
-
 
 }
 
@@ -53,13 +49,18 @@ while($row=$stmt->fetch(PDO::FETCH_ASSOC)){
 
 
 $days=[
-
 "Monday",
 "Tuesday",
 "Wednesday",
 "Thursday",
 "Friday"
+];
 
+
+
+$courses=[
+"IS",
+"CS"
 ];
 
 
@@ -80,6 +81,7 @@ $slots=[
 ];
 
 
+
 $labels=[
 
 "08:00:00"=>"8 AM - 9 AM",
@@ -96,6 +98,7 @@ $labels=[
 ];
 
 
+
 $used=[];
 
 
@@ -107,7 +110,6 @@ $used=[];
 <html>
 
 <head>
-
 
 <title>View Timetable</title>
 
@@ -140,7 +142,7 @@ border:1px solid black;
 text-align:center;
 vertical-align:middle;
 height:60px;
-padding:4px;
+padding:5px;
 
 }
 
@@ -182,8 +184,8 @@ font-size:12px;
 
 button{
 
-padding:10px 25px;
 margin-top:20px;
+padding:10px 25px;
 
 }
 
@@ -198,7 +200,6 @@ display:none;
 }
 
 }
-
 
 
 </style>
@@ -218,7 +219,6 @@ University of Colombo School of Computing (UCSC)
 </h2>
 
 
-
 <h3 style="text-align:center">
 
 Lecture Time Table
@@ -231,7 +231,6 @@ Year <?php echo $academic_year; ?>
 
 <?php echo $semester; ?>
 
-
 </h3>
 
 
@@ -239,8 +238,8 @@ Year <?php echo $academic_year; ?>
 <table>
 
 
-<tr>
 
+<tr>
 
 <th class="time">
 
@@ -264,6 +263,7 @@ TIME
 
 
 
+
 <tr>
 
 
@@ -272,9 +272,18 @@ TIME
 
 <?php foreach($days as $day){ ?>
 
-<th>IS</th>
+<th>
 
-<th>CS</th>
+IS
+
+</th>
+
+<th>
+
+CS
+
+</th>
+
 
 <?php } ?>
 
@@ -307,12 +316,10 @@ TIME
 
 </td>
 
-
 </tr>
 
 
 <?php } ?>
-
 
 
 
@@ -334,27 +341,20 @@ TIME
 
 
 
-<?php
+<?php foreach($courses as $course){ ?>
 
-
-// if already merged cell
-
-if(isset($used[$day][$slot])){
-
-
-?>
-
-
-<td></td>
 
 
 <?php
+
+
+// merged cell skip
+
+if(isset($used[$day][$course][$slot])){
 
 continue;
 
 }
-
-
 
 
 
@@ -365,16 +365,24 @@ $class=null;
 foreach($records[$day] ?? [] as $data){
 
 
-if($data['start_time']==$slot){
+if(
+
+$data['course']==$course
+
+&&
+
+$data['start_time']==$slot
+
+){
 
 $class=$data;
+
 break;
 
 }
 
 
 }
-
 
 
 
@@ -388,11 +396,11 @@ $start=strtotime($class['start_time']);
 $end=strtotime($class['end_time']);
 
 
-$hours=($end-$start)/3600;
+$rowspan=($end-$start)/3600;
 
 
 
-for($i=0;$i<$hours;$i++){
+for($i=0;$i<$rowspan;$i++){
 
 
 $next=date(
@@ -404,17 +412,18 @@ strtotime("+".$i." hour",$start)
 );
 
 
-$used[$day][$next]=true;
+$used[$day][$course][$next]=true;
 
 
 }
+
 
 
 ?>
 
 
 
-<td rowspan="<?php echo $hours; ?>">
+<td rowspan="<?php echo $rowspan; ?>">
 
 
 <div class="subject">
@@ -435,13 +444,12 @@ $used[$day][$next]=true;
 
 
 
-<?php
 
+<?php
 
 }
 
 else{
-
 
 ?>
 
@@ -451,12 +459,15 @@ else{
 
 <?php
 
-
 }
 
 
-
 ?>
+
+
+
+
+<?php } ?>
 
 
 
@@ -478,19 +489,16 @@ else{
 
 <center>
 
-
 <button onclick="window.print()">
 
 Print Timetable
 
 </button>
 
-
 </center>
 
 
 
 </body>
-
 
 </html>
