@@ -5,42 +5,7 @@ session_start();
 include("../config/db.php");
 
 
-if(isset($_POST['semester']) && isset($_POST['academic_year'])){
-
-    $semester = $_POST['semester'];
-    $academic_year = $_POST['academic_year'];
-
-
-    $sql = "
-    SELECT *
-    FROM timetables
-    WHERE semester = :semester
-    AND academic_year = :academic_year
-    ORDER BY start_time
-    ";
-
-
-    $stmt = $pdo->prepare($sql);
-
-    $stmt->execute([
-        ':semester'=>$semester,
-        ':academic_year'=>$academic_year
-    ]);
-
-
-    $records = [];
-
-
-    while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-
-        $records[$row['day_name']][$row['start_time']] = $row;
-
-    }
-
-
-
-}
-else{
+if(!isset($_POST['semester']) || !isset($_POST['academic_year'])){
 
     echo "No timetable selected";
     exit();
@@ -48,8 +13,76 @@ else{
 }
 
 
+$semester = $_POST['semester'];
+$academic_year = $_POST['academic_year'];
 
-$times = [
+
+
+$sql = "
+SELECT *
+FROM timetables
+WHERE semester = :semester
+AND academic_year = :year
+ORDER BY start_time
+";
+
+
+$stmt = $pdo->prepare($sql);
+
+
+$stmt->execute([
+
+    ':semester'=>$semester,
+    ':year'=>$academic_year
+
+]);
+
+
+
+$records=[];
+
+
+while($row=$stmt->fetch(PDO::FETCH_ASSOC)){
+
+
+    $records[$row['day_name']][]=$row;
+
+
+}
+
+
+
+
+$days=[
+
+"Monday",
+"Tuesday",
+"Wednesday",
+"Thursday",
+"Friday"
+
+];
+
+
+
+$slots=[
+
+"08:00:00",
+"09:00:00",
+"10:00:00",
+"11:00:00",
+"13:00:00",
+"14:00:00",
+"15:00:00",
+"16:00:00",
+"17:00:00",
+"18:00:00"
+
+];
+
+
+
+$labels=[
 
 "08:00:00"=>"8 AM - 9 AM",
 "09:00:00"=>"9 AM - 10 AM",
@@ -65,21 +98,14 @@ $times = [
 ];
 
 
-$days = [
 
-"Monday",
-"Tuesday",
-"Wednesday",
-"Thursday",
-"Friday"
+$used=[];
 
-];
 
 ?>
 
 
 <!DOCTYPE html>
-
 <html>
 
 <head>
@@ -92,60 +118,21 @@ $days = [
 
 body{
 
-font-family:Arial,sans-serif;
+font-family:Arial;
 
 }
-
-
-
-.container{
-
-width:95%;
-margin:auto;
-
-}
-
-
-
-.header{
-
-text-align:center;
-
-font-weight:bold;
-
-margin-bottom:20px;
-
-}
-
-
-
-.header h2{
-
-margin:5px;
-
-}
-
-
-.info{
-
-text-align:center;
-font-size:18px;
-margin-bottom:20px;
-
-}
-
 
 
 table{
 
-width:100%;
+width:95%;
+margin:auto;
 border-collapse:collapse;
 
 }
 
 
-
-th,td{
+td,th{
 
 border:1px solid black;
 text-align:center;
@@ -155,13 +142,26 @@ height:55px;
 }
 
 
-
 th{
 
-background:#eeeeee;
+background:#eee;
 
 }
 
+
+.subject{
+
+font-weight:bold;
+font-size:13px;
+
+}
+
+
+.room{
+
+font-size:12px;
+
+}
 
 
 .time{
@@ -172,51 +172,18 @@ width:120px;
 }
 
 
-
-.subject{
-
-font-size:13px;
-font-weight:bold;
-
-}
-
-
-
-.room{
-
-font-size:12px;
-
-}
-
-
-
 .lunch{
 
-font-weight:bold;
 font-size:18px;
+font-weight:bold;
 
 }
 
 
-
 button{
 
-margin-top:20px;
+margin:20px;
 padding:10px 25px;
-font-size:16px;
-cursor:pointer;
-
-}
-
-
-
-@media print{
-
-button{
-
-display:none;
-
-}
 
 }
 
@@ -231,43 +198,21 @@ display:none;
 <body>
 
 
-<div class="container">
 
+<h2 style="text-align:center">
 
-<div class="header">
-
-
-<h2>
 University of Colombo School of Computing (UCSC)
+
 </h2>
 
 
-<p>
-Bachelor of Science in Computer Science and Bachelor of Science in Information Systems Degree Programme
-</p>
+<h3 style="text-align:center">
 
+Lecture Time Table - Year <?php echo $academic_year; ?>
 
-<h3>
-Lecture Time Table - 
-<?php echo "Year ".$academic_year." - ".$semester; ?>
+(<?php echo $semester;?>)
+
 </h3>
-
-
-</div>
-
-
-
-<div class="info">
-
-
-Semester : <?php echo $semester; ?>
-
-<br>
-
-Academic Year : <?php echo $academic_year; ?>
-
-
-</div>
 
 
 
@@ -284,17 +229,13 @@ TIME
 <?php foreach($days as $day){ ?>
 
 <th colspan="2">
-
-<?php echo strtoupper($day); ?>
-
+<?php echo strtoupper($day);?>
 </th>
-
 
 <?php } ?>
 
 
 </tr>
-
 
 
 <tr>
@@ -304,9 +245,7 @@ TIME
 
 <?php foreach($days as $day){ ?>
 
-
 <th>IS</th>
-
 <th>CS</th>
 
 
@@ -318,25 +257,21 @@ TIME
 
 
 
-<?php foreach($times as $time=>$label){ ?>
+<?php foreach($slots as $slot){ ?>
 
 
-<?php if($time=="13:00:00"){ ?>
+<?php if($slot=="13:00:00"){ ?>
 
 
 <tr>
 
 <td class="time">
-
 12 PM - 1 PM
-
 </td>
 
 
 <td colspan="10" class="lunch">
-
 Lunch Break
-
 </td>
 
 
@@ -352,42 +287,74 @@ Lunch Break
 
 <td class="time">
 
-<?php echo $label; ?>
+<?php echo $labels[$slot];?>
 
 </td>
+
 
 
 
 <?php foreach($days as $day){ ?>
 
 
+
 <?php
 
 
-$is_class=false;
+if(isset($used[$day][$slot])){
 
-$cs_class=false;
-
-
-
-if(isset($records[$day][$time])){
-
-
-$data=$records[$day][$time];
-
-
-if($data['course']=="IS"){
-
-$is_class=true;
+continue;
 
 }
 
 
-if($data['course']=="CS"){
 
-$cs_class=true;
+$found=[];
+
+
+foreach($records[$day] ?? [] as $data){
+
+
+if($data['start_time']==$slot){
+
+$found=$data;
+break;
 
 }
+
+
+}
+
+
+
+
+if(!empty($found)){
+
+
+
+$start=strtotime($found['start_time']);
+
+$end=strtotime($found['end_time']);
+
+
+$hours=($end-$start)/3600;
+
+
+
+$rowspan=$hours;
+
+
+
+for($i=0;$i<$hours;$i++){
+
+
+$next=date(
+"H:i:s",
+strtotime("+".$i." hour",$start)
+);
+
+
+$used[$day][$next]=true;
 
 
 }
@@ -398,55 +365,54 @@ $cs_class=true;
 
 
 
-<td>
+<td rowspan="<?php echo $rowspan;?>">
 
-
-<?php if($is_class){ ?>
 
 <div class="subject">
 
-<?php echo $data['subject_name']; ?>
+<?php echo $found['subject_name'];?>
 
 </div>
 
 
 <div class="room">
 
-<?php echo $data['room']; ?>
+<?php echo $found['room'];?>
 
 </div>
-
-
-<?php } ?>
 
 
 </td>
 
 
 
-<td>
+<?php
 
 
-<?php if($cs_class){ ?>
+}
 
-<div class="subject">
-
-<?php echo $data['subject_name']; ?>
-
-</div>
+else{
 
 
-<div class="room">
-
-<?php echo $data['room']; ?>
-
-</div>
+?>
 
 
-<?php } ?>
+<td></td>
 
 
-</td>
+<?php
+
+
+}
+
+
+
+?>
+
+
+
+
+<td></td>
 
 
 
@@ -465,20 +431,17 @@ $cs_class=true;
 </table>
 
 
+
 <center>
 
 <button onclick="window.print()">
 
-Print Timetable
+Print
 
 </button>
 
-
 </center>
 
-
-
-</div>
 
 
 </body>
