@@ -684,7 +684,7 @@ session_start();
 
 
                 <div class="update-section">
-
+                <form action="update_timetable.php" method="POST">
                     <h2>
                         Old Timetable Slot
                     </h2>
@@ -1054,7 +1054,7 @@ session_start();
                         </button>
 
                     </div>
-
+                </form>
                 </div>
 
             </div>
