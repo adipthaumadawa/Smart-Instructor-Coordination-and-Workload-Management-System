@@ -29,7 +29,6 @@ ORDER BY start_time
 
 $stmt = $pdo->prepare($sql);
 
-
 $stmt->execute([
 
     ':semester'=>$semester,
@@ -81,7 +80,6 @@ $slots=[
 ];
 
 
-
 $labels=[
 
 "08:00:00"=>"8 AM - 9 AM",
@@ -98,7 +96,6 @@ $labels=[
 ];
 
 
-
 $used=[];
 
 
@@ -106,9 +103,11 @@ $used=[];
 
 
 <!DOCTYPE html>
+
 <html>
 
 <head>
+
 
 <title>View Timetable</title>
 
@@ -119,42 +118,58 @@ $used=[];
 body{
 
 font-family:Arial;
+margin:20px;
 
 }
+
 
 
 table{
 
-width:95%;
-margin:auto;
+width:100%;
 border-collapse:collapse;
+table-layout:fixed;
 
 }
 
 
-td,th{
+
+th,td{
 
 border:1px solid black;
 text-align:center;
-
-height:55px;
+vertical-align:middle;
+height:60px;
+padding:4px;
 
 }
+
 
 
 th{
 
-background:#eee;
+background:#eeeeee;
 
 }
+
+
+
+.time{
+
+width:120px;
+font-weight:bold;
+
+}
+
 
 
 .subject{
 
-font-weight:bold;
 font-size:13px;
+font-weight:bold;
 
 }
+
 
 
 .room{
@@ -164,26 +179,23 @@ font-size:12px;
 }
 
 
-.time{
-
-font-weight:bold;
-width:120px;
-
-}
-
-
-.lunch{
-
-font-size:18px;
-font-weight:bold;
-
-}
-
 
 button{
 
-margin:20px;
 padding:10px 25px;
+margin-top:20px;
+
+}
+
+
+
+@media print{
+
+button{
+
+display:none;
+
+}
 
 }
 
@@ -206,11 +218,19 @@ University of Colombo School of Computing (UCSC)
 </h2>
 
 
+
 <h3 style="text-align:center">
 
-Lecture Time Table - Year <?php echo $academic_year; ?>
+Lecture Time Table
 
-(<?php echo $semester;?>)
+<br>
+
+Year <?php echo $academic_year; ?>
+
+-
+
+<?php echo $semester; ?>
+
 
 </h3>
 
@@ -221,15 +241,20 @@ Lecture Time Table - Year <?php echo $academic_year; ?>
 
 <tr>
 
+
 <th class="time">
+
 TIME
+
 </th>
 
 
 <?php foreach($days as $day){ ?>
 
 <th colspan="2">
-<?php echo strtoupper($day);?>
+
+<?php echo strtoupper($day); ?>
+
 </th>
 
 <?php } ?>
@@ -238,7 +263,9 @@ TIME
 </tr>
 
 
+
 <tr>
+
 
 <th></th>
 
@@ -246,8 +273,8 @@ TIME
 <?php foreach($days as $day){ ?>
 
 <th>IS</th>
-<th>CS</th>
 
+<th>CS</th>
 
 <?php } ?>
 
@@ -257,7 +284,9 @@ TIME
 
 
 
+
 <?php foreach($slots as $slot){ ?>
+
 
 
 <?php if($slot=="13:00:00"){ ?>
@@ -266,12 +295,16 @@ TIME
 <tr>
 
 <td class="time">
+
 12 PM - 1 PM
+
 </td>
 
 
-<td colspan="10" class="lunch">
-Lunch Break
+<td colspan="10">
+
+<b>Lunch Break</b>
+
 </td>
 
 
@@ -282,14 +315,17 @@ Lunch Break
 
 
 
+
+
 <tr>
 
 
 <td class="time">
 
-<?php echo $labels[$slot];?>
+<?php echo $labels[$slot]; ?>
 
 </td>
+
 
 
 
@@ -301,7 +337,18 @@ Lunch Break
 <?php
 
 
+// if already merged cell
+
 if(isset($used[$day][$slot])){
+
+
+?>
+
+
+<td></td>
+
+
+<?php
 
 continue;
 
@@ -309,7 +356,10 @@ continue;
 
 
 
-$found=[];
+
+
+$class=null;
+
 
 
 foreach($records[$day] ?? [] as $data){
@@ -317,7 +367,7 @@ foreach($records[$day] ?? [] as $data){
 
 if($data['start_time']==$slot){
 
-$found=$data;
+$class=$data;
 break;
 
 }
@@ -328,20 +378,17 @@ break;
 
 
 
-if(!empty($found)){
+
+if($class){
 
 
 
-$start=strtotime($found['start_time']);
+$start=strtotime($class['start_time']);
 
-$end=strtotime($found['end_time']);
+$end=strtotime($class['end_time']);
 
 
 $hours=($end-$start)/3600;
-
-
-
-$rowspan=$hours;
 
 
 
@@ -349,8 +396,11 @@ for($i=0;$i<$hours;$i++){
 
 
 $next=date(
+
 "H:i:s",
+
 strtotime("+".$i." hour",$start)
+
 );
 
 
@@ -360,24 +410,23 @@ $used[$day][$next]=true;
 }
 
 
-
 ?>
 
 
 
-<td rowspan="<?php echo $rowspan;?>">
+<td rowspan="<?php echo $hours; ?>">
 
 
 <div class="subject">
 
-<?php echo $found['subject_name'];?>
+<?php echo $class['subject_name']; ?>
 
 </div>
 
 
 <div class="room">
 
-<?php echo $found['room'];?>
+<?php echo $class['room']; ?>
 
 </div>
 
@@ -411,11 +460,6 @@ else{
 
 
 
-
-<td></td>
-
-
-
 <?php } ?>
 
 
@@ -434,16 +478,19 @@ else{
 
 <center>
 
+
 <button onclick="window.print()">
 
-Print
+Print Timetable
 
 </button>
+
 
 </center>
 
 
 
 </body>
+
 
 </html>
