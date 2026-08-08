@@ -33,12 +33,38 @@ if (!function_exists('sidebar_link')) {
         ROLE_DIRECTOR=>'director/dashboard.php'
       ];
       sidebar_link($dashMap[$currentRole] ?? 'index.php', 'Dashboard', 'chart-column', $currentPage);
+
       if ($currentRole === ROLE_ADMIN) {
         echo '<p class="sidebar-label">Administration</p>';
         sidebar_link('admin/users.php','Users','users',$currentPage);
         sidebar_link('admin/roles.php','Roles & access','shield',$currentPage);
         sidebar_link('admin/activity_logs.php','Activity logs','history',$currentPage);
         sidebar_link('admin/settings.php','System settings','settings',$currentPage);
+      }
+
+      if ($currentRole === ROLE_COORDINATOR) {
+        echo '<p class="sidebar-label">Instructors</p>';
+        sidebar_link('coordinator/instructor.php','All Instructors','users',$currentPage);
+        sidebar_link('coordinator/availability.php','Availability','calendar',$currentPage);
+        echo '<p class="sidebar-label">Tasks &amp; Coordination</p>';
+        sidebar_link('coordinator/additional_tasks.php','Additional Tasks','square-pen',$currentPage);
+        sidebar_link('coordinator/smart_suggestions.php','Smart Suggestions','search',$currentPage);
+        sidebar_link('coordinator/replacements.php','Replacement Requests','user-check',$currentPage);
+        sidebar_link('coordinator/urgency_replacements.php','Urgency Replacements','bell',$currentPage);
+        echo '<p class="sidebar-label">Records</p>';
+        sidebar_link('coordinator/leave_records.php','Leave Records','history',$currentPage);
+      }
+
+      if ($currentRole === ROLE_INSTRUCTOR) {
+        echo '<p class="sidebar-label">My Work</p>';
+        sidebar_link('instructor/my_tasks.php','My Tasks','briefcase-business',$currentPage);
+        sidebar_link('instructor/timetable.php','Timetable','calendar',$currentPage);
+        sidebar_link('instructor/workload.php','Workload','chart-column',$currentPage);
+        echo '<p class="sidebar-label">Coordination</p>';
+        sidebar_link('instructor/leave_notification.php','Leave & Notifications','history',$currentPage);
+        sidebar_link('instructor/replacement_request.php','Replacements','user-check',$currentPage);
+        echo '<p class="sidebar-label">Account</p>';
+        sidebar_link('instructor/setting.php','Settings','settings',$currentPage);
       }
       ?>
     </ul>

@@ -489,3 +489,18 @@ INSERT INTO system_settings (setting_key, setting_value, description) VALUES
 -- 1. Create database smart_instructor_system (if not created)
 -- 2. Import this file
 -- =====================================================
+
+CREATE TABLE timetables (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    subject_name VARCHAR(100) NOT NULL,
+    course VARCHAR(10) NOT NULL,
+    day_name VARCHAR(20) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    room VARCHAR(50) NOT NULL,
+    semester VARCHAR(20) NOT NULL,
+    academic_year INT NOT NULL
+);
+
+
+DELETE FROM timetables;

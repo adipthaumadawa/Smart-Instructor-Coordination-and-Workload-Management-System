@@ -22,6 +22,37 @@ function sanitize($data) {
 }
 
 /**
+ * =====================================================
+ * CSRF PROTECTION
+ * =====================================================
+ * Generates/verifies a per-session token so state-changing
+ * requests (POST forms, accept/reject actions) can't be
+ * forged by a third-party site or replayed link.
+ */
+function csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function csrf_field() {
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') . '">';
+}
+
+/**
+ * Verifies the token submitted with a request. Stops execution
+ * with a 403 response if it is missing or does not match.
+ */
+function csrf_verify() {
+    $submitted = $_POST['csrf_token'] ?? $_GET['csrf_token'] ?? '';
+    if (empty($_SESSION['csrf_token']) || !is_string($submitted) || !hash_equals($_SESSION['csrf_token'], $submitted)) {
+        http_response_code(403);
+        die('Your session security token has expired or is invalid. Please go back, refresh the page, and try again.');
+    }
+}
+
+/**
  * Log user activity (for audit trail)
  */
 function logActivity($userId, $action, $description = '') {
@@ -391,6 +422,11 @@ function getStatusBadge($status) {
         'confirmed' => '<span class="badge bg-success">Confirmed</span>',
         'cancelled' => '<span class="badge bg-danger">Cancelled</span>',
         'scheduled' => '<span class="badge bg-primary">Scheduled</span>',
+        'low' => '<span class="badge bg-secondary">Low</span>',
+        'medium' => '<span class="badge bg-info">Medium</span>',
+        'high' => '<span class="badge bg-warning text-dark">High</span>',
+        'urgent' => '<span class="badge bg-danger">Urgent</span>',
+        'handled' => '<span class="badge bg-success">Handled</span>',
     ];
     
     return $badges[$status] ?? '<span class="badge bg-secondary">' . ucfirst($status) . '</span>';
