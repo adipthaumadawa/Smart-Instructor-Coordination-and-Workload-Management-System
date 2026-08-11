@@ -1,6 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
 /**
  * Project Coordinator Dashboard
  * Smart Instructor Coordination and Workload Management System
@@ -9,31 +7,11 @@
  * Manages presentation sessions, assigns panel members, and tracks presentation schedules.
  */
 
->>>>>>> 1c8e2e93fbd5460b344258cfe02192e1cb4dad1a
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
-<<<<<<< HEAD
-require_once __DIR__ . '/../includes/dashboard_ui.php';
-
-checkRole(ROLE_PROJECT_COORDINATOR);
-
-$pageTitle = "Project Coordinator Dashboard";
-include __DIR__ . '/../includes/header.php';
-
-sic_render_dashboard(
-    "Project Coordinator Dashboard",
-    "Manage presentation sessions, panel members, instructor availability, venues, and schedules.",
-    sic_dashboard_cards('project'),
-    app_url('project_coordinator/schedule_session.php'),
-    "Schedule Session"
-);
-
-include __DIR__ . '/../includes/footer.php';
-?>
-=======
 
 // Ensure user is logged in
 requireLogin();
@@ -411,4 +389,3 @@ try {
 
 </body>
 </html>
->>>>>>> 1c8e2e93fbd5460b344258cfe02192e1cb4dad1a
