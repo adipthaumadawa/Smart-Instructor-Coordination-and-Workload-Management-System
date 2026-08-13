@@ -1362,7 +1362,8 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     </div>
 
 </section>
-<?php } ?>
+<?php
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    INSTRUCTOR-ONLY DASHBOARD
