@@ -8,6 +8,11 @@
  * ==================================================
  */
 
+/* ==================================================
+   DATABASE CONNECTION
+   db.php is inside ../config/
+================================================== */
+
 require_once __DIR__ . '/../config/db.php';
 
 
@@ -179,6 +184,7 @@ if (isset($_POST['view'])) {
         Lecture Room & Laboratory
     </title>
 
+    <!-- CORRECT CSS PATH -->
     <link
         rel="stylesheet"
         href="css/room_schedules.css"
@@ -468,8 +474,6 @@ if (isset($_POST['view'])) {
                         <div class="form-row">
 
 
-                            <!-- ROOM NAME -->
-
                             <div class="form-group room-name-field">
 
                                 <label>
@@ -485,8 +489,6 @@ if (isset($_POST['view'])) {
 
                             </div>
 
-
-                            <!-- CAPACITY -->
 
                             <div class="form-group capacity-field">
 
@@ -505,8 +507,6 @@ if (isset($_POST['view'])) {
                             </div>
 
 
-                            <!-- LOCATION -->
-
                             <div class="form-group location-field">
 
                                 <label>
@@ -522,8 +522,6 @@ if (isset($_POST['view'])) {
 
                             </div>
 
-
-                            <!-- TYPE -->
 
                             <div class="form-group type-field">
 
@@ -662,8 +660,6 @@ if (isset($_POST['view'])) {
                     <form method="POST">
 
 
-                        <!-- OLD ROOM -->
-
                         <h2>
                             Old Lecture Room & Laboratory
                         </h2>
@@ -694,8 +690,6 @@ if (isset($_POST['view'])) {
                         <div class="update-divider"></div>
 
 
-                        <!-- NEW ROOM -->
-
                         <h2>
                             New Lecture Room & Laboratory
                         </h2>
@@ -703,8 +697,6 @@ if (isset($_POST['view'])) {
 
                         <div class="form-row">
 
-
-                            <!-- ROOM NAME -->
 
                             <div class="form-group room-name-field">
 
@@ -721,8 +713,6 @@ if (isset($_POST['view'])) {
 
                             </div>
 
-
-                            <!-- CAPACITY -->
 
                             <div class="form-group capacity-field">
 
@@ -741,8 +731,6 @@ if (isset($_POST['view'])) {
                             </div>
 
 
-                            <!-- LOCATION -->
-
                             <div class="form-group location-field">
 
                                 <label>
@@ -758,8 +746,6 @@ if (isset($_POST['view'])) {
 
                             </div>
 
-
-                            <!-- TYPE -->
 
                             <div class="form-group type-field">
 
@@ -889,10 +875,6 @@ if (isset($_POST['view'])) {
 
                     </form>
 
-
-                    <!-- ==================================================
-                         RESULTS
-                    ================================================== -->
 
                     <?php if (!empty($rooms)): ?>
 

@@ -51,6 +51,7 @@ body {
 
 .sidebar-logo {
     padding: 20px 16px;
+
     border-bottom: 1px solid #17134d;
 }
 
@@ -69,6 +70,7 @@ body {
 
 .sidebar-logo h3 {
     font-size: 16px;
+
     margin-bottom: 4px;
 }
 
@@ -286,7 +288,7 @@ body {
 ================================================== */
 
 .content {
-    padding: 20px 24px;
+    padding: 40px 24px;
 
     display: grid;
 
@@ -429,7 +431,7 @@ body {
 
 
 /* ==================================================
-   INPUT AND SELECT
+   INPUT / SELECT
 ================================================== */
 
 .form-group input,
@@ -458,28 +460,20 @@ body {
    BOX SIZES
 ================================================== */
 
-/* Room Name */
-
 .room-name-field input {
     width: 135px;
 }
 
-
-/* Capacity */
 
 .capacity-field input {
     width: 109px;
 }
 
 
-/* Location */
-
 .location-field input {
     width: 101px;
 }
 
-
-/* Type */
 
 .type-field select {
     width: 83px;
