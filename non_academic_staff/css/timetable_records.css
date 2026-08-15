@@ -8,7 +8,6 @@
     box-sizing: border-box;
 }
 
-
 body {
     font-family: Arial, sans-serif;
     background-color: #ffffff;
@@ -33,12 +32,9 @@ body {
 .sidebar {
     width: 282px;
     min-height: 100vh;
-
     background-color: #05002e;
     color: white;
-
     position: fixed;
-
     left: 0;
     top: 0;
     bottom: 0;
@@ -51,35 +47,25 @@ body {
 
 .sidebar-logo {
     padding: 20px 16px;
-
     border-bottom: 1px solid #17134d;
 }
-
 
 .sidebar-logo img {
     width: 65px;
     height: 65px;
-
     object-fit: contain;
-
     background-color: white;
-
     margin-bottom: 8px;
 }
 
-
 .sidebar-logo h3 {
     font-size: 16px;
-
     margin-bottom: 4px;
 }
 
-
 .sidebar-logo p {
     font-size: 13px;
-
     color: #c7c5d8;
-
     line-height: 1.3;
 }
 
@@ -92,12 +78,9 @@ body {
     padding: 12px 10px;
 }
 
-
 .sidebar-navigation h4 {
     color: #67647d;
-
     font-size: 17px;
-
     margin: 12px 10px;
 }
 
@@ -108,33 +91,21 @@ body {
 
 .nav-item {
     display: flex;
-
     align-items: center;
-
     gap: 14px;
-
     width: 100%;
-
     padding: 14px 18px;
-
     margin-bottom: 4px;
-
     color: white;
-
     text-decoration: none;
-
     border-radius: 12px;
-
     font-size: 16px;
-
     font-weight: bold;
 }
-
 
 .nav-item img {
     width: 22px;
     height: 22px;
-
     object-fit: contain;
 }
 
@@ -143,7 +114,6 @@ body {
 
 .nav-item.active {
     background-color: #003d4d;
-
     border-left: 5px solid #29d8d2;
 }
 
@@ -161,7 +131,6 @@ body {
 
 .main-content {
     margin-left: 282px;
-
     width: calc(100% - 282px);
 }
 
@@ -172,15 +141,10 @@ body {
 
 .top-header {
     height: 70px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
     padding: 0 22px;
-
     border-bottom: 1px solid #090044;
 }
 
@@ -191,25 +155,17 @@ body {
 
 .system-name {
     display: flex;
-
     align-items: center;
-
     gap: 12px;
-
     font-size: 20px;
-
     color: #111111;
 }
-
 
 .system-name img {
     width: 46px;
     height: 46px;
-
     background-color: #05002e;
-
     padding: 10px;
-
     border-radius: 4px;
 }
 
@@ -220,62 +176,43 @@ body {
 
 .user-section {
     display: flex;
-
     align-items: center;
-
     gap: 14px;
 }
-
 
 .top-notification {
     width: 30px;
     height: 30px;
-
     margin-right: 20px;
 }
-
 
 .user-avatar {
     width: 46px;
     height: 46px;
-
     display: flex;
-
     align-items: center;
     justify-content: center;
-
     border: 2px solid #00a86b;
-
     border-radius: 50%;
-
     background-color: #05002e;
-
     color: white;
-
     font-size: 22px;
-
     font-weight: bold;
 }
 
-
 .user-details {
     display: flex;
-
     flex-direction: column;
 }
-
 
 .user-details strong {
     font-size: 20px;
 }
 
-
 .user-details span {
     color: #77758c;
-
     font-size: 15px;
 }
-
 
 .dropdown-icon {
     width: 18px;
@@ -288,15 +225,16 @@ body {
 ================================================== */
 
 .content {
-    padding: 40px 24px;
-
+    padding: 22px 18px;
     display: grid;
 
-    grid-template-columns: 1fr 1fr;
+    /* IMPORTANT:
+       ONE COLUMN LIKE FIRST IMAGE
+    */
+    grid-template-columns: 1fr;
 
-    column-gap: 90px;
-
-    row-gap: 40px;
+    column-gap: 0;
+    row-gap: 30px;
 }
 
 
@@ -305,31 +243,22 @@ body {
 ================================================== */
 
 .page-heading {
-    grid-column: 1 / -1;
-
+    grid-column: 1;
     display: flex;
-
     align-items: center;
-
-    gap: 14px;
-
-    padding: 8px 0 18px;
-
+    gap: 10px;
+    padding: 0 0 15px;
     border-bottom: 1px solid #777777;
 }
 
-
 .page-heading-icon img {
-    width: 60px;
-    height: 60px;
+    width: 40px;
+    height: 40px;
 }
 
-
 .page-heading h1 {
-    color: #001495;
-
-    font-size: 36px;
-
+    color: #3049b5;
+    font-size: 24px;
     font-weight: 800;
 }
 
@@ -340,12 +269,10 @@ body {
 
 .record-card {
     background-color: #ffffff;
-
     border: 1px solid #000000;
-
-    border-radius: 20px;
-
+    border-radius: 13px;
     overflow: hidden;
+    width: 100%;
 }
 
 
@@ -354,20 +281,13 @@ body {
 ================================================== */
 
 .card-title {
-    height: 57px;
-
+    height: 32px;
     display: flex;
-
     align-items: center;
-
-    padding: 0 14px;
-
+    padding: 0 8px;
     border-bottom: 1px solid #777777;
-
     color: #111111;
-
-    font-size: 24px;
-
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -377,7 +297,7 @@ body {
 ================================================== */
 
 .card-body {
-    padding: 15px 28px 20px;
+    padding: 8px 18px 12px;
 }
 
 
@@ -387,13 +307,9 @@ body {
 
 .form-row {
     display: flex;
-
     align-items: flex-end;
-
     justify-content: center;
-
-    gap: 24px;
-
+    gap: 10px;
     flex-wrap: nowrap;
 }
 
@@ -404,12 +320,10 @@ body {
 
 .form-group {
     display: flex;
-
     flex-direction: column;
-
     align-items: center;
-
-    gap: 7px;
+    gap: 4px;
+    min-width: 0;
 }
 
 
@@ -419,13 +333,9 @@ body {
 
 .form-group label {
     color: #000000;
-
-    opacity: 0.6;
-
-    font-size: 18px;
-
-    font-weight: 800;
-
+    opacity: 0.65;
+    font-size: 11px;
+    font-weight: 700;
     white-space: nowrap;
 }
 
@@ -436,47 +346,32 @@ body {
 
 .form-group input,
 .form-group select {
-    height: 39px;
-
+    height: 24px;
     border: 1px solid #030023;
-
-    border-radius: 10px;
-
+    border-radius: 7px;
     background-color: #ffffff;
-
     color: #333333;
-
-    padding: 7px 10px;
-
+    padding: 3px 7px;
     font-family: Arial, sans-serif;
-
-    font-size: 16px;
-
+    font-size: 11px;
     outline: none;
 }
 
 
 /* ==================================================
-   BOX SIZES
+   FIELD SIZES
 ================================================== */
 
-.room-name-field input {
-    width: 135px;
+.subject-field input {
+    width: 58px;
 }
 
-
-.capacity-field input {
-    width: 109px;
+.form-group select {
+    width: 58px;
 }
 
-
-.location-field input {
-    width: 101px;
-}
-
-
-.type-field select {
-    width: 83px;
+.room-field input {
+    width: 82px;
 }
 
 
@@ -486,10 +381,8 @@ body {
 
 .button-area {
     display: flex;
-
     justify-content: center;
-
-    margin-top: 24px;
+    margin-top: 12px;
 }
 
 
@@ -498,27 +391,17 @@ body {
 ================================================== */
 
 .primary-button {
-    width: 135px;
-
-    height: 39px;
-
+    width: 77px;
+    height: 23px;
     border: none;
-
-    border-radius: 10px;
-
+    border-radius: 6px;
     background-color: #12009c;
-
     color: white;
-
     font-family: Arial, sans-serif;
-
-    font-size: 24px;
-
+    font-size: 13px;
     font-weight: 800;
-
     cursor: pointer;
 }
-
 
 .primary-button:hover {
     background-color: #0d0078;
@@ -530,14 +413,7 @@ body {
 ================================================== */
 
 .delete-card {
-    min-height: 208px;
-}
-
-
-.delete-field {
-    display: flex;
-
-    justify-content: center;
+    min-height: auto;
 }
 
 
@@ -546,32 +422,29 @@ body {
 ================================================== */
 
 .update-card {
-    min-height: 377px;
+    min-height: auto;
 }
-
 
 .update-section h2 {
     text-align: center;
-
-    font-size: 24px;
-
+    font-size: 14px;
     font-weight: 700;
-
-    padding: 14px 5px;
+    padding: 8px 5px;
 }
-
 
 .update-section .form-row {
-    padding: 0 15px;
+    padding: 0 10px;
 }
 
+
+/* ==================================================
+   UPDATE DIVIDER
+================================================== */
 
 .update-divider {
     width: 100%;
-
     border-top: 1px solid #777777;
-
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 
@@ -580,26 +453,24 @@ body {
 ================================================== */
 
 .view-card {
-    min-height: 208px;
+    width: 225px;
+    justify-self: center;
+    min-height: auto;
 }
-
 
 .view-body {
-    padding: 25px 20px;
+    padding: 12px 15px;
 }
-
 
 .view-fields {
     display: flex;
-
     justify-content: center;
-
     align-items: center;
+    gap: 12px;
 }
 
-
 .view-body .button-area {
-    margin-top: 30px;
+    margin-top: 14px;
 }
 
 
@@ -609,35 +480,25 @@ body {
 
 .results-table {
     width: 100%;
-
     margin-top: 25px;
-
     overflow-x: auto;
 }
 
-
 .results-table table {
     width: 100%;
-
     border-collapse: collapse;
 }
-
 
 .results-table th,
 .results-table td {
     border: 1px solid #777777;
-
     padding: 10px;
-
     text-align: left;
-
     font-size: 15px;
 }
 
-
 .results-table th {
     background-color: #eeeeee;
-
     font-weight: bold;
 }
 
@@ -651,22 +512,19 @@ body {
     grid-row: 2;
 }
 
-
 .delete-card {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-
-.update-card {
     grid-column: 1;
     grid-row: 3;
 }
 
+.update-card {
+    grid-column: 1;
+    grid-row: 4;
+}
 
 .view-card {
-    grid-column: 2;
-    grid-row: 3;
+    grid-column: 1;
+    grid-row: 5;
 }
 
 
@@ -674,58 +532,7 @@ body {
    RESPONSIVE
 ================================================== */
 
-@media screen and (max-width: 1200px) {
-
-    .content {
-        column-gap: 30px;
-    }
-
-    .form-row {
-        gap: 12px;
-    }
-
-}
-
-
-@media screen and (max-width: 1000px) {
-
-    .sidebar {
-        width: 220px;
-    }
-
-    .main-content {
-        margin-left: 220px;
-
-        width: calc(100% - 220px);
-    }
-
-    .content {
-        grid-template-columns: 1fr;
-
-        row-gap: 30px;
-    }
-
-    .page-heading {
-        grid-column: 1;
-    }
-
-    .add-card,
-    .delete-card,
-    .update-card,
-    .view-card {
-        grid-column: 1;
-
-        grid-row: auto;
-    }
-
-    .form-row {
-        flex-wrap: wrap;
-    }
-
-}
-
-
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 900px) {
 
     .sidebar {
         display: none;
@@ -733,29 +540,96 @@ body {
 
     .main-content {
         margin-left: 0;
-
         width: 100%;
     }
 
     .content {
         padding: 20px 12px;
+        grid-template-columns: 1fr;
+        row-gap: 30px;
     }
 
-    .page-heading h1 {
-        font-size: 28px;
-    }
-
-    .page-heading-icon img {
-        width: 45px;
-        height: 45px;
-    }
-
-    .user-details {
-        display: none;
+    .page-heading {
+        grid-column: 1;
     }
 
     .form-row {
-        flex-wrap: wrap;
+        gap: 7px;
     }
 
+    .form-group label {
+        font-size: 10px;
+    }
+
+    .form-group input,
+    .form-group select {
+        font-size: 10px;
+    }
+}
+
+
+/* ==================================================
+   SMALL SCREEN
+================================================== */
+
+@media screen and (max-width: 700px) {
+
+    .top-header {
+        display: none;
+    }
+
+    .content {
+        padding: 12px;
+    }
+
+    .page-heading h1 {
+        font-size: 22px;
+    }
+
+    .page-heading-icon img {
+        width: 35px;
+        height: 35px;
+    }
+
+    .card-title {
+        font-size: 14px;
+    }
+
+    .form-row {
+        gap: 5px;
+    }
+
+    .form-group label {
+        display: none;
+    }
+
+    .form-group input,
+    .form-group select {
+        height: 26px;
+        font-size: 10px;
+        padding: 3px 5px;
+    }
+
+    .subject-field input,
+    .form-group select {
+        width: 58px;
+    }
+
+    .room-field input {
+        width: 82px;
+    }
+
+    .primary-button {
+        width: 77px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .update-section h2 {
+        font-size: 14px;
+    }
+
+    .view-card {
+        width: 225px;
+    }
 }
