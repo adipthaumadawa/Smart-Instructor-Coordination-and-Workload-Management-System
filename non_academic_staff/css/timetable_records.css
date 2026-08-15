@@ -8,6 +8,11 @@
     box-sizing: border-box;
 }
 
+html,
+body {
+    min-height: 100%;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #ffffff;
@@ -32,12 +37,18 @@ body {
 .sidebar {
     width: 282px;
     min-height: 100vh;
+    height: 100vh;
+
     background-color: #05002e;
     color: white;
+
     position: fixed;
+
     left: 0;
     top: 0;
     bottom: 0;
+
+    overflow-y: auto;
 }
 
 
@@ -53,8 +64,11 @@ body {
 .sidebar-logo img {
     width: 65px;
     height: 65px;
+
     object-fit: contain;
+
     background-color: white;
+
     margin-bottom: 8px;
 }
 
@@ -92,25 +106,37 @@ body {
 .nav-item {
     display: flex;
     align-items: center;
+
     gap: 14px;
+
     width: 100%;
+
     padding: 14px 18px;
+
     margin-bottom: 4px;
+
     color: white;
+
     text-decoration: none;
+
     border-radius: 12px;
+
     font-size: 16px;
+
     font-weight: bold;
 }
 
 .nav-item img {
     width: 22px;
     height: 22px;
+
     object-fit: contain;
 }
 
 
-/* ACTIVE */
+/* ==================================================
+   ACTIVE ITEM
+================================================== */
 
 .nav-item.active {
     background-color: #003d4d;
@@ -118,7 +144,9 @@ body {
 }
 
 
-/* HOVER */
+/* ==================================================
+   HOVER
+================================================== */
 
 .nav-item:hover {
     background-color: #003d4d;
@@ -131,7 +159,10 @@ body {
 
 .main-content {
     margin-left: 282px;
+
     width: calc(100% - 282px);
+
+    min-height: 100vh;
 }
 
 
@@ -141,11 +172,18 @@ body {
 
 .top-header {
     height: 70px;
+
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
+
     padding: 0 22px;
+
     border-bottom: 1px solid #090044;
+
+    background-color: white;
 }
 
 
@@ -155,17 +193,24 @@ body {
 
 .system-name {
     display: flex;
+
     align-items: center;
+
     gap: 12px;
+
     font-size: 20px;
+
     color: #111111;
 }
 
 .system-name img {
     width: 46px;
     height: 46px;
+
     background-color: #05002e;
+
     padding: 10px;
+
     border-radius: 4px;
 }
 
@@ -176,32 +221,44 @@ body {
 
 .user-section {
     display: flex;
+
     align-items: center;
+
     gap: 14px;
 }
 
 .top-notification {
     width: 30px;
     height: 30px;
+
     margin-right: 20px;
 }
 
 .user-avatar {
     width: 46px;
     height: 46px;
+
     display: flex;
+
     align-items: center;
     justify-content: center;
+
     border: 2px solid #00a86b;
+
     border-radius: 50%;
+
     background-color: #05002e;
+
     color: white;
+
     font-size: 22px;
+
     font-weight: bold;
 }
 
 .user-details {
     display: flex;
+
     flex-direction: column;
 }
 
@@ -221,19 +278,11 @@ body {
 
 
 /* ==================================================
-   CONTENT
+   PAGE CONTENT
 ================================================== */
 
 .content {
-    padding: 22px 18px;
-
-    display: grid;
-
-    grid-template-columns: 635px;
-
-    justify-content: start;
-
-    row-gap: 30px;
+    padding: 20px 24px 50px 34px;
 }
 
 
@@ -242,26 +291,39 @@ body {
 ================================================== */
 
 .page-heading {
-    grid-column: 1;
-
     display: flex;
+
     align-items: center;
 
-    gap: 10px;
+    gap: 14px;
 
-    padding: 0 0 15px;
+    margin-bottom: 24px;
+}
 
-    border-bottom: 1px solid #777777;
+.page-heading-icon {
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
 }
 
 .page-heading-icon img {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
+
+    object-fit: contain;
 }
 
 .page-heading h1 {
-    color: #3049b5;
-    font-size: 24px;
+    color: #1239b5;
+
+    font-size: 36px;
+
     font-weight: 800;
 }
 
@@ -271,15 +333,17 @@ body {
 ================================================== */
 
 .record-card {
-    width: 635px;
+    width: 100%;
 
-    background-color: #ffffff;
+    border: 1px solid #111111;
 
-    border: 1px solid #000000;
+    border-radius: 20px;
 
-    border-radius: 13px;
+    margin-bottom: 26px;
 
     overflow: hidden;
+
+    background-color: white;
 }
 
 
@@ -288,18 +352,18 @@ body {
 ================================================== */
 
 .card-title {
-    height: 32px;
+    min-height: 56px;
 
     display: flex;
+
     align-items: center;
 
-    padding: 0 8px;
+    padding: 0 14px;
 
-    border-bottom: 1px solid #777777;
+    border-bottom: 1px solid #777;
 
-    color: #111111;
+    font-size: 24px;
 
-    font-size: 14px;
     font-weight: 700;
 }
 
@@ -309,7 +373,7 @@ body {
 ================================================== */
 
 .card-body {
-    padding: 9px 18px 13px;
+    padding: 16px 34px 18px 34px;
 }
 
 
@@ -322,9 +386,7 @@ body {
 
     align-items: flex-end;
 
-    justify-content: center;
-
-    gap: 10px;
+    gap: 18px;
 
     flex-wrap: nowrap;
 }
@@ -339,69 +401,59 @@ body {
 
     flex-direction: column;
 
-    align-items: center;
+    gap: 6px;
 
-    gap: 4px;
+    min-width: 100px;
 }
-
-
-/* ==================================================
-   LABEL
-================================================== */
 
 .form-group label {
-    color: #000000;
+    font-size: 13px;
 
-    opacity: 0.65;
+    color: #555555;
 
-    font-size: 11px;
-
-    font-weight: 700;
-
-    white-space: nowrap;
+    font-weight: bold;
 }
 
 
 /* ==================================================
-   INPUT / SELECT
+   INPUTS
 ================================================== */
 
 .form-group input,
 .form-group select {
-    height: 25px;
+    height: 39px;
+
+    min-width: 100px;
+
+    padding: 7px 12px;
 
     border: 1px solid #030023;
 
-    border-radius: 7px;
+    border-radius: 10px;
 
-    background-color: #ffffff;
+    background-color: white;
 
-    color: #333333;
-
-    padding: 3px 7px;
+    color: #222222;
 
     font-family: Arial, sans-serif;
 
-    font-size: 11px;
+    font-size: 16px;
 
     outline: none;
 }
 
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #12009c;
+}
+
 
 /* ==================================================
-   FIELD SIZES
+   SUBJECT
 ================================================== */
 
 .subject-field input {
-    width: 58px;
-}
-
-.form-group select {
-    width: 58px;
-}
-
-.room-field input {
-    width: 82px;
+    width: 90px;
 }
 
 
@@ -414,22 +466,24 @@ body {
 
     justify-content: center;
 
-    margin-top: 12px;
+    margin-top: 18px;
 }
 
 
 /* ==================================================
-   BUTTON
+   PRIMARY BUTTON
 ================================================== */
 
 .primary-button {
-    width: 77px;
+    min-width: 135px;
 
-    height: 23px;
+    height: 39px;
+
+    padding: 0 20px;
 
     border: none;
 
-    border-radius: 6px;
+    border-radius: 10px;
 
     background-color: #12009c;
 
@@ -437,7 +491,7 @@ body {
 
     font-family: Arial, sans-serif;
 
-    font-size: 13px;
+    font-size: 18px;
 
     font-weight: 800;
 
@@ -445,41 +499,28 @@ body {
 }
 
 .primary-button:hover {
-    background-color: #0d0078;
+    background-color: #0d007c;
 }
 
 
 /* ==================================================
-   DELETE
-================================================== */
-
-.delete-card {
-    min-height: auto;
-}
-
-
-/* ==================================================
-   UPDATE
+   UPDATE CARD
 ================================================== */
 
 .update-card {
-    width: 635px;
+    margin-bottom: 26px;
+}
 
-    min-height: auto;
+.update-section {
+    padding: 0 34px 20px 34px;
 }
 
 .update-section h2 {
     text-align: center;
 
-    font-size: 14px;
+    font-size: 22px;
 
-    font-weight: 700;
-
-    padding: 8px 5px;
-}
-
-.update-section .form-row {
-    padding: 0 10px;
+    margin: 14px 0 16px 0;
 }
 
 
@@ -488,109 +529,88 @@ body {
 ================================================== */
 
 .update-divider {
-    width: 100%;
+    height: 1px;
 
-    border-top: 1px solid #777777;
+    background-color: #777777;
 
-    margin-top: 6px;
+    opacity: 0.5;
+
+    margin: 20px -34px;
 }
 
 
 /* ==================================================
-   VIEW
+   VIEW CARD
 ================================================== */
 
 .view-card {
-    width: 225px;
+    width: 390px;
 
-    min-height: auto;
+    max-width: 100%;
 
-    justify-self: center;
+    margin-left: auto;
+
+    margin-right: auto;
 }
 
 .view-body {
-    padding: 12px 15px;
+    padding: 18px 38px 20px 38px;
 }
 
 .view-fields {
     display: flex;
 
+    gap: 24px;
+
     justify-content: center;
-
-    align-items: center;
-
-    gap: 12px;
 }
 
-.view-body .button-area {
-    margin-top: 14px;
-}
-
-
-/* ==================================================
-   VIEW TABLE
-================================================== */
-
-.results-table {
-    width: 100%;
-
-    margin-top: 25px;
-
-    overflow-x: auto;
-}
-
-.results-table table {
-    width: 100%;
-
-    border-collapse: collapse;
-}
-
-.results-table th,
-.results-table td {
-    border: 1px solid #777777;
-
-    padding: 10px;
-
-    text-align: left;
-
-    font-size: 15px;
-}
-
-.results-table th {
-    background-color: #eeeeee;
-
-    font-weight: bold;
-}
-
-
-/* ==================================================
-   CARD POSITIONS
-================================================== */
-
-.add-card {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.delete-card {
-    grid-column: 1;
-    grid-row: 3;
-}
-
-.update-card {
-    grid-column: 1;
-    grid-row: 4;
-}
-
-.view-card {
-    grid-column: 1;
-    grid-row: 5;
+.view-fields .form-group input,
+.view-fields .form-group select {
+    width: 144px;
 }
 
 
 /* ==================================================
    RESPONSIVE
 ================================================== */
+
+@media screen and (max-width: 1200px) {
+
+    .form-row {
+        gap: 12px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 120px;
+    }
+
+}
+
+
+@media screen and (max-width: 1000px) {
+
+    .sidebar {
+        width: 220px;
+    }
+
+    .main-content {
+        margin-left: 220px;
+
+        width: calc(100% - 220px);
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .user-details {
+        display: none;
+    }
+
+}
+
 
 @media screen and (max-width: 700px) {
 
@@ -600,38 +620,133 @@ body {
 
     .main-content {
         margin-left: 0;
+
         width: 100%;
     }
 
     .content {
-        padding: 20px 12px;
-        grid-template-columns: 1fr;
+        padding: 18px 12px 40px 12px;
     }
 
-    .record-card,
-    .update-card {
-        width: 100%;
-    }
-
-    .page-heading {
-        grid-column: 1;
-    }
-
-    .form-row {
-        flex-wrap: wrap;
-        gap: 8px;
+    .top-header {
+        padding: 0 12px;
     }
 
     .page-heading h1 {
-        font-size: 22px;
+        font-size: 28px;
+    }
+
+    .page-heading-icon {
+        width: 50px;
+        height: 50px;
     }
 
     .page-heading-icon img {
-        width: 35px;
-        height: 35px;
+        width: 42px;
+        height: 42px;
+    }
+
+    .card-title {
+        font-size: 20px;
+    }
+
+    .card-body,
+    .update-section {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .form-row {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .form-group,
+    .form-group input,
+    .form-group select {
+        width: 100%;
     }
 
     .view-card {
-        width: 225px;
+        width: 100%;
     }
+
+    .view-fields {
+        flex-direction: column;
+    }
+
+    .view-fields .form-group input,
+    .view-fields .form-group select {
+        width: 100%;
+    }
+
+}
+
+
+/* Room/Lab box size - all sections */
+.room-field input {
+    width: 110px;
+}
+.toast{
+
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding: 18px 35px;
+
+    border-radius: 10px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    z-index: 9999;
+
+    animation: fadeOut 5s forwards;
+
+}
+
+
+/* Green success */
+
+.success-toast{
+
+    background:#28a745;
+
+    color:white;
+
+}
+
+
+
+/* Red error */
+
+.error-toast{
+
+    background:#dc3545;
+
+    color:white;
+
+}
+
+
+
+@keyframes fadeOut{
+
+    0%{
+        opacity:1;
+    }
+
+    80%{
+        opacity:1;
+    }
+
+    100%{
+        opacity:0;
+        display:none;
+    }
+
 }
