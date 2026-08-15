@@ -1,10 +1,18 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   DATABASE HELPERS
+   ───────────────────────────────────────────────────────────────────────────── */
+
 if (!function_exists('sic_count')) {
     function sic_count(string $sql): int {
         global $pdo;
-        try { return (int)$pdo->query($sql)->fetchColumn(); } catch (Throwable $e) { return 0; }
+        try { 
+            return (int)$pdo->query($sql)->fetchColumn(); 
+        } catch (Throwable $e) { 
+            return 0; 
+        }
     }
 }
 
@@ -16,7 +24,9 @@ if (!function_exists('sic_scalar')) {
             $stmt->execute($params);
             $value = $stmt->fetchColumn();
             return ($value === false || $value === null) ? $default : $value;
-        } catch (Throwable $e) { return $default; }
+        } catch (Throwable $e) { 
+            return $default; 
+        }
     }
 }
 
@@ -45,7 +55,9 @@ if (!function_exists('sic_workload_alert_count')) {
                 HAVING week_hours >= (i.max_weekly_hours * 0.8)
             ) x");
             return (int)$stmt->fetchColumn();
-        } catch (Throwable $e) { return 0; }
+        } catch (Throwable $e) { 
+            return 0; 
+        }
     }
 }
 
@@ -57,6 +69,60 @@ if (!function_exists('sic_room_usage_percent')) {
         return min(100, (int)round(($bookings / $rooms) * 100)) . '%';
     }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   AVATAR & USER CARD RENDERERS
+   ───────────────────────────────────────────────────────────────────────────── */
+
+if (!function_exists('sic_user_avatar')) {
+    /**
+     * Renders an avatar element: displays image if URL provided, else initial letter.
+     */
+    function sic_user_avatar(?string $imageUrl = null, string $name = 'User', string $class = 'avatar'): string {
+        $name = trim($name) ?: 'User';
+        $initial = strtoupper(mb_substr($name, 0, 1));
+        
+        $output = '<span class="' . htmlspecialchars($class, ENT_QUOTES, 'UTF-8') . '">';
+        if (!empty($imageUrl)) {
+            $output .= '<img src="' . htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . '" class="avatar-img">';
+        } else {
+            $output .= htmlspecialchars($initial, ENT_QUOTES, 'UTF-8');
+        }
+        $output .= '</span>';
+        
+        return $output;
+    }
+}
+
+if (!function_exists('sic_render_profile_button')) {
+    /**
+     * Helper to render the Topbar/Header profile button with dynamic user image support.
+     */
+    function sic_render_profile_button(?string $imageUrl = null, string $fullName = 'System Administrator', string $roleName = 'System Administrator'): void {
+        ?>
+        <div class="menu-wrap">
+            <button type="button" class="profile-button" data-menu-button="profileMenu" aria-expanded="false">
+                <?= sic_user_avatar($imageUrl, $fullName, 'avatar') ?>
+                <span class="profile-copy">
+                    <span class="profile-name"><?= htmlspecialchars($fullName, ENT_QUOTES, 'UTF-8') ?></span>
+                    <span class="profile-role"><?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?></span>
+                </span>
+                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div id="profileMenu" class="dropdown-menu" hidden>
+                <a href="<?= app_url('includes/profile.php') ?>" class="dropdown-item">Profile Settings</a>
+                <a href="<?= app_url('auth/logout.php') ?>" class="dropdown-item text-danger">Logout</a>
+            </div>
+        </div>
+        <?php
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DASHBOARD CARDS & DATA FETCHING
+   ───────────────────────────────────────────────────────────────────────────── */
 
 if (!function_exists('sic_dashboard_cards')) {
     function sic_dashboard_cards(string $roleKey): array {
@@ -97,7 +163,7 @@ if (!function_exists('sic_dashboard_cards')) {
                 return [
                     ["Timetable Records Today", sic_scalar("SELECT COUNT(*) FROM timetable_slots WHERE day_of_week = DAYNAME(CURDATE())"), 'Official timetable', 'calendar','blue',''],
                     ['Room Bookings Today',      sic_scalar("SELECT COUNT(*) FROM lecture_hall_bookings WHERE booking_date = CURDATE() AND status IN ('Confirmed','Pending')"), 'Lecture halls/labs', 'building','purple',''],
-                    ['Pending Attendance',       0, 'Attendance module', 'user-clock','coral',''],
+                    ['Pending Attendance',      0, 'Attendance module', 'user-clock','coral',''],
                     ['Leave Notifications',      sic_scalar("SELECT COUNT(*) FROM notifications WHERE user_id = :uid AND is_read = 0 AND type = 'leave'", [':uid'=>$uid]), 'Unread leave alerts', 'bell','teal',''],
                 ];
             case 'project':
@@ -124,7 +190,7 @@ if (!function_exists('sic_recent_tasks')) {
         global $pdo;
         try {
             return $pdo->query("
-                SELECT ta.*, i.employee_id, u.full_name, tt.name AS type_name,
+                SELECT ta.*, i.employee_id, u.full_name, u.avatar_url, tt.name AS type_name,
                        COALESCE(atr.title, tt.name, 'Academic Task') AS task_title
                 FROM task_assignments ta
                 LEFT JOIN instructors i ON ta.instructor_id = i.id
@@ -173,7 +239,10 @@ if (!function_exists('sic_icon')) {
     }
 }
 
-/* ─── Inline dashboard styles ─── */
+/* ─────────────────────────────────────────────────────────────────────────────
+   INLINE DASHBOARD & PROFILE CARD STYLES
+   ───────────────────────────────────────────────────────────────────────────── */
+
 if (!function_exists('sic_dashboard_styles')) {
     function sic_dashboard_styles(): void {
         static $printed = false;
@@ -183,23 +252,99 @@ if (!function_exists('sic_dashboard_styles')) {
 <style>
 /* ── Dashboard design tokens ── */
 :root {
-    --d-navy:  #071a33;
-    --d-navy2: #0d2a50;
-    --d-teal:  #00939e;
-    --d-teal2: #00b3c0;
-    --d-blue:  #3b82f6;
-    --d-purple:#7c5fe6;
-    --d-coral: #ef5350;
-    --d-green: #22c55e;
-    --d-amber: #f59e0b;
-    --d-page:  #f1f5f9;
-    --d-card:  #ffffff;
-    --d-line:  #e2e8f0;
-    --d-text:  #0f172a;
-    --d-muted: #64748b;
-    --d-radius:14px;
-    --d-shadow:0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.06);
-    --d-shadow-hover:0 4px 8px rgba(15,23,42,.08), 0 16px 32px rgba(15,23,42,.1);
+    --d-navy:   #071a33;
+    --d-navy2:  #0d2a50;
+    --d-teal:   #00939e;
+    --d-teal2:  #00b3c0;
+    --d-blue:   #3b82f6;
+    --d-purple: #7c5fe6;
+    --d-coral:  #ef5350;
+    --d-green:  #22c55e;
+    --d-amber:  #f59e0b;
+    --d-page:   #f1f5f9;
+    --d-card:   #ffffff;
+    --d-line:   #e2e8f0;
+    --d-text:   #0f172a;
+    --d-muted:  #64748b;
+    --d-radius: 14px;
+    --d-shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.06);
+    --d-shadow-hover: 0 4px 8px rgba(15,23,42,.08), 0 16px 32px rgba(15,23,42,.1);
+}
+
+/* ── Avatar & Profile Button Enhancements ── */
+.avatar {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    background: linear-gradient(145deg, var(--d-teal2), var(--d-teal));
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 15px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.profile-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.profile-button:hover {
+    background-color: rgba(15, 23, 42, 0.04);
+}
+
+.profile-button:hover .avatar {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.profile-copy {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.profile-name {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--d-text);
+    line-height: 1.2;
+}
+
+.profile-role {
+    font-size: 11.5px;
+    color: var(--d-muted);
+    font-weight: 500;
+}
+
+.chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--d-muted);
+    transition: transform 0.2s ease;
+}
+
+.profile-button[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
 }
 
 /* ── Page wrapper ── */
@@ -213,7 +358,6 @@ if (!function_exists('sic_dashboard_styles')) {
     gap: 20px;
     margin-bottom: 24px;
 }
-.dash-title-wrap {}
 .dash-title-wrap h1 {
     margin: 0 0 5px;
     font-size: 26px;
@@ -288,7 +432,6 @@ if (!function_exists('sic_dashboard_styles')) {
     transform: translateY(-3px);
     box-shadow: var(--d-shadow-hover);
 }
-/* Top gradient strip */
 .kpi-strip {
     height: 4px;
     border-radius: var(--d-radius) var(--d-radius) 0 0;
@@ -361,7 +504,6 @@ if (!function_exists('sic_dashboard_styles')) {
 }
 .kpi-note.danger { color: var(--d-coral); font-weight: 700; }
 
-/* Mini sparkline at bottom */
 .kpi-spark {
     padding: 0 20px 14px;
     height: 44px;
@@ -437,7 +579,7 @@ if (!function_exists('sic_dashboard_styles')) {
 }
 .d-card:hover { transform: translateY(-2px); box-shadow: var(--d-shadow-hover); }
 
-/* ── Dashboard main grid ── */
+/* ── Dashboard main grids ── */
 .dash-grid-row1 {
     display: grid;
     grid-template-columns: 2fr 1.1fr 1.3fr;
@@ -446,10 +588,7 @@ if (!function_exists('sic_dashboard_styles')) {
     align-items: start;
 }
 
-/* ── Workload chart ── */
-.chart-area {
-    padding: 20px 20px 12px;
-}
+.chart-area { padding: 20px 20px 12px; }
 .chart-bars {
     display: flex;
     align-items: flex-end;
@@ -457,13 +596,11 @@ if (!function_exists('sic_dashboard_styles')) {
     gap: 8px;
     height: 160px;
     position: relative;
-    /* horizontal guide lines */
     background-image:
         linear-gradient(to right, var(--d-line) 1px, transparent 1px),
         linear-gradient(to top, var(--d-line) 1px, transparent 1px);
     background-size: 100% 25%, 100% 25%;
     background-position: 0 100%, 0 0;
-    padding-bottom: 0;
 }
 .bar-col {
     flex: 1;
@@ -581,9 +718,7 @@ if (!function_exists('sic_dashboard_styles')) {
 }
 .sched-item:last-child { border-bottom: 0; }
 .sched-item:hover { background: #f8fafc; }
-.sched-time {
-    text-align: center;
-}
+.sched-time { text-align: center; }
 .sched-time-start {
     font-size: 13px;
     font-weight: 800;
@@ -596,7 +731,6 @@ if (!function_exists('sic_dashboard_styles')) {
     display: block;
     margin-top: 1px;
 }
-.sched-info {}
 .sched-course {
     font-size: 13px;
     font-weight: 700;
@@ -663,7 +797,9 @@ if (!function_exists('sic_dashboard_styles')) {
     font-weight: 800;
     color: #fff;
     flex-shrink: 0;
+    overflow: hidden;
 }
+.lv-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .lv-info { flex: 1; min-width: 0; }
 .lv-name {
     font-size: 13px;
@@ -807,7 +943,9 @@ if (!function_exists('sic_dashboard_styles')) {
     color: #fff;
     flex-shrink: 0;
     background: linear-gradient(135deg, var(--d-teal2), var(--d-teal));
+    overflow: hidden;
 }
+.act-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .act-name { font-size: 13px; font-weight: 600; }
 
 /* ── Generic icons inline ── */
@@ -840,7 +978,10 @@ if (!function_exists('sic_dashboard_styles')) {
     }
 }
 
-/* ─── Render function ─── */
+/* ─────────────────────────────────────────────────────────────────────────────
+   MAIN RENDER FUNCTION
+   ───────────────────────────────────────────────────────────────────────────── */
+
 function sic_render_dashboard(string $heading, string $subtitle, array $cards = [], string $primaryActionUrl = '', string $primaryActionText = 'Quick Action') {
     sic_dashboard_styles();
 
@@ -862,30 +1003,29 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     $weekStart = date('M d');
     $weekEnd   = date('M d, Y', strtotime('+6 days'));
 
-    /* Bar chart data — height as % of max */
+    /* Bar chart data */
     $barData   = [
         ['Mon', 55, false], ['Tue', 76, false], ['Wed', 62, false],
         ['Thu', 42, false],
-        ['Fri', 50, date('N') == 5], /* highlight current weekday */
+        ['Fri', 50, date('N') == 5],
         ['Sat', 70, false], ['Sun', 52, false],
     ];
-    $todayIdx  = (int)date('N') - 1; // 0=Mon
+    $todayIdx   = (int)date('N') - 1;
     foreach ($barData as $bi => &$bd) { $bd[2] = ($bi === $todayIdx); }
     unset($bd);
     $maxBar    = max(array_column($barData, 1));
 
     /* Donut SVG circle math */
-    $donutR    = 52; $donutCx = 70; $donutCy = 70;
-    $donutCirc = 2 * M_PI * $donutR; // ≈ 326.7
+    $donutR    = 52;
+    $donutCirc = 2 * M_PI * $donutR;
     $segs      = [
         ['Available', 42, '#00b3c0'],
         ['Partial',   36, '#3b82f6'],
         ['Busy',      16, '#7c5fe6'],
         ['On Leave',   6, '#cbd5e1'],
     ];
-    $donutOffset = 0; // start at top (stroke-dasharray starts from 3 o'clock; we'll rotate the SVG)
 
-    /* Avatar colours for leave items */
+    /* Avatar colours for default initial items */
     $avatarColors = ['#00939e','#3b82f6','#7c5fe6','#f59e0b','#ef5350','#22c55e'];
 ?>
 <!-- ═══════════════════════════════════════════════════════
@@ -913,7 +1053,6 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     <div class="kpi-grid">
         <?php
         $accentMap   = ['teal'=>'teal','blue'=>'blue','purple'=>'purple','coral'=>'coral','amber'=>'amber'];
-        /* Simple spark polyline points per accent colour */
         $sparkPoints = [
             'teal'  => '0,28 16,18 32,24 48,14 64,20 80,10 100,16',
             'blue'  => '0,22 16,30 32,16 48,24 64,12 80,20 100,14',
@@ -991,9 +1130,7 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
             <div class="avail-body">
                 <div class="donut-wrap">
                     <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Background circle -->
                         <circle cx="70" cy="70" r="<?= $donutR ?>" fill="none" stroke="#e2e8f0" stroke-width="18"/>
-                        <!-- Segments — drawn via stroke-dasharray on a rotated circle -->
                         <?php
                         $cumulative = 0;
                         foreach ($segs as $seg):
@@ -1009,7 +1146,6 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
                                 stroke-linecap="butt"
                                 transform="rotate(<?= round($rotation, 2) ?> 70 70)"/>
                         <?php endforeach; ?>
-                        <!-- Inner white circle -->
                         <circle cx="70" cy="70" r="42" fill="white"/>
                     </svg>
                     <div class="donut-center">
@@ -1077,16 +1213,23 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
             <div class="leave-list">
                 <?php
                 $leaves = [
-                    ['C','Dr. Chamila Wijesooriya','May 19 – 21, 2025','Medical Leave','s-pill-blue','Pending','s-pill-orange'],
-                    ['I','Mr. Isuru Madushan',     'May 16, 2025 (1 day)','Casual Leave','s-pill-teal','Pending','s-pill-orange'],
-                    ['H','Dr. Harini Silva',        'May 23 – 24, 2025','Medical Leave','s-pill-blue','Approved','s-pill-green'],
-                    ['S','Mr. Sachintha Perera',    'May 15, 2025 (1 day)','Casual Leave','s-pill-teal','Declined','s-pill-red'],
+                    ['C','Dr. Chamila Wijesooriya','May 19 – 21, 2025','Medical Leave','s-pill-blue','Pending','s-pill-orange', null],
+                    ['I','Mr. Isuru Madushan',     'May 16, 2025 (1 day)','Casual Leave','s-pill-teal','Pending','s-pill-orange', null],
+                    ['H','Dr. Harini Silva',        'May 23 – 24, 2025','Medical Leave','s-pill-blue','Approved','s-pill-green', null],
+                    ['S','Mr. Sachintha Perera',    'May 15, 2025 (1 day)','Casual Leave','s-pill-teal','Declined','s-pill-red', null],
                 ];
                 foreach ($leaves as $li => $l):
                     $avatarBg = $avatarColors[$li % count($avatarColors)];
+                    $imgUrl = $l[7] ?? null;
                 ?>
                 <div class="leave-item">
-                    <div class="lv-avatar" style="background:<?= $avatarBg ?>"><?= htmlspecialchars($l[0]) ?></div>
+                    <div class="lv-avatar" style="background:<?= $avatarBg ?>">
+                        <?php if ($imgUrl): ?>
+                            <img src="<?= htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($l[1], ENT_QUOTES, 'UTF-8') ?>">
+                        <?php else: ?>
+                            <?= htmlspecialchars($l[0]) ?>
+                        <?php endif; ?>
+                    </div>
                     <div class="lv-info">
                         <span class="lv-name"><?= htmlspecialchars($l[1]) ?></span>
                         <span class="lv-date"><?= htmlspecialchars($l[2]) ?></span>
@@ -1176,11 +1319,11 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
                 <?php
                 if (empty($tasks)) {
                     $tasks = [
-                        ['task_title'=>'Lecture – Week 7',       'type_name'=>'CO3210 – Database Systems',    'full_name'=>'Dr. N. De Silva',  'scheduled_date'=>date('Y-m-d'),             'start_time'=>'09:00','end_time'=>'10:30','status'=>'Completed'],
-                        ['task_title'=>'Tutorial – Week 6',      'type_name'=>'CO2220 – Data Structures',    'full_name'=>'Mr. I. Madushan',  'scheduled_date'=>date('Y-m-d'),             'start_time'=>'11:00','end_time'=>'12:30','status'=>'Completed'],
-                        ['task_title'=>'Lecture – Week 7',       'type_name'=>'CO4230 – Software Eng.',      'full_name'=>'Dr. A. Perera',    'scheduled_date'=>date('Y-m-d'),             'start_time'=>'14:00','end_time'=>'15:30','status'=>'In Progress'],
-                        ['task_title'=>'Marking – Assignment 2', 'type_name'=>'CO2220 – Data Structures',    'full_name'=>'Dr. R. Fernando',  'scheduled_date'=>date('Y-m-d', strtotime('-1 day')), 'start_time'=>'','end_time'=>'','status'=>'Pending'],
-                        ['task_title'=>'Guest Lecture on AI',    'type_name'=>'CO5310 – AI & Applications',  'full_name'=>'Dr. K. Jayawardena','scheduled_date'=>date('Y-m-d', strtotime('+1 day')), 'start_time'=>'10:00','end_time'=>'12:00','status'=>'Assigned'],
+                        ['task_title'=>'Lecture – Week 7',       'type_name'=>'CO3210 – Database Systems',    'full_name'=>'Dr. N. De Silva',  'scheduled_date'=>date('Y-m-d'),             'start_time'=>'09:00','end_time'=>'10:30','status'=>'Completed', 'avatar_url'=>null],
+                        ['task_title'=>'Tutorial – Week 6',      'type_name'=>'CO2220 – Data Structures',    'full_name'=>'Mr. I. Madushan',  'scheduled_date'=>date('Y-m-d'),             'start_time'=>'11:00','end_time'=>'12:30','status'=>'Completed', 'avatar_url'=>null],
+                        ['task_title'=>'Lecture – Week 7',       'type_name'=>'CO4230 – Software Eng.',      'full_name'=>'Dr. A. Perera',    'scheduled_date'=>date('Y-m-d'),             'start_time'=>'14:00','end_time'=>'15:30','status'=>'In Progress', 'avatar_url'=>null],
+                        ['task_title'=>'Marking – Assignment 2', 'type_name'=>'CO2220 – Data Structures',    'full_name'=>'Dr. R. Fernando',  'scheduled_date'=>date('Y-m-d', strtotime('-1 day')), 'start_time'=>'','end_time'=>'','status'=>'Pending', 'avatar_url'=>null],
+                        ['task_title'=>'Guest Lecture on AI',    'type_name'=>'CO5310 – AI & Applications',  'full_name'=>'Dr. K. Jayawardena','scheduled_date'=>date('Y-m-d', strtotime('+1 day')), 'start_time'=>'10:00','end_time'=>'12:00','status'=>'Assigned', 'avatar_url'=>null],
                     ];
                 }
                 $actColors = ['#00939e','#3b82f6','#7c5fe6','#f59e0b','#ef5350','#22c55e'];
@@ -1190,14 +1333,22 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
                          : ($status === 'In Progress' ? 's-pill-blue'
                          : ($status === 'Assigned' ? 's-pill-teal' : 's-pill-orange'));
                     $actBg = $actColors[$ti % count($actColors)];
+                    $assigneeName = $t['full_name'] ?? 'Unassigned';
+                    $userAvatar   = $t['avatar_url'] ?? null;
                 ?>
                 <tr>
                     <td data-label="Task"><?= htmlspecialchars($t['task_title'] ?? 'Academic Task') ?></td>
                     <td data-label="Course"><?= htmlspecialchars($t['type_name'] ?? 'Module') ?></td>
                     <td data-label="Assigned To">
                         <div class="act-assignee">
-                            <div class="act-avatar" style="background:<?= $actBg ?>"><?= strtoupper(substr((string)($t['full_name'] ?? 'U'), 0, 1)) ?></div>
-                            <span class="act-name"><?= htmlspecialchars($t['full_name'] ?? 'Unassigned') ?></span>
+                            <div class="act-avatar" style="background:<?= $actBg ?>">
+                                <?php if (!empty($userAvatar)): ?>
+                                    <img src="<?= htmlspecialchars($userAvatar, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($assigneeName, ENT_QUOTES, 'UTF-8') ?>">
+                                <?php else: ?>
+                                    <?= strtoupper(substr((string)$assigneeName, 0, 1)) ?>
+                                <?php endif; ?>
+                            </div>
+                            <span class="act-name"><?= htmlspecialchars($assigneeName) ?></span>
                         </div>
                     </td>
                     <td data-label="Date"><?= !empty($t['scheduled_date']) ? date('M d, Y', strtotime($t['scheduled_date'])) : '—' ?></td>

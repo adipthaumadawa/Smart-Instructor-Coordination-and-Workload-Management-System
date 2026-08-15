@@ -42,6 +42,19 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('admin/settings.php','System settings','settings',$currentPage);
       }
 
+      if ($currentRole === ROLE_COORDINATOR) {
+        echo '<p class="sidebar-label">Instructors</p>';
+        sidebar_link('coordinator/instructor.php','All Instructors','users',$currentPage);
+        sidebar_link('coordinator/availability.php','Availability','calendar',$currentPage);
+        echo '<p class="sidebar-label">Tasks &amp; Coordination</p>';
+        sidebar_link('coordinator/additional_tasks.php','Additional Tasks','square-pen',$currentPage);
+        sidebar_link('coordinator/smart_suggestions.php','Smart Suggestions','search',$currentPage);
+        sidebar_link('coordinator/replacements.php','Replacement Requests','user-check',$currentPage);
+        sidebar_link('coordinator/urgency_replacements.php','Urgency Replacements','bell',$currentPage);
+        echo '<p class="sidebar-label">Records</p>';
+        sidebar_link('coordinator/leave_records.php','Leave Records','history',$currentPage);
+      }
+
       if ($currentRole === ROLE_INSTRUCTOR) {
         echo '<p class="sidebar-label">My Work</p>';
         sidebar_link('instructor/my_tasks.php','My Tasks','briefcase-business',$currentPage);
@@ -52,6 +65,13 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('instructor/replacement_request.php','Replacements','user-check',$currentPage);
         echo '<p class="sidebar-label">Account</p>';
         sidebar_link('instructor/setting.php','Settings','settings',$currentPage);
+      }
+
+      if ($currentRole === ROLE_PROJECT_COORDINATOR) {
+        echo '<p class="sidebar-label">Presentation Coordination</p>';
+        sidebar_link('project_coordinator/sessions.php','Sessions & Venues','calendar',$currentPage);
+        echo '<p class="sidebar-label">Account</p>';
+        sidebar_link('project_coordinator/setting.php','Settings','settings',$currentPage);
       }
       ?>
     </ul>
