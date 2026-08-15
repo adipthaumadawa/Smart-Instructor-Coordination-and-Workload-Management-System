@@ -386,7 +386,7 @@ body {
 
     align-items: flex-end;
 
-    gap: 18px;
+    gap: 28px;
 
     flex-wrap: nowrap;
 }
@@ -401,13 +401,13 @@ body {
 
     flex-direction: column;
 
-    gap: 6px;
+    gap: 9px;
 
-    min-width: 100px;
+    min-width: 120px;
 }
 
 .form-group label {
-    font-size: 13px;
+    font-size: 15px;
 
     color: #555555;
 
@@ -421,11 +421,11 @@ body {
 
 .form-group input,
 .form-group select {
-    height: 39px;
+    height: 48px;
 
-    min-width: 100px;
+    min-width: 120px;
 
-    padding: 7px 12px;
+    padding: 9px 14px;
 
     border: 1px solid #030023;
 
@@ -437,7 +437,7 @@ body {
 
     font-family: Arial, sans-serif;
 
-    font-size: 16px;
+    font-size: 18px;
 
     outline: none;
 }
@@ -453,7 +453,7 @@ body {
 ================================================== */
 
 .subject-field input {
-    width: 90px;
+    width: 120px;
 }
 
 
@@ -475,11 +475,11 @@ body {
 ================================================== */
 
 .primary-button {
-    min-width: 135px;
+    min-width: 150px;
 
-    height: 39px;
+    height: 46px;
 
-    padding: 0 20px;
+    padding: 0 25px;
 
     border: none;
 
@@ -491,7 +491,7 @@ body {
 
     font-family: Arial, sans-serif;
 
-    font-size: 18px;
+    font-size: 19px;
 
     font-weight: 800;
 
@@ -686,8 +686,10 @@ body {
 
 /* Room/Lab box size - all sections */
 .room-field input {
-    width: 110px;
+    width: 140px;
 }
+
+
 .toast{
 
     position: fixed;
@@ -721,7 +723,6 @@ body {
 }
 
 
-
 /* Red error */
 
 .error-toast{
@@ -731,7 +732,6 @@ body {
     color:white;
 
 }
-
 
 
 @keyframes fadeOut{
