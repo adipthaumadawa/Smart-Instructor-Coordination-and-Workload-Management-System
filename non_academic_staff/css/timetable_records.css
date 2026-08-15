@@ -226,14 +226,13 @@ body {
 
 .content {
     padding: 22px 18px;
+
     display: grid;
 
-    /* IMPORTANT:
-       ONE COLUMN LIKE FIRST IMAGE
-    */
-    grid-template-columns: 1fr;
+    grid-template-columns: 635px;
 
-    column-gap: 0;
+    justify-content: start;
+
     row-gap: 30px;
 }
 
@@ -244,10 +243,14 @@ body {
 
 .page-heading {
     grid-column: 1;
+
     display: flex;
     align-items: center;
+
     gap: 10px;
+
     padding: 0 0 15px;
+
     border-bottom: 1px solid #777777;
 }
 
@@ -268,11 +271,15 @@ body {
 ================================================== */
 
 .record-card {
+    width: 635px;
+
     background-color: #ffffff;
+
     border: 1px solid #000000;
+
     border-radius: 13px;
+
     overflow: hidden;
-    width: 100%;
 }
 
 
@@ -282,11 +289,16 @@ body {
 
 .card-title {
     height: 32px;
+
     display: flex;
     align-items: center;
+
     padding: 0 8px;
+
     border-bottom: 1px solid #777777;
+
     color: #111111;
+
     font-size: 14px;
     font-weight: 700;
 }
@@ -297,7 +309,7 @@ body {
 ================================================== */
 
 .card-body {
-    padding: 8px 18px 12px;
+    padding: 9px 18px 13px;
 }
 
 
@@ -307,9 +319,13 @@ body {
 
 .form-row {
     display: flex;
+
     align-items: flex-end;
+
     justify-content: center;
+
     gap: 10px;
+
     flex-wrap: nowrap;
 }
 
@@ -320,10 +336,12 @@ body {
 
 .form-group {
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
+
     gap: 4px;
-    min-width: 0;
 }
 
 
@@ -333,9 +351,13 @@ body {
 
 .form-group label {
     color: #000000;
+
     opacity: 0.65;
+
     font-size: 11px;
+
     font-weight: 700;
+
     white-space: nowrap;
 }
 
@@ -346,14 +368,22 @@ body {
 
 .form-group input,
 .form-group select {
-    height: 24px;
+    height: 25px;
+
     border: 1px solid #030023;
+
     border-radius: 7px;
+
     background-color: #ffffff;
+
     color: #333333;
+
     padding: 3px 7px;
+
     font-family: Arial, sans-serif;
+
     font-size: 11px;
+
     outline: none;
 }
 
@@ -381,7 +411,9 @@ body {
 
 .button-area {
     display: flex;
+
     justify-content: center;
+
     margin-top: 12px;
 }
 
@@ -392,14 +424,23 @@ body {
 
 .primary-button {
     width: 77px;
+
     height: 23px;
+
     border: none;
+
     border-radius: 6px;
+
     background-color: #12009c;
+
     color: white;
+
     font-family: Arial, sans-serif;
+
     font-size: 13px;
+
     font-weight: 800;
+
     cursor: pointer;
 }
 
@@ -422,13 +463,18 @@ body {
 ================================================== */
 
 .update-card {
+    width: 635px;
+
     min-height: auto;
 }
 
 .update-section h2 {
     text-align: center;
+
     font-size: 14px;
+
     font-weight: 700;
+
     padding: 8px 5px;
 }
 
@@ -443,7 +489,9 @@ body {
 
 .update-divider {
     width: 100%;
+
     border-top: 1px solid #777777;
+
     margin-top: 6px;
 }
 
@@ -454,8 +502,10 @@ body {
 
 .view-card {
     width: 225px;
-    justify-self: center;
+
     min-height: auto;
+
+    justify-self: center;
 }
 
 .view-body {
@@ -464,8 +514,11 @@ body {
 
 .view-fields {
     display: flex;
+
     justify-content: center;
+
     align-items: center;
+
     gap: 12px;
 }
 
@@ -480,25 +533,32 @@ body {
 
 .results-table {
     width: 100%;
+
     margin-top: 25px;
+
     overflow-x: auto;
 }
 
 .results-table table {
     width: 100%;
+
     border-collapse: collapse;
 }
 
 .results-table th,
 .results-table td {
     border: 1px solid #777777;
+
     padding: 10px;
+
     text-align: left;
+
     font-size: 15px;
 }
 
 .results-table th {
     background-color: #eeeeee;
+
     font-weight: bold;
 }
 
@@ -532,7 +592,7 @@ body {
    RESPONSIVE
 ================================================== */
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 700px) {
 
     .sidebar {
         display: none;
@@ -546,7 +606,11 @@ body {
     .content {
         padding: 20px 12px;
         grid-template-columns: 1fr;
-        row-gap: 30px;
+    }
+
+    .record-card,
+    .update-card {
+        width: 100%;
     }
 
     .page-heading {
@@ -554,32 +618,8 @@ body {
     }
 
     .form-row {
-        gap: 7px;
-    }
-
-    .form-group label {
-        font-size: 10px;
-    }
-
-    .form-group input,
-    .form-group select {
-        font-size: 10px;
-    }
-}
-
-
-/* ==================================================
-   SMALL SCREEN
-================================================== */
-
-@media screen and (max-width: 700px) {
-
-    .top-header {
-        display: none;
-    }
-
-    .content {
-        padding: 12px;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .page-heading h1 {
@@ -589,44 +629,6 @@ body {
     .page-heading-icon img {
         width: 35px;
         height: 35px;
-    }
-
-    .card-title {
-        font-size: 14px;
-    }
-
-    .form-row {
-        gap: 5px;
-    }
-
-    .form-group label {
-        display: none;
-    }
-
-    .form-group input,
-    .form-group select {
-        height: 26px;
-        font-size: 10px;
-        padding: 3px 5px;
-    }
-
-    .subject-field input,
-    .form-group select {
-        width: 58px;
-    }
-
-    .room-field input {
-        width: 82px;
-    }
-
-    .primary-button {
-        width: 77px;
-        height: 24px;
-        font-size: 12px;
-    }
-
-    .update-section h2 {
-        font-size: 14px;
     }
 
     .view-card {
