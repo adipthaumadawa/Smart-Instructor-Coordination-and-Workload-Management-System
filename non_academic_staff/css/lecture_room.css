@@ -101,7 +101,7 @@ body {
 
 
 /* ==================================================
-   NAVIGATION ITEM
+   NAVIGATION
 ================================================== */
 
 .nav-item {
@@ -137,16 +137,12 @@ body {
 }
 
 
-/* ACTIVE */
-
 .nav-item.active {
     background-color: #003d4d;
 
     border-left: 5px solid #29d8d2;
 }
 
-
-/* HOVER */
 
 .nav-item:hover {
     background-color: #003d4d;
@@ -165,7 +161,7 @@ body {
 
 
 /* ==================================================
-   TOP HEADER
+   HEADER
 ================================================== */
 
 .top-header {
@@ -213,7 +209,7 @@ body {
 
 
 /* ==================================================
-   USER SECTION
+   USER
 ================================================== */
 
 .user-section {
@@ -312,6 +308,8 @@ body {
     gap: 14px;
 
     padding: 8px 0 18px;
+
+    margin-bottom: 2px;
 
     border-bottom: 1px solid #777777;
 }
@@ -429,7 +427,7 @@ body {
 
 
 /* ==================================================
-   INPUT AND SELECT
+   INPUT / SELECT
 ================================================== */
 
 .form-group input,
@@ -455,31 +453,23 @@ body {
 
 
 /* ==================================================
-   BOX SIZES
+   INDIVIDUAL FIELD SIZES
 ================================================== */
-
-/* Room Name */
 
 .room-name-field input {
     width: 135px;
 }
 
 
-/* Capacity */
-
 .capacity-field input {
     width: 109px;
 }
 
 
-/* Location */
-
 .location-field input {
     width: 101px;
 }
 
-
-/* Type */
 
 .type-field select {
     width: 83px;
@@ -505,7 +495,6 @@ body {
 
 .primary-button {
     width: 135px;
-
     height: 39px;
 
     border: none;
@@ -544,6 +533,8 @@ body {
     display: flex;
 
     justify-content: center;
+
+    padding-top: 1px;
 }
 
 
@@ -610,7 +601,7 @@ body {
 
 
 /* ==================================================
-   VIEW TABLE
+   VIEW RESULTS
 ================================================== */
 
 .results-table {
@@ -649,7 +640,7 @@ body {
 
 
 /* ==================================================
-   CARD POSITIONS
+   DESKTOP CARD POSITIONS
 ================================================== */
 
 .add-card {
