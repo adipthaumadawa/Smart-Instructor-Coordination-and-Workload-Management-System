@@ -83,7 +83,7 @@ if ($currentRole === ROLE_DIRECTOR) {
         echo '<p class="sidebar-label">Account</p>';
         sidebar_link('project_coordinator/setting.php','Settings','settings',$currentPage);
       }
-      }
+      
       ?>
     </ul>
   </nav>
