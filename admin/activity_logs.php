@@ -5,6 +5,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/dashboard_ui.php'; // Required for sic_user_avatar() used in navbar.php
 require_once __DIR__ . '/../config/db.php';
 
 checkRole(ROLE_ADMIN);
@@ -29,7 +30,7 @@ $logs = $pdo->query("
             <div class="card shadow-sm">
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover mb-0" id="activityLogsTable">
                             <thead class="table-light">
                                 <tr>
                                     <th>#</th>
@@ -60,5 +61,22 @@ $logs = $pdo->query("
             <div class="mt-3 text-muted small">
                 Showing last 100 activity logs. For full audit trail, check the database directly.
             </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('globalSearch');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#activityLogsTable tbody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = (!query || text.includes(query)) ? '' : 'none';
+        });
+    });
+});
+</script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>

@@ -5,6 +5,7 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/dashboard_ui.php'; // Required for sic_user_avatar() in navbar.php
 require_once __DIR__ . '/../config/db.php';
 
 checkRole(ROLE_ADMIN);
@@ -23,7 +24,7 @@ $roles = $pdo->query("SELECT * FROM roles ORDER BY id")->fetchAll();
             <div class="card shadow-sm">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="rolesTable">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -50,5 +51,22 @@ $roles = $pdo->query("SELECT * FROM roles ORDER BY id")->fetchAll();
                     </div>
                 </div>
             </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('globalSearch');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#rolesTable tbody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = (!query || text.includes(query)) ? '' : 'none';
+        });
+    });
+});
+</script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
