@@ -67,7 +67,7 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('instructor/setting.php','Settings','settings',$currentPage);
       }
 
-      if ($currentRole === ROLE_DIRECTOR) {
+if ($currentRole === ROLE_DIRECTOR) {
         echo '<p class="sidebar-label">Monitoring &amp; Oversight</p>';
         sidebar_link('director/active_tasks.php', 'Active Tasks', 'briefcase-business', $currentPage);
         sidebar_link('director/leave_records.php', 'Leave Records', 'history', $currentPage);
@@ -75,6 +75,14 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('director/room_usage.php', 'Room Usage', 'calendar', $currentPage);
         sidebar_link('director/reports.php', 'Reports', 'chart-column', $currentPage);
         sidebar_link('director/allocations.php', 'Allocation Status', 'square-pen', $currentPage);
+      }
+
+      if ($currentRole === ROLE_PROJECT_COORDINATOR) {
+        echo '<p class="sidebar-label">Presentation Coordination</p>';
+        sidebar_link('project_coordinator/sessions.php','Sessions & Venues','calendar',$currentPage);
+        echo '<p class="sidebar-label">Account</p>';
+        sidebar_link('project_coordinator/setting.php','Settings','settings',$currentPage);
+      }
       }
       ?>
     </ul>
