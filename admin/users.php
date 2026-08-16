@@ -16,7 +16,7 @@ checkRole(ROLE_ADMIN);
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $deleteId = (int)$_GET['delete'];
     if ($deleteId !== (int)($_SESSION['user_id'] ?? 0)) {
-        $stmt = $pdo->prepare("UPDATE users SET status = 'inactive' WHERE id = ?");
+        $stmt =$pdo->prepare("UPDATE users SET status = 'inactive' WHERE id = ?");
         $stmt->execute([$deleteId]);
         if (function_exists('logActivity')) {
             logActivity($_SESSION['user_id'] ?? null, 'Deactivate User', "Deactivated user ID: {$deleteId}");
@@ -29,7 +29,7 @@ if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     exit;
 }
 
-$users = $pdo->query("SELECT u.*, r.role_name FROM users u JOIN roles r ON u.role_id = r.id ORDER BY u.created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+$users =$pdo->query("SELECT u.*, r.role_name FROM users u JOIN roles r ON u.role_id = r.id ORDER BY u.created_at DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 $pageTitle = 'Manage Users';
 include __DIR__ . '/../includes/header.php';
@@ -114,7 +114,7 @@ include __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle admin-table">
+                        <table class="table table-hover align-middle admin-table" id="manageUsersTable">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -128,17 +128,15 @@ include __DIR__ . '/../includes/header.php';
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($users as $index => $user): ?>
+                                <?php foreach ($users as $index =>$user): ?>
                                     <tr>
                                         <td data-label="#"><?= $index + 1 ?></td>
                                         <td data-label="User">
                                             <div class="user-cell-flex">
                                                 <?php 
-                                                    $cleanName = trim(preg_replace('/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i', '', $user['full_name'] ?? 'U'));
-                                                    $initial = mb_substr($cleanName, 0, 1);
-                                                    $avatarUrl = !empty($user['avatar_url']) ? app_url($user['avatar_url']) : null;
+                                                    $cleanName = trim(preg_replace('/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i', '', $user['full_name'] ?? 'U'));$initial = mb_substr($cleanName, 0, 1);$avatarUrl = !empty($user['avatar_url']) ? app_url($user['avatar_url']) : null;
                                                 ?>
-                                                <?= sic_user_avatar($avatarUrl, $initial, 'avatar-mini') ?>
+                                                <?= sic_user_avatar($avatarUrl,$initial, 'avatar-mini') ?>
                                                 <strong><?= htmlspecialchars($user['full_name']) ?></strong>
                                             </div>
                                         </td>
@@ -168,5 +166,22 @@ include __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
             </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('globalSearch');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        const rows = document.querySelectorAll('#manageUsersTable tbody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = (!query || text.includes(query)) ? '' : 'none';
+        });
+    });
+});
+</script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
