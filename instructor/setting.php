@@ -16,21 +16,78 @@ $instructorId = sic_current_instructor_id();
 $userId = (int)$_SESSION['user_id'];
 $error = '';
 
-// Handle profile update (name/phone) BEFORE header output
+// Handle profile update (name/phone/avatar) BEFORE header output
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $fullName = sanitize($_POST['full_name'] ?? '');
     $phone = sanitize($_POST['phone'] ?? '');
+    $avatarPath = null;
 
     if ($fullName === '') {
         $error = 'Full name cannot be empty.';
     } else {
-        $stmt = $pdo->prepare("UPDATE users SET full_name = ?, phone = ? WHERE id = ?");
-        $stmt->execute([$fullName, $phone, $userId]);
-        $_SESSION['full_name'] = $fullName;
-        logActivity($userId, 'Update Profile', 'Updated profile details');
-        $_SESSION['success'] = 'Profile updated successfully.';
-        header('Location: ' . app_url('instructor/setting.php'));
-        exit;
+        // Fetch current user details to manage old avatar
+        $currStmt = $pdo->prepare("SELECT avatar_url FROM users WHERE id = ?");
+        $currStmt->execute([$userId]);
+        $currentAvatar = $currStmt->fetchColumn();
+
+        // Handle Avatar File Upload
+        if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+            $file = $_FILES['avatar'];
+            $fileSize = $file['size'];
+            $fileTmp = $file['tmp_name'];
+            $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+
+            if (!in_array($ext, $allowedExtensions, true)) {
+                $error = 'Invalid file format. Allowed formats: JPG, JPEG, PNG, WEBP.';
+            } elseif ($fileSize > 2 * 1024 * 1024) {
+                $error = 'File size exceeds maximum limit of 2MB.';
+            } else {
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $mimeType = $finfo->file($fileTmp);
+                $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+
+                if (!in_array($mimeType, $allowedMimes, true)) {
+                    $error = 'Uploaded file is not a valid image.';
+                } else {
+                    $uploadDir = __DIR__ . '/../uploads/avatars/';
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
+                    }
+
+                    $newFileName = 'avatar_' . $userId . '_' . time() . '.' . $ext;
+                    $destination = $uploadDir . $newFileName;
+                    $relativePath = 'uploads/avatars/' . $newFileName;
+
+                    if (move_uploaded_file($fileTmp, $destination)) {
+                        // Delete old avatar if present
+                        if (!empty($currentAvatar) && file_exists(__DIR__ . '/../' . $currentAvatar)) {
+                            @unlink(__DIR__ . '/../' . $currentAvatar);
+                        }
+                        $avatarPath = $relativePath;
+                    } else {
+                        $error = 'Failed to save uploaded image.';
+                    }
+                }
+            }
+        }
+
+        if (empty($error)) {
+            if ($avatarPath === null) {
+                $avatarPath = $currentAvatar;
+            }
+
+            $stmt = $pdo->prepare("UPDATE users SET full_name = ?, phone = ?, avatar_url = ? WHERE id = ?");
+            $stmt->execute([$fullName, $phone, $avatarPath, $userId]);
+            
+            $_SESSION['full_name'] = $fullName;
+            $_SESSION['avatar_url'] = $avatarPath;
+
+            logActivity($userId, 'Update Profile', 'Updated profile details and avatar');
+            $_SESSION['success'] = 'Profile updated successfully.';
+            header('Location: ' . app_url('instructor/setting.php'));
+            exit;
+        }
     }
 }
 
@@ -63,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
 // Load profile + instructor details
 $stmt = $pdo->prepare("
-    SELECT u.full_name, u.username, u.email, u.phone,
+    SELECT u.full_name, u.username, u.email, u.phone, u.avatar_url,
            i.employee_id, i.designation, i.max_weekly_hours, i.status,
            d.name AS department_name, ast.name AS stream_name
     FROM users u
@@ -78,6 +135,27 @@ $profile = $stmt->fetch();
 $pageTitle = 'Settings';
 include __DIR__ . '/../includes/header.php';
 ?>
+
+<style>
+/* CSS fix for avatar preview box */
+.avatar-preview .avatar {
+    width: 48px !important;
+    height: 48px !important;
+    flex: 0 0 48px !important;
+    border-radius: 12px !important;
+    display: grid !important;
+    place-items: center !important;
+    overflow: hidden !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+}
+.avatar-preview .avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+</style>
 
             <div class="page-toolbar">
                 <div>
@@ -111,7 +189,26 @@ include __DIR__ . '/../includes/header.php';
                     <div class="card mt-4">
                         <div class="card-header"><h5>Edit Profile</h5></div>
                         <div class="card-body">
-                            <form method="POST" action="">
+                            <form method="POST" action="" enctype="multipart/form-data">
+                                
+                                <!-- Profile Picture Upload Field -->
+                                <div class="mb-3 d-flex align-items-center gap-3">
+                                    <div class="avatar-preview">
+                                        <?php 
+                                            // Extract title prefix and grab ONLY the first letter
+                                            $cleanName = trim(preg_replace('/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i', '', $profile['full_name'] ?? 'U'));
+                                            $firstInitial = mb_substr($cleanName, 0, 1);
+                                            $avatarUrl = !empty($profile['avatar_url']) ? app_url($profile['avatar_url']) : null;
+                                        ?>
+                                        <?= sic_user_avatar($avatarUrl, $firstInitial, 'avatar') ?>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <label class="form-label mb-1" for="avatar">Profile Picture</label>
+                                        <input type="file" name="avatar" id="avatar" class="form-control" accept="image/png, image/jpeg, image/webp">
+                                        <div class="form-text">JPG, PNG, or WEBP (Max 2MB).</div>
+                                    </div>
+                                </div>
+
                                 <div class="mb-3">
                                     <label class="form-label">Full Name <span class="text-danger">*</span></label>
                                     <input type="text" name="full_name" class="form-control" required value="<?= htmlspecialchars($profile['full_name'] ?? '') ?>">

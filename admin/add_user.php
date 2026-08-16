@@ -8,6 +8,7 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/dashboard_ui.php'; // Required for sic_user_avatar() in navbar.php
 
 checkRole(ROLE_ADMIN);
 
@@ -16,12 +17,12 @@ $error = '';
 // Handle form submit BEFORE header/navbar output
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $full_name = sanitize($_POST['full_name'] ?? '');
-    $username = sanitize($_POST['username'] ?? '');
-    $email = sanitize($_POST['email'] ?? '');
-    $phone = sanitize($_POST['phone'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $role_id = (int)($_POST['role_id'] ?? 0);
-    $status = sanitize($_POST['status'] ?? 'active');
+    $username  = sanitize($_POST['username'] ?? '');
+    $email     = sanitize($_POST['email'] ?? '');
+    $phone     = sanitize($_POST['phone'] ?? '');
+    $password  = $_POST['password'] ?? '';
+    $role_id   = (int)($_POST['role_id'] ?? 0);
+    $status    = sanitize($_POST['status'] ?? 'active');
 
     if ($full_name === '' || $username === '' || $email === '' || $password === '' || $role_id <= 0) {
         $error = 'Please fill all required fields.';
