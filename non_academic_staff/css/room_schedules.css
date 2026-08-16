@@ -1,6 +1,4 @@
-/* ==================================================
-   RESET
-================================================== */
+
 
 * {
     margin: 0;
@@ -8,10 +6,6 @@
     box-sizing: border-box;
 }
 
-html,
-body {
-    min-height: 100%;
-}
 
 body {
     font-family: Arial, sans-serif;
@@ -37,7 +31,6 @@ body {
 .sidebar {
     width: 282px;
     min-height: 100vh;
-    height: 100vh;
 
     background-color: #05002e;
     color: white;
@@ -47,8 +40,6 @@ body {
     left: 0;
     top: 0;
     bottom: 0;
-
-    overflow-y: auto;
 }
 
 
@@ -61,6 +52,7 @@ body {
     border-bottom: 1px solid #17134d;
 }
 
+
 .sidebar-logo img {
     width: 65px;
     height: 65px;
@@ -72,14 +64,18 @@ body {
     margin-bottom: 8px;
 }
 
+
 .sidebar-logo h3 {
     font-size: 16px;
     margin-bottom: 4px;
 }
 
+
 .sidebar-logo p {
     font-size: 13px;
+
     color: #c7c5d8;
+
     line-height: 1.3;
 }
 
@@ -92,19 +88,23 @@ body {
     padding: 12px 10px;
 }
 
+
 .sidebar-navigation h4 {
     color: #67647d;
+
     font-size: 17px;
+
     margin: 12px 10px;
 }
 
 
 /* ==================================================
-   NAVIGATION ITEM
+   NAVIGATION
 ================================================== */
 
 .nav-item {
     display: flex;
+
     align-items: center;
 
     gap: 14px;
@@ -126,6 +126,7 @@ body {
     font-weight: bold;
 }
 
+
 .nav-item img {
     width: 22px;
     height: 22px;
@@ -134,19 +135,12 @@ body {
 }
 
 
-/* ==================================================
-   ACTIVE ITEM
-================================================== */
-
 .nav-item.active {
     background-color: #003d4d;
+
     border-left: 5px solid #29d8d2;
 }
 
-
-/* ==================================================
-   HOVER
-================================================== */
 
 .nav-item:hover {
     background-color: #003d4d;
@@ -161,13 +155,11 @@ body {
     margin-left: 282px;
 
     width: calc(100% - 282px);
-
-    min-height: 100vh;
 }
 
 
 /* ==================================================
-   TOP HEADER
+   HEADER
 ================================================== */
 
 .top-header {
@@ -182,8 +174,6 @@ body {
     padding: 0 22px;
 
     border-bottom: 1px solid #090044;
-
-    background-color: white;
 }
 
 
@@ -203,6 +193,7 @@ body {
     color: #111111;
 }
 
+
 .system-name img {
     width: 46px;
     height: 46px;
@@ -216,7 +207,7 @@ body {
 
 
 /* ==================================================
-   USER SECTION
+   USER
 ================================================== */
 
 .user-section {
@@ -227,12 +218,14 @@ body {
     gap: 14px;
 }
 
+
 .top-notification {
     width: 30px;
     height: 30px;
 
     margin-right: 20px;
 }
+
 
 .user-avatar {
     width: 46px;
@@ -256,20 +249,25 @@ body {
     font-weight: bold;
 }
 
+
 .user-details {
     display: flex;
 
     flex-direction: column;
 }
 
+
 .user-details strong {
     font-size: 20px;
 }
 
+
 .user-details span {
     color: #77758c;
+
     font-size: 15px;
 }
+
 
 .dropdown-icon {
     width: 18px;
@@ -278,11 +276,19 @@ body {
 
 
 /* ==================================================
-   PAGE CONTENT
+   CONTENT
 ================================================== */
 
 .content {
-    padding: 20px 24px 50px 34px;
+    padding: 20px 24px;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    column-gap: 90px;
+
+    row-gap: 40px;
 }
 
 
@@ -291,36 +297,30 @@ body {
 ================================================== */
 
 .page-heading {
+    grid-column: 1 / -1;
+
     display: flex;
 
     align-items: center;
 
     gap: 14px;
 
-    margin-bottom: 24px;
+    padding: 8px 0 18px;
+
+    margin-bottom: 2px;
+
+    border-bottom: 1px solid #777777;
 }
 
-.page-heading-icon {
-    width: 60px;
-    height: 60px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-}
 
 .page-heading-icon img {
-    width: 50px;
-    height: 50px;
-
-    object-fit: contain;
+    width: 60px;
+    height: 60px;
 }
 
+
 .page-heading h1 {
-    color: #1239b5;
+    color: #001495;
 
     font-size: 36px;
 
@@ -333,17 +333,13 @@ body {
 ================================================== */
 
 .record-card {
-    width: 100%;
+    background-color: #ffffff;
 
-    border: 1px solid #111111;
+    border: 1px solid #000000;
 
     border-radius: 20px;
 
-    margin-bottom: 26px;
-
     overflow: hidden;
-
-    background-color: white;
 }
 
 
@@ -352,7 +348,7 @@ body {
 ================================================== */
 
 .card-title {
-    min-height: 56px;
+    height: 57px;
 
     display: flex;
 
@@ -360,7 +356,9 @@ body {
 
     padding: 0 14px;
 
-    border-bottom: 1px solid #777;
+    border-bottom: 1px solid #777777;
+
+    color: #111111;
 
     font-size: 24px;
 
@@ -373,7 +371,7 @@ body {
 ================================================== */
 
 .card-body {
-    padding: 16px 34px 18px 34px;
+    padding: 15px 28px 20px;
 }
 
 
@@ -386,7 +384,9 @@ body {
 
     align-items: flex-end;
 
-    gap: 32px;
+    justify-content: center;
+
+    gap: 24px;
 
     flex-wrap: nowrap;
 }
@@ -401,59 +401,76 @@ body {
 
     flex-direction: column;
 
-    gap: 10px;
+    align-items: center;
 
-    min-width: 130px;
-}
-
-.form-group label {
-    font-size: 16px;
-
-    color: #555555;
-
-    font-weight: bold;
+    gap: 7px;
 }
 
 
 /* ==================================================
-   INPUTS
+   LABEL
+================================================== */
+
+.form-group label {
+    color: #000000;
+
+    opacity: 0.6;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+
+/* ==================================================
+   INPUT / SELECT
 ================================================== */
 
 .form-group input,
 .form-group select {
-    height: 52px;
-
-    min-width: 130px;
-
-    padding: 10px 15px;
+    height: 39px;
 
     border: 1px solid #030023;
 
     border-radius: 10px;
 
-    background-color: white;
+    background-color: #ffffff;
 
-    color: #222222;
+    color: #333333;
+
+    padding: 7px 10px;
 
     font-family: Arial, sans-serif;
 
-    font-size: 19px;
+    font-size: 16px;
 
     outline: none;
 }
 
-.form-group input:focus,
-.form-group select:focus {
-    border-color: #12009c;
+
+/* ==================================================
+   INDIVIDUAL FIELD SIZES
+================================================== */
+
+.room-name-field input {
+    width: 135px;
 }
 
 
-/* ==================================================
-   SUBJECT
-================================================== */
+.capacity-field input {
+    width: 109px;
+}
 
-.subject-field input {
-    width: 130px;
+
+.location-field input {
+    width: 101px;
+}
+
+
+.type-field select {
+    width: 83px;
 }
 
 
@@ -466,20 +483,17 @@ body {
 
     justify-content: center;
 
-    margin-top: 18px;
+    margin-top: 24px;
 }
 
 
 /* ==================================================
-   PRIMARY BUTTON
+   BUTTON
 ================================================== */
 
 .primary-button {
-    min-width: 155px;
-
-    height: 48px;
-
-    padding: 0 25px;
+    width: 135px;
+    height: 39px;
 
     border: none;
 
@@ -491,83 +505,163 @@ body {
 
     font-family: Arial, sans-serif;
 
-    font-size: 20px;
+    font-size: 24px;
 
     font-weight: 800;
 
     cursor: pointer;
 }
 
+
 .primary-button:hover {
-    background-color: #0d007c;
+    background-color: #0d0078;
 }
 
 
 /* ==================================================
-   UPDATE CARD
+   DELETE
+================================================== */
+
+.delete-card {
+    min-height: 208px;
+}
+
+
+.delete-field {
+    display: flex;
+
+    justify-content: center;
+
+    padding-top: 1px;
+}
+
+
+/* ==================================================
+   UPDATE
 ================================================== */
 
 .update-card {
-    margin-bottom: 26px;
+    min-height: 377px;
 }
 
-.update-section {
-    padding: 0 34px 20px 34px;
-}
 
 .update-section h2 {
     text-align: center;
 
-    font-size: 22px;
+    font-size: 24px;
 
-    margin: 14px 0 16px 0;
+    font-weight: 700;
+
+    padding: 14px 5px;
 }
 
 
-/* ==================================================
-   UPDATE DIVIDER
-================================================== */
+.update-section .form-row {
+    padding: 0 15px;
+}
+
 
 .update-divider {
-    height: 1px;
+    width: 100%;
 
-    background-color: #777777;
+    border-top: 1px solid #777777;
 
-    opacity: 0.5;
-
-    margin: 20px -34px;
+    margin-top: 8px;
 }
 
 
 /* ==================================================
-   VIEW CARD
+   VIEW
 ================================================== */
 
 .view-card {
-    width: 390px;
-
-    max-width: 100%;
-
-    margin-left: auto;
-
-    margin-right: auto;
+    min-height: 208px;
 }
+
 
 .view-body {
-    padding: 18px 38px 20px 38px;
+    padding: 25px 20px;
 }
+
 
 .view-fields {
     display: flex;
 
-    gap: 24px;
-
     justify-content: center;
+
+    align-items: center;
 }
 
-.view-fields .form-group input,
-.view-fields .form-group select {
-    width: 144px;
+
+.view-body .button-area {
+    margin-top: 30px;
+}
+
+
+/* ==================================================
+   VIEW RESULTS
+================================================== */
+
+.results-table {
+    width: 100%;
+
+    margin-top: 25px;
+
+    overflow-x: auto;
+}
+
+
+.results-table table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.results-table th,
+.results-table td {
+    border: 1px solid #777777;
+
+    padding: 10px;
+
+    text-align: left;
+
+    font-size: 15px;
+}
+
+
+.results-table th {
+    background-color: #eeeeee;
+
+    font-weight: bold;
+}
+
+
+/* ==================================================
+   DESKTOP CARD POSITIONS
+================================================== */
+
+.add-card {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+
+.delete-card {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+
+.update-card {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+
+.view-card {
+    grid-column: 2;
+    grid-row: 3;
 }
 
 
@@ -577,13 +671,12 @@ body {
 
 @media screen and (max-width: 1200px) {
 
-    .form-row {
-        gap: 16px;
+    .content {
+        column-gap: 30px;
     }
 
-    .form-group input,
-    .form-group select {
-        width: 130px;
+    .form-row {
+        gap: 12px;
     }
 
 }
@@ -602,11 +695,26 @@ body {
     }
 
     .content {
-        padding: 20px;
+        grid-template-columns: 1fr;
+
+        row-gap: 30px;
     }
 
-    .user-details {
-        display: none;
+    .page-heading {
+        grid-column: 1;
+    }
+
+    .add-card,
+    .delete-card,
+    .update-card,
+    .view-card {
+        grid-column: 1;
+
+        grid-row: auto;
+    }
+
+    .form-row {
+        flex-wrap: wrap;
     }
 
 }
@@ -625,128 +733,24 @@ body {
     }
 
     .content {
-        padding: 18px 12px 40px 12px;
-    }
-
-    .top-header {
-        padding: 0 12px;
+        padding: 20px 12px;
     }
 
     .page-heading h1 {
         font-size: 28px;
     }
 
-    .page-heading-icon {
-        width: 50px;
-        height: 50px;
-    }
-
     .page-heading-icon img {
-        width: 42px;
-        height: 42px;
+        width: 45px;
+        height: 45px;
     }
 
-    .card-title {
-        font-size: 20px;
-    }
-
-    .card-body,
-    .update-section {
-        padding-left: 18px;
-        padding-right: 18px;
+    .user-details {
+        display: none;
     }
 
     .form-row {
-        flex-direction: column;
-
-        align-items: stretch;
-    }
-
-    .form-group,
-    .form-group input,
-    .form-group select {
-        width: 100%;
-    }
-
-    .view-card {
-        width: 100%;
-    }
-
-    .view-fields {
-        flex-direction: column;
-    }
-
-    .view-fields .form-group input,
-    .view-fields .form-group select {
-        width: 100%;
-    }
-
-}
-
-
-/* Room/Lab box size - all sections */
-.room-field input {
-    width: 150px;
-}
-
-
-.toast{
-
-    position: fixed;
-    top: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-
-    padding: 18px 35px;
-
-    border-radius: 10px;
-
-    font-size: 18px;
-
-    font-weight: bold;
-
-    z-index: 9999;
-
-    animation: fadeOut 5s forwards;
-
-}
-
-
-/* Green success */
-
-.success-toast{
-
-    background:#28a745;
-
-    color:white;
-
-}
-
-
-/* Red error */
-
-.error-toast{
-
-    background:#dc3545;
-
-    color:white;
-
-}
-
-
-@keyframes fadeOut{
-
-    0%{
-        opacity:1;
-    }
-
-    80%{
-        opacity:1;
-    }
-
-    100%{
-        opacity:0;
-        display:none;
+        flex-wrap: wrap;
     }
 
 }
