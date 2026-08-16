@@ -1329,4 +1329,294 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     </div>
 
 </section>
-<?php } ?>
+<?php
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INSTRUCTOR-ONLY DASHBOARD
+   Separate from sic_render_dashboard() (used by admin/coordinator/director etc.)
+   so that instructor-specific privacy rules never leak into the shared layout,
+   and vice-versa.
+   ───────────────────────────────────────────────────────────────────────────── */
+if (!function_exists('sic_render_instructor_dashboard')) {
+    function sic_render_instructor_dashboard(string $heading, string $subtitle, array $cards, string $primaryActionUrl, string $primaryActionText) {
+        global $pdo;
+        sic_dashboard_styles();
+
+        $instructorId = sic_current_instructor_id();
+        $weekStart    = date('M d');
+        $weekEnd      = date('M d, Y', strtotime('+6 days'));
+
+        /* Upcoming schedule — this instructor's own upcoming tasks only */
+        $upcoming = [];
+        if ($instructorId) {
+            try {
+                $stmt = $pdo->prepare("
+                    SELECT ta.scheduled_date, ta.start_time, ta.end_time, ta.location, tt.name AS type_name,
+                           COALESCE(atr.title, tt.name, 'Academic Task') AS task_title
+                    FROM task_assignments ta
+                    LEFT JOIN task_types tt ON ta.task_type_id = tt.id
+                    LEFT JOIN additional_task_requests atr ON ta.additional_task_request_id = atr.id
+                    WHERE ta.instructor_id = :iid AND ta.scheduled_date >= CURDATE() AND ta.status IN ('Assigned','Accepted')
+                    ORDER BY ta.scheduled_date ASC, ta.start_time ASC
+                    LIMIT 6
+                ");
+                $stmt->execute([':iid' => $instructorId]);
+                $upcoming = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Throwable $e) { $upcoming = []; }
+        }
+
+        /* Weekly task summary — this instructor's own tasks, next 7 days, grouped by type */
+        $typeBreakdown = [];
+        $weekTotal = 0;
+        if ($instructorId) {
+            try {
+                $stmt = $pdo->prepare("
+                    SELECT COALESCE(tt.name,'Other') AS type_name, COUNT(*) AS c
+                    FROM task_assignments ta
+                    LEFT JOIN task_types tt ON ta.task_type_id = tt.id
+                    WHERE ta.instructor_id = :iid
+                      AND ta.scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY)
+                      AND ta.status IN ('Assigned','Accepted','Completed')
+                    GROUP BY type_name
+                    ORDER BY c DESC
+                ");
+                $stmt->execute([':iid' => $instructorId]);
+                $typeBreakdown = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($typeBreakdown as $row) { $weekTotal += (int)$row['c']; }
+            } catch (Throwable $e) { $typeBreakdown = []; }
+        }
+        $typeColors = ['#00b3c0','#3b82f6','#7c5fe6','#f59e0b','#ef5350','#22c55e','#94a3b8'];
+
+        /* Replacement alerts — ONLY requests this instructor is party to (requester or suggested replacement) */
+        $myAlerts = [];
+        if ($instructorId) {
+            try {
+                $stmt = $pdo->prepare("
+                    SELECT rr.id, rr.status, rr.created_at, ta.scheduled_date, ta.start_time, ta.end_time,
+                           COALESCE(atr.title, tt.name, 'Academic Task') AS task_title,
+                           rr.requested_by_instructor_id, rr.suggested_instructor_id
+                    FROM replacement_requests rr
+                    JOIN task_assignments ta ON rr.task_assignment_id = ta.id
+                    LEFT JOIN task_types tt ON ta.task_type_id = tt.id
+                    LEFT JOIN additional_task_requests atr ON ta.additional_task_request_id = atr.id
+                    WHERE rr.status = 'Pending' AND (rr.requested_by_instructor_id = :iid1 OR rr.suggested_instructor_id = :iid2)
+                    ORDER BY rr.created_at DESC
+                    LIMIT 5
+                ");
+                $stmt->execute([':iid1' => $instructorId, ':iid2' => $instructorId]);
+                $myAlerts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Throwable $e) { $myAlerts = []; }
+        }
+
+        /* Recent task allocations — this instructor's own tasks ONLY (no other instructor's assignments) */
+        $myRecentTasks = [];
+        if ($instructorId) {
+            try {
+                $stmt = $pdo->prepare("
+                    SELECT ta.scheduled_date, ta.start_time, ta.end_time, ta.status,
+                           COALESCE(atr.title, tt.name, 'Academic Task') AS task_title, tt.name AS type_name
+                    FROM task_assignments ta
+                    LEFT JOIN task_types tt ON ta.task_type_id = tt.id
+                    LEFT JOIN additional_task_requests atr ON ta.additional_task_request_id = atr.id
+                    WHERE ta.instructor_id = :iid
+                    ORDER BY ta.created_at DESC
+                    LIMIT 6
+                ");
+                $stmt->execute([':iid' => $instructorId]);
+                $myRecentTasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Throwable $e) { $myRecentTasks = []; }
+        }
+        ?>
+<section class="dash-page">
+
+    <!-- Hero header -->
+    <div class="dash-hero">
+        <div class="dash-title-wrap">
+            <h1><?= htmlspecialchars($heading) ?></h1>
+            <p><?= htmlspecialchars($subtitle) ?></p>
+        </div>
+        <div class="dash-actions">
+            <span class="date-chip"><?= sic_icon('calendar') ?><?= htmlspecialchars($weekStart) ?> – <?= htmlspecialchars($weekEnd) ?></span>
+            <?php if ($primaryActionUrl): ?>
+            <a class="dash-primary-action" href="<?= htmlspecialchars($primaryActionUrl) ?>">
+                <?= sic_icon('plus') ?><?= htmlspecialchars($primaryActionText) ?>
+            </a>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- ── Upcoming Schedule — shown first, this is what an instructor needs to see immediately ── -->
+    <div class="d-card">
+        <div class="section-head">
+            <h2 class="section-title"><?= sic_icon('calendar') ?>Your Upcoming Schedule</h2>
+            <a href="<?= app_url('instructor/timetable.php') ?>" class="section-link"><?= sic_icon('eye') ?>View full timetable</a>
+        </div>
+        <div class="schedule-list">
+            <?php if (empty($upcoming)): ?>
+                <p class="text-muted" style="padding:8px 4px;">You have no upcoming tasks scheduled.</p>
+            <?php else: foreach ($upcoming as $s): ?>
+                <div class="sched-item">
+                    <div class="sched-time">
+                        <span class="sched-time-start"><?= htmlspecialchars(formatTime($s['start_time'])) ?></span>
+                        <span class="sched-time-end"><?= htmlspecialchars(formatTime($s['end_time'])) ?></span>
+                    </div>
+                    <div class="sched-info">
+                        <span class="sched-course"><?= htmlspecialchars($s['task_title']) ?></span>
+                        <span class="sched-meta"><?= htmlspecialchars(formatDate($s['scheduled_date'])) ?><?= $s['location'] ? ' • ' . htmlspecialchars($s['location']) : '' ?></span>
+                    </div>
+                    <span class="s-pill s-pill-blue"><?= htmlspecialchars($s['type_name'] ?? 'Task') ?></span>
+                </div>
+            <?php endforeach; endif; ?>
+        </div>
+    </div>
+
+    <!-- ── KPI Cards (own data only) ── -->
+    <div class="kpi-grid">
+        <?php
+        $accentMap   = ['teal'=>'teal','blue'=>'blue','purple'=>'purple','coral'=>'coral','amber'=>'amber'];
+        foreach ($cards as $c):
+            $accent   = $accentMap[$c[4]] ?? 'teal';
+            $isDanger = ($c[5] ?? '') === 'danger';
+        ?>
+        <div class="kpi-card">
+            <div class="kpi-strip <?= htmlspecialchars($accent) ?>"></div>
+            <div class="kpi-inner">
+                <div class="kpi-row-top">
+                    <div class="kpi-icon <?= htmlspecialchars($c[4]) ?>"><?= sic_icon((string)$c[3]) ?></div>
+                    <span class="kpi-trend <?= $isDanger ? 'danger' : '' ?>"><?= $isDanger ? '⚠ Alert' : '● Live' ?></span>
+                </div>
+                <div class="kpi-label"><?= htmlspecialchars($c[0]) ?></div>
+                <span class="kpi-number"><?= htmlspecialchars((string)$c[1]) ?></span>
+                <div class="kpi-note <?= $isDanger ? 'danger' : '' ?>"><?= htmlspecialchars($c[2]) ?></div>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+
+    <!-- ── Row: Weekly Task Summary | Replacement Alerts (own only) ── -->
+    <div class="dash-grid-row1">
+
+        <!-- Weekly Task Summary (replaces the old global "Availability" widget) -->
+        <div class="d-card">
+            <div class="section-head">
+                <h2 class="section-title"><?= sic_icon('chart') ?>My Weekly Task Summary</h2>
+                <span class="section-badge">Next 7 days</span>
+            </div>
+            <div class="avail-body">
+                <div class="donut-wrap">
+                    <?php if ($weekTotal > 0):
+                        $donutR2 = 52; $donutCirc2 = 2 * M_PI * $donutR2; $cumulative2 = 0;
+                    ?>
+                    <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="70" cy="70" r="<?= $donutR2 ?>" fill="none" stroke="#e2e8f0" stroke-width="18"/>
+                        <?php foreach ($typeBreakdown as $ti => $row):
+                            $pct = ($row['c'] / $weekTotal) * 100;
+                            $dashLen  = ($pct / 100) * $donutCirc2;
+                            $gapLen   = $donutCirc2 - $dashLen;
+                            $rotation = -90 + ($cumulative2 / 100) * 360;
+                            $cumulative2 += $pct;
+                            $color = $typeColors[$ti % count($typeColors)];
+                        ?>
+                        <circle cx="70" cy="70" r="<?= $donutR2 ?>" fill="none"
+                                stroke="<?= htmlspecialchars($color) ?>" stroke-width="18"
+                                stroke-dasharray="<?= round($dashLen, 2) ?> <?= round($gapLen, 2) ?>"
+                                stroke-linecap="butt"
+                                transform="rotate(<?= round($rotation, 2) ?> 70 70)"/>
+                        <?php endforeach; ?>
+                        <circle cx="70" cy="70" r="42" fill="white"/>
+                    </svg>
+                    <?php else: ?>
+                    <svg viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="70" cy="70" r="52" fill="none" stroke="#e2e8f0" stroke-width="18"/>
+                    </svg>
+                    <?php endif; ?>
+                    <div class="donut-center">
+                        <strong><?= $weekTotal ?></strong>
+                        <small>Tasks</small>
+                    </div>
+                </div>
+                <?php if (empty($typeBreakdown)): ?>
+                    <p class="text-muted" style="padding:8px 4px;">No tasks scheduled in the next 7 days.</p>
+                <?php else: foreach ($typeBreakdown as $ti => $row):
+                    $color = $typeColors[$ti % count($typeColors)];
+                    $pct = $weekTotal > 0 ? round(($row['c'] / $weekTotal) * 100) : 0;
+                ?>
+                <div class="avail-legend-item">
+                    <div class="avail-legend-name">
+                        <span class="leg-dot" style="background:<?= htmlspecialchars($color) ?>"></span>
+                        <?= htmlspecialchars($row['type_name']) ?>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div class="avail-pct-bar">
+                            <div class="avail-pct-fill" style="width:<?= $pct ?>%;background:<?= htmlspecialchars($color) ?>"></div>
+                        </div>
+                        <strong><?= (int)$row['c'] ?></strong>
+                    </div>
+                </div>
+                <?php endforeach; endif; ?>
+            </div>
+        </div>
+
+        <!-- Replacement Alerts — only requests this instructor is actually part of -->
+        <div class="d-card">
+            <div class="section-head">
+                <h2 class="section-title"><?= sic_icon('warning') ?>My Replacement Alerts</h2>
+                <a href="<?= app_url('instructor/replacement_request.php') ?>" class="section-link"><?= sic_icon('eye') ?>View all</a>
+            </div>
+            <div class="alert-list">
+                <?php if (empty($myAlerts)): ?>
+                    <p class="text-muted" style="padding:8px 4px;">No pending replacement requests involving you.</p>
+                <?php else: foreach ($myAlerts as $a):
+                    $role = ((int)$a['requested_by_instructor_id'] === $instructorId) ? 'You requested' : 'Suggested for you';
+                ?>
+                <div class="alert-item">
+                    <div class="alert-icon-wrap"><?= sic_icon('warning') ?></div>
+                    <div class="alert-info">
+                        <span class="alert-course"><?= htmlspecialchars($a['task_title']) ?></span>
+                        <span class="alert-meta"><?= htmlspecialchars($role) ?> • <?= htmlspecialchars(formatDate($a['scheduled_date'])) ?></span>
+                    </div>
+                    <span class="s-pill s-pill-orange">Pending</span>
+                </div>
+                <?php endforeach; endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Recent Task Allocations — this instructor's own tasks ONLY ── -->
+    <div class="d-card">
+        <div class="section-head">
+            <h2 class="section-title"><?= sic_icon('history') ?>My Recent Task Allocations</h2>
+            <a href="<?= app_url('instructor/my_tasks.php') ?>" class="section-link"><?= sic_icon('eye') ?>View all</a>
+        </div>
+        <div class="act-table-wrap">
+            <table class="act-table">
+                <thead>
+                    <tr><th>Task / Activity</th><th>Type</th><th>Date</th><th>Time</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                <?php if (empty($myRecentTasks)): ?>
+                    <tr><td colspan="5" class="text-muted">No task allocations yet.</td></tr>
+                <?php else: foreach ($myRecentTasks as $t):
+                    $status = $t['status'] ?? 'Pending';
+                    $cls = $status === 'Completed' ? 's-pill-green'
+                         : ($status === 'Cancelled' ? 's-pill-red'
+                         : ($status === 'Accepted' ? 's-pill-teal' : 's-pill-orange'));
+                ?>
+                <tr>
+                    <td data-label="Task"><?= htmlspecialchars($t['task_title'] ?? 'Academic Task') ?></td>
+                    <td data-label="Type"><?= htmlspecialchars($t['type_name'] ?? '—') ?></td>
+                    <td data-label="Date"><?= !empty($t['scheduled_date']) ? htmlspecialchars(formatDate($t['scheduled_date'])) : '—' ?></td>
+                    <td data-label="Time"><?= htmlspecialchars(trim(formatTime($t['start_time'] ?? '') . ' – ' . formatTime($t['end_time'] ?? ''), ' –')) ?: '—' ?></td>
+                    <td data-label="Status"><span class="s-pill <?= $cls ?>"><?= htmlspecialchars($status) ?></span></td>
+                </tr>
+                <?php endforeach; endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+<?php
+    }
+}

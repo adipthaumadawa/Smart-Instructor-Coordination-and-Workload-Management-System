@@ -61,7 +61,8 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('instructor/timetable.php','Timetable','calendar',$currentPage);
         sidebar_link('instructor/workload.php','Workload','chart-column',$currentPage);
         echo '<p class="sidebar-label">Coordination</p>';
-        sidebar_link('instructor/leave_notification.php','Leave & Notifications','history',$currentPage);
+        sidebar_link('instructor/leave.php','Leave','calendar',$currentPage);
+        sidebar_link('instructor/notifications.php','Notifications','bell',$currentPage);
         sidebar_link('instructor/replacement_request.php','Replacements','user-check',$currentPage);
         echo '<p class="sidebar-label">Account</p>';
         sidebar_link('instructor/setting.php','Settings','settings',$currentPage);

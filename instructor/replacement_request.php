@@ -21,10 +21,13 @@ if (!$instructorId) {
 
 $error = '';
 
-// Handle Accept / Reject of a request where I am the suggested instructor
-if (isset($_GET['respond'], $_GET['action']) && is_numeric($_GET['respond'])) {
-    $reqId = (int)$_GET['respond'];
-    $action = $_GET['action'] === 'accept' ? 'Accepted' : ($_GET['action'] === 'reject' ? 'Rejected' : null);
+// Handle Accept / Reject of a request where I am the suggested instructor.
+// POST + CSRF protected so the decision can't be triggered by a plain link.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['respond'], $_POST['action'])) {
+    csrf_verify();
+
+    $reqId = (int)$_POST['respond'];
+    $action = $_POST['action'] === 'accept' ? 'Accepted' : ($_POST['action'] === 'reject' ? 'Rejected' : null);
 
     if ($action) {
         $chk = $pdo->prepare("SELECT * FROM replacement_requests WHERE id = ? AND suggested_instructor_id = ? AND status = 'Pending'");
@@ -32,25 +35,75 @@ if (isset($_GET['respond'], $_GET['action']) && is_numeric($_GET['respond'])) {
         $reqRow = $chk->fetch();
 
         if ($reqRow) {
-            $upd = $pdo->prepare("UPDATE replacement_requests SET status = ?, responded_by = ?, responded_at = NOW() WHERE id = ?");
-            $upd->execute([$action, $_SESSION['user_id'], $reqId]);
+            try {
+                $pdo->beginTransaction();
 
-            // If accepted, reassign the task to this instructor; coordinator finalizes any further changes.
-            if ($action === 'Accepted') {
-                $reassign = $pdo->prepare("UPDATE task_assignments SET instructor_id = ? WHERE id = ?");
-                $reassign->execute([$instructorId, $reqRow['task_assignment_id']]);
+                $upd = $pdo->prepare("UPDATE replacement_requests SET status = ?, responded_by = ?, responded_at = NOW() WHERE id = ?");
+                $upd->execute([$action, $_SESSION['user_id'], $reqId]);
+
+                $requesterUserId = null;
+                $requesterStmt = $pdo->prepare("SELECT user_id, id FROM instructors WHERE id = ?");
+                $requesterStmt->execute([$reqRow['requested_by_instructor_id']]);
+                $requesterRow = $requesterStmt->fetch();
+                $requesterUserId = $requesterRow['user_id'] ?? null;
+
+                if ($reqRow['leave_record_id']) {
+                    // Leave-based request: this covers the requester's whole leave period,
+                    // not just one task.
+                    if ($action === 'Accepted') {
+                        // The leave is now confirmed.
+                        $confirmLeave = $pdo->prepare("UPDATE leave_records SET status = 'Approved' WHERE id = ?");
+                        $confirmLeave->execute([$reqRow['leave_record_id']]);
+
+                        // Reassign any of the requester's tasks that fall within the leave
+                        // period to the accepting instructor. If they have none scheduled,
+                        // nothing to reassign — the leave is still confirmed either way.
+                        $leaveDates = $pdo->prepare("SELECT start_date, end_date FROM leave_records WHERE id = ?");
+                        $leaveDates->execute([$reqRow['leave_record_id']]);
+                        $ld = $leaveDates->fetch();
+                        if ($ld) {
+                            $reassign = $pdo->prepare("
+                                UPDATE task_assignments
+                                SET instructor_id = ?
+                                WHERE instructor_id = ?
+                                  AND status IN ('Assigned','Accepted')
+                                  AND scheduled_date BETWEEN ? AND ?
+                            ");
+                            $reassign->execute([$instructorId, $reqRow['requested_by_instructor_id'], $ld['start_date'], $ld['end_date']]);
+                        }
+
+                        if ($requesterUserId) {
+                            createNotification($requesterUserId, 'Leave Confirmed', ($_SESSION['full_name'] ?? 'An instructor') . " accepted to cover your leave. Your leave is now confirmed.", 'leave', $reqRow['leave_record_id']);
+                        }
+                    } else {
+                        // Rejected — leave stays Pending; requester must pick another replacement.
+                        if ($requesterUserId) {
+                            createNotification($requesterUserId, 'Replacement Request Rejected', ($_SESSION['full_name'] ?? 'An instructor') . " declined to cover your leave. Please choose another replacement.", 'leave', $reqRow['leave_record_id']);
+                        }
+                    }
+                } else {
+                    // Task-based request (one specific task, not a full leave).
+                    if ($action === 'Accepted' && $reqRow['task_assignment_id']) {
+                        $reassign = $pdo->prepare("UPDATE task_assignments SET instructor_id = ? WHERE id = ?");
+                        $reassign->execute([$instructorId, $reqRow['task_assignment_id']]);
+                    }
+                }
+
+                logActivity($_SESSION['user_id'], 'Respond Replacement', "Replacement request #{$reqId} {$action}");
+
+                // Notify coordinators of the outcome
+                $notifyUsers = $pdo->prepare("SELECT id FROM users WHERE role_id IN (:coord, :chief) AND status = 'active'");
+                $notifyUsers->execute([':coord' => ROLE_COORDINATOR, ':chief' => ROLE_CHIEF_COORDINATOR]);
+                foreach ($notifyUsers->fetchAll(PDO::FETCH_COLUMN) as $uid) {
+                    createNotification($uid, 'Replacement Response', "Replacement request #{$reqId} was {$action} by " . ($_SESSION['full_name'] ?? 'an instructor') . ".", 'replacement', $reqId);
+                }
+
+                $pdo->commit();
+                $_SESSION['success'] = "Replacement request {$action}.";
+            } catch (PDOException $e) {
+                $pdo->rollBack();
+                $_SESSION['error'] = 'Database error: ' . $e->getMessage();
             }
-
-            logActivity($_SESSION['user_id'], 'Respond Replacement', "Replacement request #{$reqId} {$action}");
-
-            // Notify coordinators of the outcome
-            $notifyUsers = $pdo->prepare("SELECT id FROM users WHERE role_id IN (:coord, :chief) AND status = 'active'");
-            $notifyUsers->execute([':coord' => ROLE_COORDINATOR, ':chief' => ROLE_CHIEF_COORDINATOR]);
-            foreach ($notifyUsers->fetchAll(PDO::FETCH_COLUMN) as $uid) {
-                createNotification($uid, 'Replacement Response', "Replacement request #{$reqId} was {$action} by " . ($_SESSION['full_name'] ?? 'an instructor') . ".", 'replacement', $reqId);
-            }
-
-            $_SESSION['success'] = "Replacement request {$action}.";
         } else {
             $_SESSION['error'] = 'Request not found or already handled.';
         }
@@ -129,13 +182,20 @@ $eligibleTasks = $eligibleStmt->fetchAll();
 // Other active instructors (for the suggestion dropdown)
 $otherInstructors = array_values(array_filter(getAllActiveInstructors(), fn($i) => (int)$i['id'] !== $instructorId));
 
-// My submitted requests
+// My submitted requests (task-based AND leave-based)
 $myReqStmt = $pdo->prepare("
-    SELECT rr.*, ta.scheduled_date, ta.start_time, ta.end_time,
-           COALESCE(atr.title, tt.name, 'Academic Task') AS task_title,
+    SELECT rr.*,
+           COALESCE(ta.scheduled_date, lr.start_date) AS scheduled_date,
+           ta.start_time, ta.end_time,
+           lr.end_date AS leave_end_date,
+           CASE WHEN rr.leave_record_id IS NOT NULL
+                THEN CONCAT(lr.leave_type, ' Leave Cover')
+                ELSE COALESCE(atr.title, tt.name, 'Academic Task')
+           END AS task_title,
            su.full_name AS suggested_name
     FROM replacement_requests rr
-    JOIN task_assignments ta ON rr.task_assignment_id = ta.id
+    LEFT JOIN task_assignments ta ON rr.task_assignment_id = ta.id
+    LEFT JOIN leave_records lr ON rr.leave_record_id = lr.id
     LEFT JOIN task_types tt ON ta.task_type_id = tt.id
     LEFT JOIN additional_task_requests atr ON ta.additional_task_request_id = atr.id
     LEFT JOIN instructors si ON rr.suggested_instructor_id = si.id
@@ -146,13 +206,20 @@ $myReqStmt = $pdo->prepare("
 $myReqStmt->execute([':iid' => $instructorId]);
 $myRequests = $myReqStmt->fetchAll();
 
-// Requests where I am the suggested replacement
+// Requests where I am the suggested replacement (task-based AND leave-based)
 $forMeStmt = $pdo->prepare("
-    SELECT rr.*, ta.scheduled_date, ta.start_time, ta.end_time,
-           COALESCE(atr.title, tt.name, 'Academic Task') AS task_title,
+    SELECT rr.*,
+           COALESCE(ta.scheduled_date, lr.start_date) AS scheduled_date,
+           ta.start_time, ta.end_time,
+           lr.end_date AS leave_end_date,
+           CASE WHEN rr.leave_record_id IS NOT NULL
+                THEN CONCAT(lr.leave_type, ' Leave Cover')
+                ELSE COALESCE(atr.title, tt.name, 'Academic Task')
+           END AS task_title,
            ru.full_name AS requester_name
     FROM replacement_requests rr
-    JOIN task_assignments ta ON rr.task_assignment_id = ta.id
+    LEFT JOIN task_assignments ta ON rr.task_assignment_id = ta.id
+    LEFT JOIN leave_records lr ON rr.leave_record_id = lr.id
     LEFT JOIN task_types tt ON ta.task_type_id = tt.id
     LEFT JOIN additional_task_requests atr ON ta.additional_task_request_id = atr.id
     JOIN instructors ri ON rr.requested_by_instructor_id = ri.id
@@ -237,19 +304,34 @@ include __DIR__ . '/../includes/header.php';
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
-                            <thead><tr><th>Task</th><th>Date</th><th>Requested By</th><th>Reason</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                            <thead><tr><th>Task / Leave</th><th>Period</th><th>Requested By</th><th>Reason</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
                             <tbody>
                                 <?php foreach ($requestsForMe as $r): ?>
                                     <tr>
-                                        <td data-label="Task"><?= htmlspecialchars($r['task_title']) ?></td>
-                                        <td data-label="Date"><?= formatDate($r['scheduled_date']) ?></td>
+                                        <td data-label="Task / Leave"><?= htmlspecialchars($r['task_title']) ?></td>
+                                        <td data-label="Period">
+                                            <?= formatDate($r['scheduled_date']) ?>
+                                            <?php if (!empty($r['leave_end_date']) && $r['leave_end_date'] !== $r['scheduled_date']): ?>
+                                                &ndash; <?= formatDate($r['leave_end_date']) ?>
+                                            <?php endif; ?>
+                                        </td>
                                         <td data-label="Requested By"><?= htmlspecialchars($r['requester_name']) ?></td>
                                         <td data-label="Reason"><?= htmlspecialchars($r['reason']) ?></td>
                                         <td data-label="Status"><?= getStatusBadge($r['status']) ?></td>
                                         <td data-label="Actions" class="text-end action-cell">
                                             <?php if ($r['status'] === 'Pending'): ?>
-                                                <a href="?respond=<?= (int)$r['id'] ?>&action=accept" class="btn btn-sm btn-success">Accept</a>
-                                                <a href="?respond=<?= (int)$r['id'] ?>&action=reject" class="btn btn-sm btn-outline-danger">Reject</a>
+                                                <form method="POST" action="" style="display:inline-block;">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="respond" value="<?= (int)$r['id'] ?>">
+                                                    <input type="hidden" name="action" value="accept">
+                                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Accept this replacement request?')">Accept</button>
+                                                </form>
+                                                <form method="POST" action="" style="display:inline-block;">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="respond" value="<?= (int)$r['id'] ?>">
+                                                    <input type="hidden" name="action" value="reject">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Reject this replacement request?')">Reject</button>
+                                                </form>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -269,15 +351,20 @@ include __DIR__ . '/../includes/header.php';
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
-                            <thead><tr><th>Task</th><th>Date</th><th>Suggested Instructor</th><th>Status</th></tr></thead>
+                            <thead><tr><th>Task / Leave</th><th>Period</th><th>Suggested Instructor</th><th>Status</th></tr></thead>
                             <tbody>
                                 <?php if (empty($myRequests)): ?>
                                     <tr><td colspan="4" class="text-muted">No replacement requests submitted yet.</td></tr>
                                 <?php endif; ?>
                                 <?php foreach ($myRequests as $r): ?>
                                     <tr>
-                                        <td data-label="Task"><?= htmlspecialchars($r['task_title']) ?></td>
-                                        <td data-label="Date"><?= formatDate($r['scheduled_date']) ?></td>
+                                        <td data-label="Task / Leave"><?= htmlspecialchars($r['task_title']) ?></td>
+                                        <td data-label="Period">
+                                            <?= formatDate($r['scheduled_date']) ?>
+                                            <?php if (!empty($r['leave_end_date']) && $r['leave_end_date'] !== $r['scheduled_date']): ?>
+                                                &ndash; <?= formatDate($r['leave_end_date']) ?>
+                                            <?php endif; ?>
+                                        </td>
                                         <td data-label="Suggested"><?= htmlspecialchars($r['suggested_name'] ?? 'Coordinator to decide') ?></td>
                                         <td data-label="Status"><?= getStatusBadge($r['status']) ?></td>
                                     </tr>
