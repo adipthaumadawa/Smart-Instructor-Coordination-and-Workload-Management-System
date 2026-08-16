@@ -8,6 +8,7 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/dashboard_ui.php';
 
 checkRole(ROLE_ADMIN);
 
@@ -33,6 +34,53 @@ $users = $pdo->query("SELECT u.*, r.role_name FROM users u JOIN roles r ON u.rol
 $pageTitle = 'Manage Users';
 include __DIR__ . '/../includes/header.php';
 ?>
+
+<style>
+.avatar-mini {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    flex: 0 0 32px !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 50% !important;
+    background: linear-gradient(145deg, var(--teal2, #0a9ba8), var(--teal, #087f8c)) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+    overflow: hidden !important;
+}
+.avatar-mini img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+}
+.user-cell-flex {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-wrap: nowrap !important;
+}
+.user-cell-flex strong {
+    white-space: nowrap !important;
+}
+/* Action cell alignment fixes */
+.action-cell {
+    text-align: right !important;
+    white-space: nowrap !important;
+}
+.action-btn-group {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
+}
+.action-btn-group .btn {
+    margin: 0 !important;
+}
+</style>
 
             <div class="page-toolbar">
                 <div>
@@ -84,8 +132,13 @@ include __DIR__ . '/../includes/header.php';
                                     <tr>
                                         <td data-label="#"><?= $index + 1 ?></td>
                                         <td data-label="User">
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span class="avatar-mini"><?= strtoupper(substr($user['full_name'], 0, 1)) ?></span>
+                                            <div class="user-cell-flex">
+                                                <?php 
+                                                    $cleanName = trim(preg_replace('/^(Dr\.|Prof\.|Mr\.|Mrs\.|Ms\.)\s+/i', '', $user['full_name'] ?? 'U'));
+                                                    $initial = mb_substr($cleanName, 0, 1);
+                                                    $avatarUrl = !empty($user['avatar_url']) ? app_url($user['avatar_url']) : null;
+                                                ?>
+                                                <?= sic_user_avatar($avatarUrl, $initial, 'avatar-mini') ?>
                                                 <strong><?= htmlspecialchars($user['full_name']) ?></strong>
                                             </div>
                                         </td>
@@ -95,16 +148,18 @@ include __DIR__ . '/../includes/header.php';
                                         <td data-label="Status"><?= getStatusBadge($user['status']) ?></td>
                                         <td data-label="Created"><?= !empty($user['created_at']) ? date('d M Y', strtotime($user['created_at'])) : 'N/A' ?></td>
                                         <td data-label="Actions" class="text-end action-cell">
-                                            <a href="<?= app_url('admin/edit_user.php?id=' . (int)$user['id']) ?>" class="btn btn-sm btn-outline-primary">
-                                                <span class="ui-dot" aria-hidden="true"></span>
-                                                Edit
-                                            </a>
-                                            <?php if ((int)$user['id'] !== (int)($_SESSION['user_id'] ?? 0)): ?>
-                                                <a href="?delete=<?= (int)$user['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('This will deactivate the user, not permanently delete. Continue?')">
+                                            <div class="action-btn-group">
+                                                <a href="<?= app_url('admin/edit_user.php?id=' . (int)$user['id']) ?>" class="btn btn-sm btn-outline-primary">
                                                     <span class="ui-dot" aria-hidden="true"></span>
-                                                    Deactivate
+                                                    Edit
                                                 </a>
-                                            <?php endif; ?>
+                                                <?php if ((int)$user['id'] !== (int)($_SESSION['user_id'] ?? 0)): ?>
+                                                    <a href="?delete=<?= (int)$user['id'] ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('This will deactivate the user, not permanently delete. Continue?')">
+                                                        <span class="ui-dot" aria-hidden="true"></span>
+                                                        Deactivate
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

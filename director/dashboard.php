@@ -8,6 +8,10 @@ require_once __DIR__ . '/../includes/dashboard_ui.php';
 
 checkRole(ROLE_DIRECTOR);
 
+// Define active page context for the header menu sidebar navigation
+$activeRole = 'director';
+$currentPage = 'dashboard';
+
 $pageTitle = "Director / Department Head Dashboard";
 include __DIR__ . '/../includes/header.php';
 
