@@ -223,6 +223,93 @@ function getSmartSuggestions($taskTypeId, $date, $startTime, $endTime, $streamId
 }
 
 /**
+ * =====================================================
+ * SMART LEAVE REPLACEMENT SUGGESTION ALGORITHM
+ * =====================================================
+ * Used when an instructor records a leave and must pick another
+ * instructor to cover for them during the whole leave period
+ * (not just one task). Simple, explainable algorithm:
+ * 1. Must be active, and not the instructor who is going on leave
+ * 2. Not already on their own approved leave that overlaps the period
+ * 3. Preferably matching academic stream (shown first, if provided)
+ * 4. Sorted by lowest workload during that period
+ */
+function getSmartLeaveReplacementSuggestions($excludeInstructorId, $startDate, $endDate, $streamId = null, $limit = 8) {
+    global $pdo;
+
+    $sql = "
+        SELECT i.*, u.full_name, ast.name as stream_name, d.name as dept_name,
+               (SELECT COALESCE(SUM(ta.duration_hours), 0)
+                FROM task_assignments ta
+                WHERE ta.instructor_id = i.id
+                  AND ta.is_presentation_panel = 0
+                  AND ta.status IN ('Assigned','Accepted','Completed')
+                  AND ta.scheduled_date BETWEEN :period_from AND :period_to
+               ) as period_workload
+        FROM instructors i
+        JOIN users u ON i.user_id = u.id
+        JOIN academic_streams ast ON i.academic_stream_id = ast.id
+        JOIN departments d ON i.department_id = d.id
+        WHERE i.status = 'active'
+          AND i.id != :exclude_id
+          AND NOT EXISTS (
+              SELECT 1 FROM leave_records lr
+              WHERE lr.instructor_id = i.id
+                AND lr.status = 'Approved'
+                AND lr.start_date <= :period_to2
+                AND lr.end_date >= :period_from2
+          )
+    ";
+
+    $params = [
+        ':period_from' => $startDate,
+        ':period_to' => $endDate,
+        ':exclude_id' => $excludeInstructorId,
+        ':period_to2' => $endDate,
+        ':period_from2' => $startDate,
+    ];
+
+    if ($streamId) {
+        $sql .= " AND i.academic_stream_id = :stream_id";
+        $params[':stream_id'] = $streamId;
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $instructors = $stmt->fetchAll();
+
+    // Rank: same stream first (if a stream was given), then lowest workload
+    usort($instructors, function ($a, $b) use ($streamId) {
+        if ($streamId) {
+            $aMatch = ((int)$a['academic_stream_id'] === (int)$streamId) ? 0 : 1;
+            $bMatch = ((int)$b['academic_stream_id'] === (int)$streamId) ? 0 : 1;
+            if ($aMatch !== $bMatch) {
+                return $aMatch <=> $bMatch;
+            }
+        }
+        return $a['period_workload'] <=> $b['period_workload'];
+    });
+
+    $suggestions = [];
+    foreach ($instructors as $instructor) {
+        $suggestions[] = [
+            'instructor_id' => $instructor['id'],
+            'name' => $instructor['full_name'],
+            'employee_id' => $instructor['employee_id'],
+            'stream' => $instructor['stream_name'],
+            'department' => $instructor['dept_name'],
+            'current_workload' => round($instructor['period_workload'], 1),
+            'designation' => $instructor['designation'],
+        ];
+        if (count($suggestions) >= $limit) {
+            break;
+        }
+    }
+
+    return $suggestions;
+}
+
+/**
  * Check if instructor has timetable conflict on given date/time
  */
 function hasTimetableConflict($instructorId, $date, $startTime, $endTime) {
@@ -430,5 +517,18 @@ function getStatusBadge($status) {
     ];
     
     return $badges[$status] ?? '<span class="badge bg-secondary">' . ucfirst($status) . '</span>';
+}
+
+/**
+ * Status badge specifically for leave_records rows.
+ * A leave's 'Approved' status is only ever set once the chosen
+ * replacement instructor has accepted, so it is shown as "Confirmed"
+ * here to match how the workflow is described to instructors.
+ */
+function getLeaveStatusBadge($status) {
+    if (strtolower($status) === 'approved') {
+        return '<span class="badge bg-success">Confirmed</span>';
+    }
+    return getStatusBadge($status);
 }
 ?>
