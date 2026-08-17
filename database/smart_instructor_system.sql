@@ -504,3 +504,21 @@ CREATE TABLE timetables (
 
 
 DELETE FROM timetables;
+
+CREATE TABLE instructor_attendance (
+    id INT(11) NOT NULL AUTO_INCREMENT,
+    instructor_id INT(11) NOT NULL,
+    attendance_date DATE NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'Present',
+    remarks TEXT NULL,
+    recorded_by INT(11) NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY unique_instructor_date
+        (instructor_id, attendance_date),
+    INDEX idx_attendance_date (attendance_date),
+    INDEX idx_instructor_id (instructor_id),
+    INDEX idx_status (status)
+);
