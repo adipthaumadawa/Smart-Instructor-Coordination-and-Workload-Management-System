@@ -522,3 +522,94 @@ CREATE TABLE instructor_attendance (
     INDEX idx_instructor_id (instructor_id),
     INDEX idx_status (status)
 );
+-- =====================================================
+-- Migration: Full upgrade to "completed project" feature set
+-- Smart Instructor Coordination and Workload Management System
+--
+-- Combines:
+--   1) timetable_requirements table (non-academic-staff-posted slots)
+--   2) timetable_slots ALTER (link slots back to requirements + auto-assign metadata)
+--   3) instructor_attendance table (non-academic-staff-managed attendance)
+--
+-- Run this ONCE against an existing smart_instructor_system database
+-- that was set up before this feature existed. Safe to re-run —
+-- every step is guarded (IF NOT EXISTS / column-existence check).
+-- =====================================================
+
+USE smart_instructor_system;
+
+-- -----------------------------------------------------
+-- 1. TIMETABLE REQUIREMENTS
+--    Raw slot posted by non-academic staff, BEFORE any
+--    instructor is assigned to it.
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS timetable_requirements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    day_of_week ENUM('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday') NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    subject VARCHAR(150) NOT NULL,
+    location VARCHAR(100),
+    academic_stream_id INT NULL,                -- required qualification/stream; NULL = any stream
+    required_instructors INT NOT NULL DEFAULT 1, -- how many instructors this slot needs
+    semester VARCHAR(20) DEFAULT 'Semester 1',
+    academic_year VARCHAR(10) DEFAULT '2025/2026',
+    status ENUM('Open','Partially Staffed','Fully Staffed') DEFAULT 'Open',
+    created_by INT NULL,                         -- user_id of non-academic staff who posted it
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (academic_stream_id) REFERENCES academic_streams(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- -----------------------------------------------------
+-- 2. ALTER timetable_slots to link back to requirements
+--    and record auto-assignment metadata.
+--    Guarded so re-running this script doesn't error out
+--    if the columns already exist.
+-- -----------------------------------------------------
+SET @col_exists := (
+    SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = 'smart_instructor_system'
+      AND TABLE_NAME = 'timetable_slots'
+      AND COLUMN_NAME = 'requirement_id'
+);
+
+SET @sql := IF(@col_exists = 0,
+    'ALTER TABLE timetable_slots
+        ADD COLUMN requirement_id INT NULL AFTER instructor_id,
+        ADD COLUMN auto_assigned TINYINT(1) DEFAULT 0 AFTER academic_year,
+        ADD COLUMN assigned_by INT NULL AFTER auto_assigned,
+        ADD FOREIGN KEY (requirement_id) REFERENCES timetable_requirements(id) ON DELETE CASCADE,
+        ADD FOREIGN KEY (assigned_by) REFERENCES users(id) ON DELETE SET NULL',
+    'SELECT "timetable_slots already upgraded, skipping ALTER" AS notice'
+);
+
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- -----------------------------------------------------
+-- 3. INSTRUCTOR ATTENDANCE
+--    Managed by Non-Academic Staff (not student attendance).
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS instructor_attendance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    instructor_id INT NOT NULL,
+    attendance_date DATE NOT NULL,
+    status ENUM('Present', 'Absent', 'Late', 'On Leave', 'Half Day') NOT NULL DEFAULT 'Present',
+    check_in_time TIME NULL,
+    check_out_time TIME NULL,
+    notes TEXT NULL,
+    recorded_by INT NULL COMMENT 'users.id of Non-Academic Staff who recorded this',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_instructor_date (instructor_id, attendance_date),
+    FOREIGN KEY (instructor_id) REFERENCES instructors(id) ON DELETE CASCADE,
+    FOREIGN KEY (recorded_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_attendance_date (attendance_date),
+    INDEX idx_attendance_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- =====================================================
+-- END OF MIGRATION
+-- =====================================================
