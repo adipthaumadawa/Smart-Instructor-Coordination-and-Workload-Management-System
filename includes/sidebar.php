@@ -78,17 +78,58 @@ if (!function_exists('sidebar_link')) {
         echo '<p class="sidebar-label">Account</p>';
         sidebar_link('instructor/setting.php','Settings','settings',$currentPage);
       }
+      if ($currentRole === ROLE_NON_ACADEMIC) {
 
-if ($currentRole === ROLE_DIRECTOR) {
-        echo '<p class="sidebar-label">Monitoring &amp; Oversight</p>';
-        sidebar_link('director/active_tasks.php', 'Active Tasks', 'briefcase-business', $currentPage);
-        sidebar_link('director/leave_records.php', 'Leave Records', 'history', $currentPage);
-        sidebar_link('director/replacements.php', 'Replacements', 'user-check', $currentPage);
-        sidebar_link('director/room_usage.php', 'Room Usage', 'calendar', $currentPage);
-        sidebar_link('director/reports.php', 'Reports', 'chart-column', $currentPage);
-        sidebar_link('director/allocations.php', 'Allocation Status', 'square-pen', $currentPage);
-      }
+      echo '<p class="sidebar-label">Timetable &amp; Rooms</p>';
 
+     sidebar_link(
+        'non_academic/timetable_management.php',
+        'Timetable Management',
+        'calendar',
+        $currentPage
+       );
+
+      sidebar_link(
+        'non_academic/room_schedules.php',
+        'Room Schedules',
+        'building-2',
+        $currentPage
+      );
+
+      sidebar_link(
+        'non_academic/lecture_hall_booking.php',
+        'Lecture Hall Booking',
+        'lecture-hall',
+        $currentPage
+      );
+
+
+      echo '<p class="sidebar-label">Records</p>';
+
+      sidebar_link(
+        'non_academic/attendance_records.php',
+        'Attendance Records',
+        'attendance',
+        $currentPage
+      );
+
+      sidebar_link(
+        'non_academic/leave_records.php',
+        'Leave Records',
+        'history',
+        $currentPage
+      );
+
+
+      echo '<p class="sidebar-label">Notifications</p>';
+
+      sidebar_link(
+        'non_academic/leave_notifications.php',
+        'Notifications',
+        'bell',
+        $currentPage
+      );
+}
       if ($currentRole === ROLE_PROJECT_COORDINATOR) {
         echo '<p class="sidebar-label">Presentation Coordination</p>';
         sidebar_link('project_coordinator/sessions.php','Sessions & Venues','calendar',$currentPage);
