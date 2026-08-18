@@ -12,9 +12,9 @@ checkRole(ROLE_INSTRUCTOR);
 $pageTitle = 'Instructor Dashboard';
 include __DIR__ . '/../includes/header.php';
 
-sic_render_dashboard(
+sic_render_instructor_dashboard(
     'Instructor Dashboard',
-    'View today\'s tasks, weekly workload, replacement requests, and notifications.',
+    'Your upcoming schedule, today\'s tasks, weekly workload, and requests that involve you.',
     sic_dashboard_cards('instructor'),
     app_url('instructor/replacement_request.php'),
     'Request Replacement'

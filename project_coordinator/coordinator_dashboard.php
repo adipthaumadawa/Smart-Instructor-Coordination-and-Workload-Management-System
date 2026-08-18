@@ -1,147 +1,46 @@
 <?php
 /**
- * Project Coordinator Dashboard
+ * Project Coordinator - Dashboard
  * Smart Instructor Coordination and Workload Management System
+<<<<<<< HEAD
+=======
  * 
  * Access: Project Coordinator role (Role ID: 6)
  * Manages presentation sessions, panel assignments, and schedules.
+>>>>>>> origin/main
  */
-
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
+<<<<<<< HEAD
+require_once __DIR__ . '/../includes/dashboard_ui.php';
+
+// Only Project Coordinators can access this dashboard.
+=======
 require_once __DIR__ . '/../includes/dashboard_ui.php'; // Resolves sic_user_avatar() in navbar.php
 
 // Ensure user is logged in and authorized
 requireLogin();
+>>>>>>> origin/main
 checkRole(ROLE_PROJECT_COORDINATOR);
 
-// Get current user information
-$currentUser = getCurrentUser();
-$userId = $currentUser['id'];
+$pageTitle = 'Project Coordinator Dashboard';
+include __DIR__ . '/../includes/header.php';
 
-// Fetch all presentation sessions managed by this coordinator
-try {
-    $stmt = $pdo->prepare("
-        SELECT ps.*
-        FROM presentation_sessions ps
-        WHERE ps.project_coordinator_id = ?
-        ORDER BY ps.session_date DESC
-    ");
-    $stmt->execute([$userId]);
-    $allSessions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $allSessions = [];
-    error_log("Error fetching presentation sessions: " . $e->getMessage());
-}
+sic_render_dashboard(
+    'Project Coordinator Dashboard',
+    'Create presentation sessions, assign evaluation panels, and manage venue bookings.',
+    sic_dashboard_cards('project'),
+    app_url('project_coordinator/sessions.php'),
+    'New Session'
+);
 
-// Fetch upcoming presentation sessions
-try {
-    $stmt = $pdo->prepare("
-        SELECT ps.*
-        FROM presentation_sessions ps
-        WHERE ps.project_coordinator_id = ? AND ps.session_date >= CURDATE()
-        ORDER BY ps.session_date ASC
-        LIMIT 5
-    ");
-    $stmt->execute([$userId]);
-    $upcomingSessions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $upcomingSessions = [];
-    error_log("Error fetching upcoming sessions: " . $e->getMessage());
-}
-
-// Fetch sessions by status
-try {
-    $stmt = $pdo->prepare("
-        SELECT ps.status, COUNT(*) as count
-        FROM presentation_sessions ps
-        WHERE ps.project_coordinator_id = ?
-        GROUP BY ps.status
-    ");
-    $stmt->execute([$userId]);
-    $statusCounts = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-} catch (PDOException $e) {
-    $statusCounts = [];
-    error_log("Error fetching status counts: " . $e->getMessage());
-}
-
-// Fetch panel assignments needing attention (incomplete panels)
-try {
-    $stmt = $pdo->prepare("
-        SELECT ps.*, COUNT(ppm.id) as panel_members_count
-        FROM presentation_sessions ps
-        LEFT JOIN presentation_panel_members ppm ON ps.id = ppm.presentation_session_id
-        WHERE ps.project_coordinator_id = ? AND ps.status IN ('Scheduled', 'Pending')
-        GROUP BY ps.id
-        ORDER BY ps.session_date ASC
-        LIMIT 5
-    ");
-    $stmt->execute([$userId]);
-    $sessionsNeedingAttention = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $sessionsNeedingAttention = [];
-    error_log("Error fetching sessions needing attention: " . $e->getMessage());
-}
-
-// Fetch available instructors for panel assignment
-try {
-    $stmt = $pdo->prepare("
-        SELECT u.id, u.full_name, d.name as department, i.designation
-        FROM users u
-        LEFT JOIN instructors i ON u.id = i.user_id
-        LEFT JOIN departments d ON i.department_id = d.id
-        WHERE u.role_id IN (?, ?, ?)
-        AND u.status = 'active'
-        ORDER BY u.full_name
-        LIMIT 20
-    ");
-    $stmt->execute([ROLE_INSTRUCTOR, ROLE_COORDINATOR, ROLE_CHIEF_COORDINATOR]);
-    $availableInstructors = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $availableInstructors = [];
-    error_log("Error fetching instructors: " . $e->getMessage());
-}
-
-// Calculate statistics
-$totalSessions = count($allSessions);
-$scheduledSessions = $statusCounts['Scheduled'] ?? 0;
-$completedSessions = $statusCounts['Completed'] ?? 0;
-$pendingSessions = $statusCounts['Pending'] ?? 0;
-
-// Fetch recent activity
-try {
-    $stmt = $pdo->prepare("
-        SELECT al.*
-        FROM activity_logs al
-        WHERE al.user_id = ?
-        ORDER BY al.created_at DESC
-        LIMIT 5
-    ");
-    $stmt->execute([$userId]);
-    $recentActivity = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $recentActivity = [];
-    error_log("Error fetching activity logs: " . $e->getMessage());
-}
-
-// Fetch notifications
-try {
-    $stmt = $pdo->prepare("
-        SELECT * FROM notifications
-        WHERE user_id = ? AND is_read = 0
-        ORDER BY created_at DESC
-        LIMIT 3
-    ");
-    $stmt->execute([$userId]);
-    $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    $notifications = [];
-    error_log("Error fetching notifications: " . $e->getMessage());
-}
+include __DIR__ . '/../includes/footer.php';
 ?>
+<<<<<<< HEAD
+=======
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -372,3 +271,4 @@ try {
 
 </body>
 </html>
+>>>>>>> origin/main

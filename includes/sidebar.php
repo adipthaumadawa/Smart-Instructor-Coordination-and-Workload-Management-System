@@ -47,6 +47,7 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('coordinator/instructor.php','All Instructors','users',$currentPage);
         sidebar_link('coordinator/availability.php','Availability','calendar',$currentPage);
         echo '<p class="sidebar-label">Tasks &amp; Coordination</p>';
+        sidebar_link('coordinator/timetable_requirements.php','Timetable Requirements','calendar',$currentPage);
         sidebar_link('coordinator/additional_tasks.php','Additional Tasks','square-pen',$currentPage);
         sidebar_link('coordinator/smart_suggestions.php','Smart Suggestions','search',$currentPage);
         sidebar_link('coordinator/replacements.php','Replacement Requests','user-check',$currentPage);
@@ -55,13 +56,24 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('coordinator/leave_records.php','Leave Records','history',$currentPage);
       }
 
+      if ($currentRole === ROLE_NON_ACADEMIC) {
+        echo '<p class="sidebar-label">Timetable</p>';
+        sidebar_link('non_academic/timetable_records.php','Timetable Requirements','calendar',$currentPage);
+        sidebar_link('non_academic/room_schedules.php','Room & Lab Schedules','square-pen',$currentPage);
+        echo '<p class="sidebar-label">Attendance &amp; Leave</p>';
+        sidebar_link('non_academic/attendance.php','Manage Attendance','user-check',$currentPage);
+        sidebar_link('non_academic/leave_records.php','Leave Records','history',$currentPage);
+        sidebar_link('non_academic/leave_notifications.php','Leave Notifications','bell',$currentPage);
+      }
+
       if ($currentRole === ROLE_INSTRUCTOR) {
         echo '<p class="sidebar-label">My Work</p>';
         sidebar_link('instructor/my_tasks.php','My Tasks','briefcase-business',$currentPage);
         sidebar_link('instructor/timetable.php','Timetable','calendar',$currentPage);
         sidebar_link('instructor/workload.php','Workload','chart-column',$currentPage);
         echo '<p class="sidebar-label">Coordination</p>';
-        sidebar_link('instructor/leave_notification.php','Leave & Notifications','history',$currentPage);
+        sidebar_link('instructor/leave.php','Leave','calendar',$currentPage);
+        sidebar_link('instructor/notifications.php','Notifications','bell',$currentPage);
         sidebar_link('instructor/replacement_request.php','Replacements','user-check',$currentPage);
         echo '<p class="sidebar-label">Account</p>';
         sidebar_link('instructor/setting.php','Settings','settings',$currentPage);
@@ -124,6 +136,7 @@ if (!function_exists('sidebar_link')) {
         echo '<p class="sidebar-label">Account</p>';
         sidebar_link('project_coordinator/setting.php','Settings','settings',$currentPage);
       }
+      
       ?>
     </ul>
   </nav>
