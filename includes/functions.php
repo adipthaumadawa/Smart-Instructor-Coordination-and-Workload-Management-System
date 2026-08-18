@@ -310,6 +310,203 @@ function getSmartLeaveReplacementSuggestions($excludeInstructorId, $startDate, $
 }
 
 /**
+ * =====================================================
+ * TIMETABLE REQUIREMENTS: AUTO-ASSIGNMENT
+ * =====================================================
+ * Non-academic staff post a semester timetable requirement
+ * (day/time/subject/location, how many instructors it needs,
+ * optionally which academic stream it belongs to). These
+ * functions pick instructors for it automatically, and let
+ * the coordinator adjust the result afterwards.
+ */
+
+/**
+ * Total weekly recurring teaching hours an instructor already
+ * has on the timetable (used to rank candidates by workload —
+ * separate from calculateWorkload(), which is for dated,
+ * one-off task_assignments, not the recurring weekly timetable).
+ */
+function getWeeklyTeachingHours($instructorId) {
+    global $pdo;
+
+    $stmt = $pdo->prepare("
+        SELECT COALESCE(SUM(TIME_TO_SEC(TIMEDIFF(end_time, start_time))), 0) / 3600 AS total_hours
+        FROM timetable_slots
+        WHERE instructor_id = :instructor_id
+    ");
+    $stmt->execute([':instructor_id' => $instructorId]);
+    $result = $stmt->fetch();
+    return (float)($result['total_hours'] ?? 0);
+}
+
+/**
+ * Check if an instructor already has a recurring timetable slot
+ * that overlaps this day/time (weekly conflict, not date-based —
+ * use hasTimetableConflict() instead for a specific calendar date).
+ */
+function hasWeeklyTimetableConflict($instructorId, $dayOfWeek, $startTime, $endTime, $excludeSlotId = null) {
+    global $pdo;
+
+    $sql = "
+        SELECT COUNT(*) as conflict_count
+        FROM timetable_slots
+        WHERE instructor_id = :instructor_id
+          AND day_of_week = :day_of_week
+          AND (start_time < :end_time AND end_time > :start_time)
+    ";
+    $params = [
+        ':instructor_id' => $instructorId,
+        ':day_of_week' => $dayOfWeek,
+        ':start_time' => $startTime,
+        ':end_time' => $endTime
+    ];
+    if ($excludeSlotId) {
+        $sql .= " AND id != :exclude_id";
+        $params[':exclude_id'] = $excludeSlotId;
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $result = $stmt->fetch();
+    return ($result['conflict_count'] ?? 0) > 0;
+}
+
+/**
+ * Ranked list of instructors eligible to fill a timetable requirement:
+ * 1. Must be active (not on_leave / inactive)
+ * 2. Matching academic stream, if the requirement specifies one
+ * 3. Not already assigned to this requirement
+ * 4. No weekly timetable conflict with the requirement's day/time
+ * 5. Sorted by lowest current weekly teaching hours first
+ */
+function getEligibleInstructorsForRequirement($requirementId, $limit = null) {
+    global $pdo;
+
+    $reqStmt = $pdo->prepare("SELECT * FROM timetable_requirements WHERE id = ?");
+    $reqStmt->execute([$requirementId]);
+    $requirement = $reqStmt->fetch();
+    if (!$requirement) return [];
+
+    $sql = "
+        SELECT i.*, u.full_name, ast.name as stream_name
+        FROM instructors i
+        JOIN users u ON i.user_id = u.id
+        JOIN academic_streams ast ON i.academic_stream_id = ast.id
+        WHERE i.status = 'active'
+          AND i.id NOT IN (
+              SELECT instructor_id FROM timetable_slots WHERE requirement_id = :requirement_id
+          )
+    ";
+    $params = [':requirement_id' => $requirementId];
+
+    if (!empty($requirement['academic_stream_id'])) {
+        $sql .= " AND i.academic_stream_id = :stream_id";
+        $params[':stream_id'] = $requirement['academic_stream_id'];
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $candidates = $stmt->fetchAll();
+
+    $eligible = [];
+    foreach ($candidates as $c) {
+        if (hasWeeklyTimetableConflict($c['id'], $requirement['day_of_week'], $requirement['start_time'], $requirement['end_time'])) {
+            continue;
+        }
+        $c['weekly_hours'] = getWeeklyTeachingHours($c['id']);
+        $eligible[] = $c;
+    }
+
+    usort($eligible, fn($a, $b) => $a['weekly_hours'] <=> $b['weekly_hours']);
+
+    if ($limit) {
+        $eligible = array_slice($eligible, 0, $limit);
+    }
+    return $eligible;
+}
+
+/**
+ * Recompute and store a requirement's status based on how many
+ * instructors are currently assigned to it vs how many it needs.
+ */
+function refreshRequirementStatus($requirementId) {
+    global $pdo;
+
+    $reqStmt = $pdo->prepare("SELECT required_instructors FROM timetable_requirements WHERE id = ?");
+    $reqStmt->execute([$requirementId]);
+    $requirement = $reqStmt->fetch();
+    if (!$requirement) return;
+
+    $countStmt = $pdo->prepare("SELECT COUNT(*) as c FROM timetable_slots WHERE requirement_id = ?");
+    $countStmt->execute([$requirementId]);
+    $assigned = (int)$countStmt->fetch()['c'];
+    $required = (int)$requirement['required_instructors'];
+
+    if ($assigned <= 0) {
+        $status = 'Open';
+    } elseif ($assigned < $required) {
+        $status = 'Partially Staffed';
+    } else {
+        $status = 'Fully Staffed';
+    }
+
+    $pdo->prepare("UPDATE timetable_requirements SET status = ? WHERE id = ?")->execute([$status, $requirementId]);
+    return $status;
+}
+
+/**
+ * Automatically fill a requirement with the best-ranked eligible
+ * instructors until required_instructors is met (or candidates run out).
+ * Called right after non-academic staff post a requirement, and can be
+ * re-run by the coordinator later to try to fill any still-open seats.
+ * Returns the number of instructors newly assigned.
+ */
+function autoAssignTimetableRequirement($requirementId) {
+    global $pdo;
+
+    $reqStmt = $pdo->prepare("SELECT * FROM timetable_requirements WHERE id = ?");
+    $reqStmt->execute([$requirementId]);
+    $requirement = $reqStmt->fetch();
+    if (!$requirement) return 0;
+
+    $countStmt = $pdo->prepare("SELECT COUNT(*) as c FROM timetable_slots WHERE requirement_id = ?");
+    $countStmt->execute([$requirementId]);
+    $alreadyAssigned = (int)$countStmt->fetch()['c'];
+    $stillNeeded = (int)$requirement['required_instructors'] - $alreadyAssigned;
+    if ($stillNeeded <= 0) {
+        refreshRequirementStatus($requirementId);
+        return 0;
+    }
+
+    $candidates = getEligibleInstructorsForRequirement($requirementId, $stillNeeded);
+
+    $insert = $pdo->prepare("
+        INSERT INTO timetable_slots
+            (instructor_id, requirement_id, day_of_week, start_time, end_time, subject, location, semester, academic_year, auto_assigned, assigned_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, NULL)
+    ");
+
+    $newlyAssigned = 0;
+    foreach ($candidates as $candidate) {
+        $insert->execute([
+            $candidate['id'],
+            $requirementId,
+            $requirement['day_of_week'],
+            $requirement['start_time'],
+            $requirement['end_time'],
+            $requirement['subject'],
+            $requirement['location'],
+            $requirement['semester'],
+            $requirement['academic_year']
+        ]);
+        $newlyAssigned++;
+    }
+
+    refreshRequirementStatus($requirementId);
+    return $newlyAssigned;
+}
+
+/**
  * Check if instructor has timetable conflict on given date/time
  */
 function hasTimetableConflict($instructorId, $date, $startTime, $endTime) {
@@ -514,6 +711,9 @@ function getStatusBadge($status) {
         'high' => '<span class="badge bg-warning text-dark">High</span>',
         'urgent' => '<span class="badge bg-danger">Urgent</span>',
         'handled' => '<span class="badge bg-success">Handled</span>',
+        'open' => '<span class="badge bg-danger">Open</span>',
+        'partially staffed' => '<span class="badge bg-warning text-dark">Partially Staffed</span>',
+        'fully staffed' => '<span class="badge bg-success">Fully Staffed</span>',
     ];
     
     return $badges[$status] ?? '<span class="badge bg-secondary">' . ucfirst($status) . '</span>';

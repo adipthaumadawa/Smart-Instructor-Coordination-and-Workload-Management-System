@@ -162,10 +162,24 @@ if (!function_exists('sic_dashboard_cards')) {
                     ['Workload Alerts',     sic_workload_alert_count(), 'High workload risk', 'gauge','teal',''],
                 ];
             case 'non_academic':
+                // Instructors still missing a today's attendance row (table may not exist yet)
+                $pendingAttendance = 0;
+                try {
+                    $pendingAttendance = (int)sic_scalar("
+                        SELECT COUNT(*) FROM instructors i
+                        WHERE i.status IN ('active','on_leave')
+                          AND NOT EXISTS (
+                              SELECT 1 FROM instructor_attendance a
+                              WHERE a.instructor_id = i.id AND a.attendance_date = CURDATE()
+                          )
+                    ");
+                } catch (Exception $e) {
+                    $pendingAttendance = 0;
+                }
                 return [
                     ["Timetable Records Today", sic_scalar("SELECT COUNT(*) FROM timetable_slots WHERE day_of_week = DAYNAME(CURDATE())"), 'Official timetable', 'calendar','blue',''],
                     ['Room Bookings Today',      sic_scalar("SELECT COUNT(*) FROM lecture_hall_bookings WHERE booking_date = CURDATE() AND status IN ('Confirmed','Pending')"), 'Lecture halls/labs', 'building','purple',''],
-                    ['Pending Attendance',      0, 'Attendance module', 'user-clock','coral',''],
+                    ['Pending Attendance',      $pendingAttendance, 'Not yet recorded today', 'user-check','coral', $pendingAttendance > 0 ? 'danger' : ''],
                     ['Leave Notifications',      sic_scalar("SELECT COUNT(*) FROM notifications WHERE user_id = :uid AND is_read = 0 AND type = 'leave'", [':uid'=>$uid]), 'Unread leave alerts', 'bell','teal',''],
                 ];
             case 'project':

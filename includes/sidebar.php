@@ -47,12 +47,23 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('coordinator/instructor.php','All Instructors','users',$currentPage);
         sidebar_link('coordinator/availability.php','Availability','calendar',$currentPage);
         echo '<p class="sidebar-label">Tasks &amp; Coordination</p>';
+        sidebar_link('coordinator/timetable_requirements.php','Timetable Requirements','calendar',$currentPage);
         sidebar_link('coordinator/additional_tasks.php','Additional Tasks','square-pen',$currentPage);
         sidebar_link('coordinator/smart_suggestions.php','Smart Suggestions','search',$currentPage);
         sidebar_link('coordinator/replacements.php','Replacement Requests','user-check',$currentPage);
         sidebar_link('coordinator/urgency_replacements.php','Urgency Replacements','bell',$currentPage);
         echo '<p class="sidebar-label">Records</p>';
         sidebar_link('coordinator/leave_records.php','Leave Records','history',$currentPage);
+      }
+
+      if ($currentRole === ROLE_NON_ACADEMIC) {
+        echo '<p class="sidebar-label">Timetable</p>';
+        sidebar_link('non_academic/timetable_records.php','Timetable Requirements','calendar',$currentPage);
+        sidebar_link('non_academic/room_schedules.php','Room & Lab Schedules','square-pen',$currentPage);
+        echo '<p class="sidebar-label">Attendance &amp; Leave</p>';
+        sidebar_link('non_academic/attendance.php','Manage Attendance','user-check',$currentPage);
+        sidebar_link('non_academic/leave_records.php','Leave Records','history',$currentPage);
+        sidebar_link('non_academic/leave_notifications.php','Leave Notifications','bell',$currentPage);
       }
 
       if ($currentRole === ROLE_INSTRUCTOR) {
