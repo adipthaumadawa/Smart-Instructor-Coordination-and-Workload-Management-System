@@ -73,6 +73,14 @@ function sic_send_replacement_request($pdo, $instructorId, $leaveId, $leaveType,
         createNotification($uid, 'Leave Replacement Requested', "{$requesterName} recorded leave and requested a replacement — awaiting their response.", 'leave', $leaveId);
     }
 
+    // Notify Non-Academic Staff so they can update administrative records (view-only; no approval).
+    $naUsers = $pdo->prepare("SELECT id FROM users WHERE role_id = :na AND status = 'active'");
+    $naUsers->execute([':na' => ROLE_NON_ACADEMIC]);
+    $leaveMsg = "{$requesterName} recorded {$leaveType} leave from " . formatDate($startDate) . " to " . formatDate($endDate) . ".";
+    foreach ($naUsers->fetchAll(PDO::FETCH_COLUMN) as $uid) {
+        createNotification($uid, 'Instructor Leave Recorded', $leaveMsg, 'leave', $leaveId);
+    }
+
     return $requestId;
 }
 

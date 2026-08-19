@@ -2,28 +2,18 @@
 /**
  * Project Coordinator - Dashboard
  * Smart Instructor Coordination and Workload Management System
-<<<<<<< HEAD
-=======
  * 
  * Access: Project Coordinator role (Role ID: 6)
  * Manages presentation sessions, panel assignments, and schedules.
->>>>>>> origin/main
  */
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
-<<<<<<< HEAD
-require_once __DIR__ . '/../includes/dashboard_ui.php';
-
-// Only Project Coordinators can access this dashboard.
-=======
 require_once __DIR__ . '/../includes/dashboard_ui.php'; // Resolves sic_user_avatar() in navbar.php
 
-// Ensure user is logged in and authorized
-requireLogin();
->>>>>>> origin/main
+// Only Project Coordinators can access this dashboard.
 checkRole(ROLE_PROJECT_COORDINATOR);
 
 $pageTitle = 'Project Coordinator Dashboard';
@@ -39,8 +29,7 @@ sic_render_dashboard(
 
 include __DIR__ . '/../includes/footer.php';
 ?>
-<<<<<<< HEAD
-=======
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -13,10 +13,10 @@ include __DIR__ . '/../includes/header.php';
 
 sic_render_dashboard(
     "Non-Academic Staff Dashboard",
-    "Manage timetable records, attendance updates, lecture room bookings, and leave notifications.",
+    "Manage timetable records, instructor attendance, lecture room bookings, leave records, and leave notifications.",
     sic_dashboard_cards('non_academic'),
-    app_url('non_academic/timetable_records.php'),
-    "Timetable Records"
+    app_url('non_academic/attendance.php'),
+    "Manage Attendance"
 );
 
 include __DIR__ . '/../includes/footer.php';

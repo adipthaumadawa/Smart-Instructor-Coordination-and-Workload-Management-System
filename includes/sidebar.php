@@ -47,12 +47,23 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('coordinator/instructor.php','All Instructors','users',$currentPage);
         sidebar_link('coordinator/availability.php','Availability','calendar',$currentPage);
         echo '<p class="sidebar-label">Tasks &amp; Coordination</p>';
+        sidebar_link('coordinator/timetable_requirements.php','Timetable Requirements','calendar',$currentPage);
         sidebar_link('coordinator/additional_tasks.php','Additional Tasks','square-pen',$currentPage);
         sidebar_link('coordinator/smart_suggestions.php','Smart Suggestions','search',$currentPage);
         sidebar_link('coordinator/replacements.php','Replacement Requests','user-check',$currentPage);
         sidebar_link('coordinator/urgency_replacements.php','Urgency Replacements','bell',$currentPage);
         echo '<p class="sidebar-label">Records</p>';
         sidebar_link('coordinator/leave_records.php','Leave Records','history',$currentPage);
+      }
+
+      if ($currentRole === ROLE_NON_ACADEMIC) {
+        echo '<p class="sidebar-label">Timetable</p>';
+        sidebar_link('non_academic/timetable_records.php','Timetable Requirements','calendar',$currentPage);
+        sidebar_link('non_academic/room_schedules.php','Room & Lab Schedules','square-pen',$currentPage);
+        echo '<p class="sidebar-label">Attendance &amp; Leave</p>';
+        sidebar_link('non_academic/attendance.php','Manage Attendance','user-check',$currentPage);
+        sidebar_link('non_academic/leave_records.php','Leave Records','history',$currentPage);
+        sidebar_link('non_academic/leave_notifications.php','Leave Notifications','bell',$currentPage);
       }
 
       if ($currentRole === ROLE_INSTRUCTOR) {
@@ -66,16 +77,6 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('instructor/replacement_request.php','Replacements','user-check',$currentPage);
         echo '<p class="sidebar-label">Account</p>';
         sidebar_link('instructor/setting.php','Settings','settings',$currentPage);
-      }
-
-if ($currentRole === ROLE_DIRECTOR) {
-        echo '<p class="sidebar-label">Monitoring &amp; Oversight</p>';
-        sidebar_link('director/active_tasks.php', 'Active Tasks', 'briefcase-business', $currentPage);
-        sidebar_link('director/leave_records.php', 'Leave Records', 'history', $currentPage);
-        sidebar_link('director/replacements.php', 'Replacements', 'user-check', $currentPage);
-        sidebar_link('director/room_usage.php', 'Room Usage', 'calendar', $currentPage);
-        sidebar_link('director/reports.php', 'Reports', 'chart-column', $currentPage);
-        sidebar_link('director/allocations.php', 'Allocation Status', 'square-pen', $currentPage);
       }
 
       if ($currentRole === ROLE_PROJECT_COORDINATOR) {
