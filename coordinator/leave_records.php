@@ -9,24 +9,17 @@ require_once __DIR__ . '/../includes/functions.php';
 require_once __DIR__ . '/../includes/dashboard_ui.php'; // Required for sic_user_avatar() in topbar
 require_once __DIR__ . '/../config/db.php';
 
-checkRole(ROLE_COORDINATOR);a
+checkRole(ROLE_COORDINATOR);
 
 $pageTitle = "Leave Records";
 include __DIR__ . '/../includes/header.php';
 
 $leaves = $pdo->query("
     SELECT lr.*, u.full_name,
-           rr.status AS rr_status, su.full_name AS rr_suggested_name
+           (DATEDIFF(lr.end_date, lr.start_date) + 1) AS total_days
     FROM leave_records lr
     JOIN instructors i ON lr.instructor_id = i.id
     JOIN users u ON i.user_id = u.id
-    LEFT JOIN replacement_requests rr ON rr.id = (
-        SELECT rr2.id FROM replacement_requests rr2
-        WHERE rr2.leave_record_id = lr.id
-        ORDER BY rr2.created_at DESC LIMIT 1
-    )
-    LEFT JOIN instructors si ON rr.suggested_instructor_id = si.id
-    LEFT JOIN users su ON si.user_id = su.id
     ORDER BY lr.created_at DESC
 ")->fetchAll();
 ?>
@@ -51,8 +44,8 @@ $leaves = $pdo->query("
                                     <th>Instructor</th>
                                     <th>Type</th>
                                     <th>Dates</th>
+                                    <th>Days</th>
                                     <th>Status</th>
-                                    <th>Replacement</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,14 +57,8 @@ $leaves = $pdo->query("
                                     <td data-label="Instructor"><strong><?= htmlspecialchars($leave['full_name']) ?></strong></td>
                                     <td data-label="Type"><?= htmlspecialchars($leave['leave_type']) ?></td>
                                     <td data-label="Dates"><?= formatDate($leave['start_date']) ?> to <?= formatDate($leave['end_date']) ?></td>
-                                    <td data-label="Status"><?= getLeaveStatusBadge($leave['status']) ?></td>
-                                    <td data-label="Replacement">
-                                        <?php if (!empty($leave['rr_suggested_name'])): ?>
-                                            <?= htmlspecialchars($leave['rr_suggested_name']) ?> <?= getStatusBadge($leave['rr_status']) ?>
-                                        <?php else: ?>
-                                            <span class="text-muted small">Not yet assigned</span>
-                                        <?php endif; ?>
-                                    </td>
+                                    <td data-label="Days"><span class="badge bg-light text-dark fw-bold"><?= $leave['total_days'] ?> <?= $leave['total_days'] == 1 ? 'day' : 'days' ?></span></td>
+                                    <td data-label="Status"><?= function_exists('getLeaveStatusBadge') ? getLeaveStatusBadge($leave['status']) : getStatusBadge($leave['status']) ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
