@@ -14,36 +14,32 @@ $pageTitle = "Smart Instructor Suggestions";
 
 $suggestions = [];
 $searchError = '';
-$hasSearched = ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['date']));
 
-// Validate/normalize GET input before it reaches the query layer. The
-// underlying queries are already parameterized (safe from SQL injection),
-// but malformed values here would otherwise cause silent bad results
-// (e.g. strtotime() on garbage) or PHP warnings.
+// Check if user submitted a search
+$hasSearched = (isset($_GET['search_submitted']) && $_GET['search_submitted'] === '1');
+
+// Get search criteria without filling default dates/times
 $taskTypeId = (int)($_GET['task_type_id'] ?? 0);
-$date = trim((string)($_GET['date'] ?? date('Y-m-d')));
-$startTime = trim((string)($_GET['start_time'] ?? '09:00'));
-$endTime = trim((string)($_GET['end_time'] ?? '11:00'));
+$date = trim((string)($_GET['date'] ?? ''));
+$startTime = trim((string)($_GET['start_time'] ?? ''));
+$endTime = trim((string)($_GET['end_time'] ?? ''));
 $streamId = (int)($_GET['stream_id'] ?? 0);
 
-if (!DateTime::createFromFormat('Y-m-d', $date)) {
-    $searchError = 'Please provide a valid date.';
-    $date = date('Y-m-d');
-}
-if (!DateTime::createFromFormat('H:i', $startTime)) {
-    $searchError = 'Please provide a valid start time.';
-    $startTime = '09:00';
-}
-if (!DateTime::createFromFormat('H:i', $endTime)) {
-    $searchError = 'Please provide a valid end time.';
-    $endTime = '11:00';
-}
-if ($searchError === '' && strtotime($endTime) <= strtotime($startTime)) {
-    $searchError = 'End time must be after start time.';
-}
+// Validate inputs only upon search execution
+if ($hasSearched) {
+    if (empty($date) || !DateTime::createFromFormat('Y-m-d', $date)) {
+        $searchError = 'Please provide a valid date.';
+    } elseif (empty($startTime) || !DateTime::createFromFormat('H:i', $startTime)) {
+        $searchError = 'Please provide a valid start time.';
+    } elseif (empty($endTime) || !DateTime::createFromFormat('H:i', $endTime)) {
+        $searchError = 'Please provide a valid end time.';
+    } elseif (strtotime($endTime) <= strtotime($startTime)) {
+        $searchError = 'End time must be after start time.';
+    }
 
-if ($hasSearched && $searchError === '') {
-    $suggestions = getSmartSuggestions($taskTypeId ?: null, $date, $startTime, $endTime, $streamId ?: null, 8);
+    if ($searchError === '') {
+        $suggestions = getSmartSuggestions($taskTypeId ?: null, $date, $startTime, $endTime, $streamId ?: null, 8);
+    }
 }
 
 $taskTypes = $pdo->query("SELECT * FROM task_types ORDER BY name")->fetchAll();
@@ -63,10 +59,12 @@ include __DIR__ . '/../includes/header.php';
                 <div class="alert alert-danger"><?= htmlspecialchars($searchError) ?></div>
             <?php endif; ?>
 
-            <div class="card">
+            <div class="card mb-4">
                 <div class="card-header"><h5>Find Best Available Instructors</h5></div>
                 <div class="card-body">
                     <form method="GET" class="row g-3">
+                        <input type="hidden" name="search_submitted" value="1">
+                        
                         <div class="col-md-3">
                             <label class="form-label">Task Type (Optional)</label>
                             <select name="task_type_id" class="form-select">
@@ -141,9 +139,14 @@ include __DIR__ . '/../includes/header.php';
                                             </span>
                                         </td>
                                         <td data-label="Action" class="text-end">
-                                            <a href="assign_task.php?instructor_id=<?= (int)$sug['instructor_id'] ?>&date=<?= urlencode($date) ?>" class="btn btn-sm btn-success">
-                                                Assign Task
-                                            </a>
+                                            <div class="d-inline-flex gap-2">
+                                                <a href="additional_tasks.php?instructor_id=<?= (int)$sug['instructor_id'] ?>&date=<?= urlencode($date) ?>&task_type_id=<?= $taskTypeId ?>&start_time=<?= urlencode($startTime) ?>&end_time=<?= urlencode($endTime) ?>" class="btn btn-sm btn-success">
+                                                    Assign Task
+                                                </a>
+                                                <a href="urgency_replacements.php?new_instructor_id=<?= (int)$sug['instructor_id'] ?>" class="btn btn-sm btn-outline-danger">
+                                                    Urgent Replacement
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                     <?php endforeach; ?>
@@ -153,7 +156,7 @@ include __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
 
-                <div class="alert alert-info">
+                <div class="alert alert-info mt-3">
                     <strong>How it works (for viva):</strong>&nbsp; The system checks: Active status &rarr; Not on leave &rarr; No timetable conflict &rarr; No task conflict &rarr; Sorts by lowest workload.
                 </div>
             <?php elseif ($hasSearched && $searchError === ''): ?>
