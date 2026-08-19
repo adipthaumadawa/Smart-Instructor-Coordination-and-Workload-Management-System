@@ -29,8 +29,7 @@ sic_render_dashboard(
 
 include __DIR__ . '/../includes/footer.php';
 ?>
-<<<<<<< HEAD
-=======
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
