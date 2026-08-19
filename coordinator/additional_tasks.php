@@ -11,7 +11,6 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/dashboard_ui.php'; // Required for sic_user_avatar() in topbar
 require_once __DIR__ . '/../config/db.php';
 
 checkRole(ROLE_COORDINATOR);
@@ -19,6 +18,13 @@ checkRole(ROLE_COORDINATOR);
 $pageTitle = "Additional Tasks";
 
 $allowedUrgency = ['Low', 'Medium', 'High', 'Urgent'];
+
+// Coming from the Availability page's "Assign Task" menu carries the chosen
+// instructor along as a hint. It pre-fills nothing in the DB by itself — the
+// coordinator still has to enter the date/time and search, so real
+// conflict/leave checks always run before anything is assigned.
+$preferredInstructorId = (int)($_GET['preferred_instructor_id'] ?? $_GET['instructor_id'] ?? 0);
+$preferredInstructorName = trim((string)($_GET['instructor_name'] ?? ''));
 
 /**
  * Validates the shared task-detail fields (used by both the search step
@@ -166,6 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_instructor_id'
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['title'])) {
     $searched = true;
     [$formErrors, $clean] = validateTaskFields($_GET, $pdo);
+    $preferredInstructorId = (int)($_GET['preferred_instructor_id'] ?? $preferredInstructorId);
 
     if (empty($formErrors)) {
         $suggestions = getSmartSuggestions(
@@ -176,6 +183,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['title'])) {
             $clean['stream_id'] ?: null,
             8
         );
+
+        // Bubble the requested instructor to the top of the results if they
+        // made the cut, so the coordinator doesn't have to hunt for them.
+        if ($preferredInstructorId > 0 && !empty($suggestions)) {
+            usort($suggestions, function ($a, $b) use ($preferredInstructorId) {
+                $aMatch = ((int)$a['instructor_id'] === $preferredInstructorId) ? 0 : 1;
+                $bMatch = ((int)$b['instructor_id'] === $preferredInstructorId) ? 0 : 1;
+                return $aMatch <=> $bMatch;
+            });
+        }
     }
 }
 
@@ -230,10 +247,19 @@ function taskFieldValue($clean, $key) {
                 </div>
             <?php endif; ?>
 
+            <?php if ($preferredInstructorId > 0 && !$searched): ?>
+                <div class="alert alert-info">
+                    Assigning for <strong><?= htmlspecialchars($preferredInstructorName ?: 'the selected instructor') ?></strong> — enter the task date &amp; time below and search to confirm they're free for that slot.
+                </div>
+            <?php endif; ?>
+
             <div class="card">
                 <div class="card-header"><h5>Task Details</h5></div>
                 <div class="card-body">
                     <form method="GET" class="row g-3">
+                        <?php if ($preferredInstructorId > 0): ?>
+                            <input type="hidden" name="preferred_instructor_id" value="<?= (int)$preferredInstructorId ?>">
+                        <?php endif; ?>
                         <div class="col-md-4">
                             <label class="form-label">Task Title</label>
                             <input name="title" class="form-control" placeholder="Task title / lecturer request" maxlength="150" value="<?= taskFieldValue($clean, 'title') ?>" required>
@@ -320,8 +346,13 @@ function taskFieldValue($clean, $key) {
                                     </thead>
                                     <tbody>
                                         <?php foreach ($suggestions as $sug): ?>
-                                        <tr>
-                                            <td data-label="Instructor"><strong><?= htmlspecialchars($sug['name']) ?></strong><br><span class="small text-muted"><?= htmlspecialchars($sug['designation']) ?></span></td>
+                                        <?php $isPreferred = $preferredInstructorId > 0 && (int)$sug['instructor_id'] === $preferredInstructorId; ?>
+                                        <tr<?= $isPreferred ? ' style="background:var(--soft);"' : '' ?>>
+                                            <td data-label="Instructor">
+                                                <strong><?= htmlspecialchars($sug['name']) ?></strong>
+                                                <?php if ($isPreferred): ?><span class="badge bg-primary" style="margin-left:6px;">Requested</span><?php endif; ?>
+                                                <br><span class="small text-muted"><?= htmlspecialchars($sug['designation']) ?></span>
+                                            </td>
                                             <td data-label="Employee ID"><?= htmlspecialchars($sug['employee_id']) ?></td>
                                             <td data-label="Stream"><?= htmlspecialchars($sug['stream']) ?></td>
                                             <td data-label="Workload">
