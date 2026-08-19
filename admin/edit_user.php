@@ -77,14 +77,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->execute([$full_name, $username, $email, $role_id, $status, $phone, $userId]);
 
                     // If user has an instructor profile, update or create it
-                    if ($instructorProfile) {
-                        $updInst = $pdo->prepare('UPDATE instructors SET employee_id = ?, designation = ?, department_id = ?, academic_stream_id = ?, max_weekly_hours = ?, status = ? WHERE user_id = ?');
-                        $updInst->execute([$employee_id, $designation, $department_id, $academic_stream_id, $max_weekly_hours, $status, $userId]);
-                    } elseif ($employee_id !== '' && $department_id > 0 && $academic_stream_id > 0) {
-                        // If they didn't have one before but admin filled it out, insert it
-                        $insInst = $pdo->prepare('INSERT INTO instructors (user_id, employee_id, designation, department_id, academic_stream_id, max_weekly_hours, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())');
-                        $insInst->execute([$userId, $employee_id, $designation, $department_id, $academic_stream_id, $max_weekly_hours, $status]);
-                    }
+                   // Derive first/last name from full_name for instructors table (NOT NULL, no defaults)
+$nameParts = preg_split('/\s+/', trim($full_name), 2);
+$first_name = $nameParts[0] !== '' ? $nameParts[0] : 'Unknown';
+$last_name  = $nameParts[1] ?? $first_name;
+// Map user status to instructor status enum
+$instStatus = in_array($status, ['active', 'inactive'], true) ? $status : 'inactive';
+
+// If user has an instructor profile, update or create it
+if ($instructorProfile) {
+    $updInst = $pdo->prepare('UPDATE instructors SET first_name = ?, last_name = ?, employee_id = ?, designation = ?, department_id = ?, academic_stream_id = ?, max_weekly_hours = ?, status = ? WHERE user_id = ?');
+    $updInst->execute([$first_name, $last_name, $employee_id, $designation, $department_id, $academic_stream_id, $max_weekly_hours, $instStatus, $userId]);
+} elseif ($employee_id !== '' && $department_id > 0 && $academic_stream_id > 0) {
+    // If they didn't have one before but admin filled it out, insert it
+    $insInst = $pdo->prepare('INSERT INTO instructors (user_id, employee_id, first_name, last_name, designation, department_id, academic_stream_id, max_weekly_hours, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())');
+    $insInst->execute([$userId, $employee_id, $first_name, $last_name, $designation, $department_id, $academic_stream_id, $max_weekly_hours, $instStatus]);
+}
 
                     $pdo->commit();
 
