@@ -1,89 +1,47 @@
 <?php
 /**
- * Coordinator - Handle Replacement Requests
+ * Coordinator - Replacement Requests
  * Smart Instructor Coordination and Workload Management System
  */
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/dashboard_ui.php'; // Required for sic_user_avatar() in topbar
+require_once __DIR__ . '/../includes/dashboard_ui.php';
 require_once __DIR__ . '/../config/db.php';
 
 checkRole(ROLE_COORDINATOR);
 
 $pageTitle = "Replacement Requests";
+include __DIR__ . '/../includes/header.php';
 
-$success = '';
-$error = '';
-
-// Handle accept/reject — POST only, CSRF-protected, so the action can't be
-// triggered by a plain link, a crawler, or a forged cross-site request.
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['id'])) {
-    csrf_verify();
-
-    $reqId = (int)$_POST['id'];
-    $action = $_POST['action'];
-    $newStatus = $action === 'accept' ? 'Accepted' : ($action === 'reject' ? 'Rejected' : null);
-
-    if ($reqId <= 0 || $newStatus === null) {
-        $_SESSION['error'] = 'Invalid request.';
-    } else {
-        // Only update if the request is still Pending — guards against double
-        // submission (e.g. double-click) or two coordinators acting at once.
-        $stmt = $pdo->prepare("UPDATE replacement_requests SET status = ?, responded_by = ?, responded_at = NOW() WHERE id = ? AND status = 'Pending'");
-        $stmt->execute([$newStatus, $_SESSION['user_id'], $reqId]);
-
-        if ($stmt->rowCount() > 0) {
-            logActivity($_SESSION['user_id'], 'Replacement ' . $newStatus, "Replacement request #$reqId marked $newStatus");
-            $_SESSION['success'] = "Replacement request $newStatus.";
-        } else {
-            $_SESSION['error'] = 'This request was already handled by someone else.';
-        }
-    }
-
-    header('Location: replacements.php');
-    exit;
-}
-
-$success = $_SESSION['success'] ?? '';
-$error = $_SESSION['error'] ?? '';
-unset($_SESSION['success'], $_SESSION['error']);
-
-// Get pending replacements
-$replacements = $pdo->query("
+// Fetch all replacement requests with requester details, target instructor, task schedule, and status
+$requests = $pdo->query("
     SELECT rr.*, 
-           u.full_name as requested_by_name,
-           ta.scheduled_date, ta.start_time, ta.end_time,
-           i1.employee_id as requesting_emp
+           req_u.full_name AS requester_name, 
+           req_i.employee_id AS requester_emp_id,
+           sug_u.full_name AS target_instructor_name,
+           ta.scheduled_date, ta.start_time, ta.end_time
     FROM replacement_requests rr
-    JOIN instructors i1 ON rr.requested_by_instructor_id = i1.id
-    JOIN users u ON i1.user_id = u.id
+    JOIN instructors req_i ON rr.requested_by_instructor_id = req_i.id
+    JOIN users req_u ON req_i.user_id = req_u.id
     JOIN task_assignments ta ON rr.task_assignment_id = ta.id
-    WHERE rr.status = 'Pending'
+    LEFT JOIN instructors sug_i ON rr.suggested_instructor_id = sug_i.id
+    LEFT JOIN users sug_u ON sug_i.user_id = sug_u.id
     ORDER BY rr.created_at DESC
 ")->fetchAll();
-
-include __DIR__ . '/../includes/header.php';
 ?>
 
             <div class="page-toolbar">
                 <div>
                     <h1>Replacement Requests</h1>
-                    <p>Review and respond to pending instructor replacement requests.</p>
+                    <p>Monitor instructor replacement requests and their current status.</p>
                 </div>
             </div>
 
-            <?php if ($success): ?>
-                <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
-            <?php endif; ?>
-            <?php if ($error): ?>
-                <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
-            <?php endif; ?>
-
             <div class="card">
                 <div class="card-header">
-                    <h5>Pending Requests</h5>
-                    <span class="text-muted small"><?= count($replacements) ?> pending</span>
+                    <h5>All Replacement Requests</h5>
+                    <span class="text-muted small"><?= count($requests) ?> records</span>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -91,40 +49,37 @@ include __DIR__ . '/../includes/header.php';
                             <thead>
                                 <tr>
                                     <th>Requested By</th>
+                                    <th>Replacement For</th>
                                     <th>Task Date</th>
                                     <th>Reason</th>
                                     <th>Requested On</th>
-                                    <th class="text-end">Actions</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (empty($replacements)): ?>
-                                    <tr><td colspan="5" class="text-muted">No pending replacement requests.</td></tr>
+                                <?php if (empty($requests)): ?>
+                                    <tr><td colspan="6" class="text-muted">No replacement requests found.</td></tr>
                                 <?php endif; ?>
-                                <?php foreach ($replacements as $req): ?>
+                                <?php foreach ($requests as $req): ?>
                                 <tr>
-                                    <td data-label="Requested By"><strong><?= htmlspecialchars($req['requested_by_name']) ?></strong> <span class="text-muted small">(<?= htmlspecialchars($req['requesting_emp']) ?>)</span></td>
-                                    <td data-label="Task Date"><?= formatDate($req['scheduled_date']) ?><br><span class="small text-muted"><?= formatTime($req['start_time']) ?> - <?= formatTime($req['end_time']) ?></span></td>
+                                    <td data-label="Requested By">
+                                        <strong><?= htmlspecialchars($req['requester_name']) ?></strong>
+                                        <span class="text-muted small">(<?= htmlspecialchars($req['requester_emp_id']) ?>)</span>
+                                    </td>
+                                    <td data-label="Replacement For">
+                                        <?php if (!empty($req['target_instructor_name'])): ?>
+                                            <?= htmlspecialchars($req['target_instructor_name']) ?>
+                                        <?php else: ?>
+                                            <span class="text-muted small">Open Request</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td data-label="Task Date">
+                                        <?= formatDate($req['scheduled_date']) ?><br>
+                                        <small class="text-muted"><?= date('h:i A', strtotime($req['start_time'])) ?> - <?= date('h:i A', strtotime($req['end_time'])) ?></small>
+                                    </td>
                                     <td data-label="Reason"><?= htmlspecialchars($req['reason']) ?></td>
                                     <td data-label="Requested On"><?= formatDate($req['created_at']) ?></td>
-                                    <td data-label="Actions" class="text-end">
-                                        <form method="post" style="display:inline-block;">
-                                            <?= csrf_field() ?>
-                                            <input type="hidden" name="id" value="<?= (int)$req['id'] ?>">
-                                            <input type="hidden" name="action" value="accept">
-                                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Accept this replacement request?')">
-                                                <span class="ui-dot" aria-hidden="true"></span>Accept
-                                            </button>
-                                        </form>
-                                        <form method="post" style="display:inline-block;">
-                                            <?= csrf_field() ?>
-                                            <input type="hidden" name="id" value="<?= (int)$req['id'] ?>">
-                                            <input type="hidden" name="action" value="reject">
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Reject this replacement request?')">
-                                                <span class="ui-dot" aria-hidden="true"></span>Reject
-                                            </button>
-                                        </form>
-                                    </td>
+                                    <td data-label="Status"><?= getStatusBadge($req['status']) ?></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
