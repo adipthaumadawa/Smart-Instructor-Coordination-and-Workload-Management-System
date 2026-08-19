@@ -2,7 +2,7 @@
 /**
  * Project Coordinator - Dashboard
  * Smart Instructor Coordination and Workload Management System
- * 
+ *
  * Access: Project Coordinator role (Role ID: 6)
  * Manages presentation sessions, panel assignments, and schedules.
  */
@@ -11,253 +11,174 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/role_check.php';
 require_once __DIR__ . '/../includes/functions.php';
-require_once __DIR__ . '/../includes/dashboard_ui.php'; // Resolves sic_user_avatar() in navbar.php
+require_once __DIR__ . '/../includes/dashboard_ui.php';
 
-// Only Project Coordinators can access this dashboard.
+// Check authentication and authorization
+requireLogin();
 checkRole(ROLE_PROJECT_COORDINATOR);
+
+// Get current user from session (getCurrentUser() is the app's real session helper)
+$currentUser = getCurrentUser() ?: [];
+
+// Initialize data variables
+$upcomingSessions = [];
+$sessionsNeedingAttention = [];
+$recentActivity = [];
+
+try {
+    // Upcoming sessions (next 5 scheduled presentations)
+    $upcomingQuery = "
+        SELECT
+            ps.id,
+            ps.course_code,
+            ps.title,
+            ps.session_date,
+            ps.start_time,
+            ps.end_time,
+            ps.venue,
+            ps.status
+        FROM presentation_sessions ps
+        WHERE ps.status = 'Scheduled'
+            AND ps.session_date >= CURDATE()
+        ORDER BY ps.session_date ASC, ps.start_time ASC
+        LIMIT 5
+    ";
+    $result = $pdo->query($upcomingQuery);
+    if ($result) {
+        $upcomingSessions = $result->fetchAll();
+    }
+
+    // Sessions needing attention (scheduled sessions with fewer than 3 panel members)
+    $attentionQuery = "
+        SELECT
+            ps.id,
+            ps.course_code,
+            ps.title,
+            ps.session_date,
+            COUNT(ppm.id) AS panel_members_count
+        FROM presentation_sessions ps
+        LEFT JOIN presentation_panel_members ppm ON ps.id = ppm.presentation_session_id
+        WHERE ps.status = 'Scheduled'
+        GROUP BY ps.id, ps.course_code, ps.title, ps.session_date
+        HAVING panel_members_count < 3
+        ORDER BY ps.session_date ASC
+        LIMIT 5
+    ";
+    $result = $pdo->query($attentionQuery);
+    if ($result) {
+        $sessionsNeedingAttention = $result->fetchAll();
+    }
+
+    // Recent activity for this coordinator
+    $activityQuery = "
+        SELECT action, description, created_at
+        FROM activity_logs
+        WHERE user_id = :uid
+        ORDER BY created_at DESC
+        LIMIT 10
+    ";
+    $stmt = $pdo->prepare($activityQuery);
+    $stmt->execute([':uid' => $currentUser['id'] ?? 0]);
+    $recentActivity = $stmt->fetchAll();
+
+} catch (Throwable $e) {
+    // Log error and continue with defaults
+    error_log("Dashboard data loading error: " . $e->getMessage());
+}
 
 $pageTitle = 'Project Coordinator Dashboard';
 include __DIR__ . '/../includes/header.php';
 
+// Renders the hero header + KPI cards using the app's shared dashboard design system
 sic_render_dashboard(
-    'Project Coordinator Dashboard',
-    'Create presentation sessions, assign evaluation panels, and manage venue bookings.',
+    'Presentation Management Dashboard',
+    'Manage final year project presentations and panel assignments',
     sic_dashboard_cards('project'),
     app_url('project_coordinator/sessions.php'),
-    'New Session'
+    'Create New Session'
 );
-
-include __DIR__ . '/../includes/footer.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coordinator Dashboard | Project Coordinator | Smart Instructor System</title>
-    <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
-</head>
-<body>
+<section class="dash-page" style="padding-top:0;">
+    <div class="dash-grid-row1" style="grid-template-columns: 1fr 1fr;">
 
-<?php include __DIR__ . '/../includes/navbar.php'; ?>
-<?php include __DIR__ . '/../includes/sidebar.php'; ?>
-
-<main class="dashboard-container">
-    
-    <!-- Header Section -->
-    <div class="dashboard-header">
-        <div>
-            <div>
-                <span><?= strtoupper(substr($currentUser['full_name'] ?? 'C', 0, 1)) ?></span>
+        <!-- Upcoming Presentations -->
+        <div class="d-card">
+            <div class="section-head">
+                <h2 class="section-title"><?= sic_icon('calendar') ?>Upcoming Presentations</h2>
+                <a href="<?= app_url('project_coordinator/sessions.php') ?>" class="section-link"><?= sic_icon('eye') ?>View all</a>
             </div>
-            <div>
-                <h4><?= htmlspecialchars($currentUser['full_name'] ?? 'Coordinator') ?></h4>
-                <div>Project Coordinator</div>
+            <div class="schedule-list">
+                <?php if (empty($upcomingSessions)): ?>
+                    <p class="text-muted" style="padding:14px 16px;">No upcoming presentation sessions.</p>
+                <?php else: foreach ($upcomingSessions as $s): ?>
+                    <div class="sched-item">
+                        <div class="sched-time">
+                            <span class="sched-time-start"><?= htmlspecialchars(formatTime($s['start_time'])) ?></span>
+                            <span class="sched-time-end"><?= htmlspecialchars(formatTime($s['end_time'])) ?></span>
+                        </div>
+                        <div class="sched-info">
+                            <span class="sched-course"><?= htmlspecialchars($s['title']) ?></span>
+                            <span class="sched-meta">
+                                <?= htmlspecialchars($s['course_code'] ?? '') ?>
+                                <?= !empty($s['venue']) ? ' • ' . htmlspecialchars($s['venue']) : '' ?>
+                                • <?= htmlspecialchars(formatDate($s['session_date'])) ?>
+                            </span>
+                        </div>
+                        <span class="s-pill s-pill-blue">Scheduled</span>
+                    </div>
+                <?php endforeach; endif; ?>
             </div>
         </div>
-        <h1>Presentation Management Dashboard</h1>
-        <p>Manage final year project presentations and panel assignments</p>
-    </div>
 
-    <!-- Alerts Section -->
-    <?php if (count($sessionsNeedingAttention) > 0): ?>
-    <div class="alert alert-info">
-        <i>info</i>
-        <div>
-            <strong>Sessions Requiring Attention</strong><br>
-            <small><?= count($sessionsNeedingAttention) ?> session(s) need panel member assignments or status updates</small>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <?php if ($pendingSessions > 0): ?>
-    <div class="alert alert-warning">
-        <i>event</i>
-        <div>
-            <strong>Pending Presentation Sessions</strong><br>
-            <small><?= $pendingSessions ?> session(s) are pending and need to be scheduled</small>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <!-- Key Statistics -->
-    <div class="stats-grid">
-        <!-- Total Sessions Card -->
-        <div class="stat-card">
-            <h3>Total Sessions</h3>
-            <div class="stat-value"><?= $totalSessions ?></div>
-            <div class="stat-label">all presentations managed</div>
-        </div>
-
-        <!-- Scheduled Sessions Card -->
-        <div class="stat-card">
-            <h3>Scheduled</h3>
-            <div class="stat-value"><?= $scheduledSessions ?></div>
-            <div class="stat-label">ready for presentations</div>
-        </div>
-
-        <!-- Completed Sessions Card -->
-        <div class="stat-card">
-            <h3>Completed</h3>
-            <div class="stat-value"><?= $completedSessions ?></div>
-            <div class="stat-label">sessions concluded</div>
-        </div>
-
-        <!-- Pending Sessions Card -->
-        <div class="stat-card">
-            <h3>Pending</h3>
-            <div class="stat-value"><?= $pendingSessions ?></div>
-            <div class="stat-label">awaiting scheduling</div>
+        <!-- Sessions Needing Attention -->
+        <div class="d-card">
+            <div class="section-head">
+                <h2 class="section-title"><?= sic_icon('warning') ?>Sessions Needing Attention</h2>
+                <a href="<?= app_url('project_coordinator/presentation_panels.php') ?>" class="section-link"><?= sic_icon('eye') ?>Manage panels</a>
+            </div>
+            <div class="alert-list">
+                <?php if (empty($sessionsNeedingAttention)): ?>
+                    <p class="text-muted" style="padding:14px 16px;">All scheduled sessions have a full panel assigned.</p>
+                <?php else: foreach ($sessionsNeedingAttention as $s): ?>
+                    <div class="alert-item">
+                        <div class="alert-icon-wrap"><?= sic_icon('warning') ?></div>
+                        <div class="alert-info">
+                            <span class="alert-course"><?= htmlspecialchars($s['title']) ?></span>
+                            <span class="alert-meta">
+                                <?= htmlspecialchars($s['course_code'] ?? '') ?>
+                                • <?= htmlspecialchars(formatDate($s['session_date'])) ?>
+                                • <?= (int)$s['panel_members_count'] ?>/3 panel members
+                            </span>
+                        </div>
+                        <span class="s-pill s-pill-red">Needs Panel</span>
+                    </div>
+                <?php endforeach; endif; ?>
+            </div>
         </div>
     </div>
 
-    <!-- Main Content Grid -->
-    <div class="dashboard-grid">
-
-        <!-- Upcoming Presentations Card -->
-        <div class="card">
-            <h3>Upcoming Presentations</h3>
-            <?php if (!empty($upcomingSessions)): ?>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Course</th>
-                            <th>Date</th>
-                            <th>Venue</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($upcomingSessions as $session): ?>
-                        <tr>
-                            <td>
-                                <strong><?= htmlspecialchars($session['course_code']) ?></strong><br>
-                                <small><?= htmlspecialchars(substr($session['title'], 0, 40)) ?>...</small>
-                            </td>
-                            <td><?= htmlspecialchars($session['session_date']) ?></td>
-                            <td><?= htmlspecialchars($session['venue']) ?></td>
-                            <td><span><?= htmlspecialchars($session['status']) ?></span></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-            <div class="card-footer">
-                <a href="<?= app_url('project_coordinator/presentations.php') ?>">
-                    <i>arrow_forward</i> View All Sessions
-                </a>
-            </div>
-            <?php else: ?>
-            <div class="empty-state">
-                <i>event</i>
-                <p>No upcoming presentation sessions</p>
-                <a href="<?= app_url('project_coordinator/create_session.php') ?>" class="btn">
-                    <i>add</i> Create New Session
-                </a>
-            </div>
-            <?php endif; ?>
+    <!-- Recent Activity -->
+    <div class="d-card">
+        <div class="section-head">
+            <h2 class="section-title"><?= sic_icon('history') ?>Recent Activity</h2>
         </div>
-
-        <!-- Sessions Needing Attention Card -->
-        <div class="card">
-            <h3>Sessions Needing Attention</h3>
-            <?php if (!empty($sessionsNeedingAttention)): ?>
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Course</th>
-                            <th>Date</th>
-                            <th>Panel Members</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($sessionsNeedingAttention as $session): ?>
-                        <tr>
-                            <td>
-                                <strong><?= htmlspecialchars($session['course_code']) ?></strong><br>
-                                <small><?= htmlspecialchars(substr($session['title'], 0, 30)) ?>...</small>
-                            </td>
-                            <td><?= htmlspecialchars($session['session_date']) ?></td>
-                            <td>
-                                <span><?= (int)$session['panel_members_count'] ?> assigned</span>
-                            </td>
-                            <td>
-                                <a href="<?= app_url('project_coordinator/assign_panel.php?id=' . urlencode($session['id'])) ?>" class="btn-sm">
-                                   Manage
-                                </a>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-            <?php else: ?>
-            <div class="empty-state">
-                <i>check_circle</i>
-                <p>All sessions are properly configured</p>
-            </div>
-            <?php endif; ?>
-        </div>
-
-    </div>
-
-    <!-- Recent Activity Card -->
-    <div class="card">
-        <h3>Recent Activity</h3>
-        <?php if (!empty($recentActivity)): ?>
-        <ul class="activity-list">
-            <?php foreach ($recentActivity as $activity): ?>
-            <li>
-                <i>info</i>
-                <div>
-                    <div class="activity-title"><?= htmlspecialchars($activity['action']) ?></div>
-                    <small><?= htmlspecialchars($activity['description'] ?? '') ?></small>
-                    <small class="text-muted"><?= date('M d, Y H:i', strtotime($activity['created_at'])) ?></small>
+        <div class="schedule-list">
+            <?php if (empty($recentActivity)): ?>
+                <p class="text-muted" style="padding:14px 16px;">No recent activity.</p>
+            <?php else: foreach ($recentActivity as $a): ?>
+                <div class="sched-item" style="grid-template-columns: 1fr auto;">
+                    <div class="sched-info">
+                        <span class="sched-course"><?= htmlspecialchars($a['action']) ?></span>
+                        <?php if (!empty($a['description'])): ?>
+                            <span class="sched-meta"><?= htmlspecialchars($a['description']) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <span class="sched-meta"><?= htmlspecialchars(formatDate($a['created_at'], 'd M Y, h:i A')) ?></span>
                 </div>
-            </li>
-            <?php endforeach; ?>
-        </ul>
-        <?php else: ?>
-        <div class="empty-state">
-            <p>No recent activity</p>
-        </div>
-        <?php endif; ?>
-    </div>
-
-    <!-- Quick Actions Section -->
-    <div class="quick-actions">
-        <h3>Quick Actions</h3>
-        <div class="action-buttons">
-            <a href="<?= app_url('project_coordinator/presentations.php') ?>" class="btn">
-                <i>event</i> View All Sessions
-            </a>
-            <a href="<?= app_url('project_coordinator/create_session.php') ?>" class="btn">
-                <i>add</i> Create New Session
-            </a>
-            <a href="<?= app_url('project_coordinator/assignments.php') ?>" class="btn">
-                <i>group_add</i> Manage Panel Assignments
-            </a>
-            <a href="<?= app_url('project_coordinator/schedule.php') ?>" class="btn">
-                <i>schedule</i> View Schedule
-            </a>
-            <a href="<?= app_url('auth/logout.php') ?>" class="btn btn-danger">
-                <i>logout</i> Logout
-            </a>
+            <?php endforeach; endif; ?>
         </div>
     </div>
+</section>
 
-    <!-- Footer -->
-    <div class="dashboard-footer">
-        <p>Smart Instructor Coordination and Workload Management System<br>
-        University of Colombo School of Computing</p>
-    </div>
-
-</main>
-
-</body>
-</html>
->>>>>>> origin/main
+<?php include __DIR__ . '/../includes/footer.php'; ?>
