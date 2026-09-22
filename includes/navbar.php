@@ -2,8 +2,15 @@
 $roleId = function_exists('getCurrentRoleId') ? (int)getCurrentRoleId() : 0;
 $dashboardUrl = function_exists('getDashboardPath') ? getDashboardPath($roleId) : app_url('index.php');
 
-// Point admins to admin settings, and all other users to the instructor settings page
-$settingsUrl = $roleId === ROLE_ADMIN ? app_url('admin/settings.php') : app_url('instructor/setting.php');
+// Point each role to its own settings page (falls back to the instructor
+// page only if a role has no dedicated one).
+$settingsMap = [
+    ROLE_ADMIN => 'admin/settings.php',
+    ROLE_INSTRUCTOR => 'instructor/setting.php',
+    ROLE_COORDINATOR => 'coordinator/setting.php',
+    ROLE_PROJECT_COORDINATOR => 'project_coordinator/setting.php',
+];
+$settingsUrl = app_url($settingsMap[$roleId] ?? 'instructor/setting.php');
 
 $unreadCount = 0;
 if (!empty($currentUser['id']) && isset($pdo)) {
