@@ -60,6 +60,7 @@ if (!function_exists('sidebar_link')) {
         echo '<p class="sidebar-label">Timetable</p>';
         sidebar_link('non_academic/timetable_records.php','Timetable Requirements','calendar',$currentPage);
         sidebar_link('non_academic/room_schedules.php','Room & Lab Schedules','square-pen',$currentPage);
+        sidebar_link('non_academic/lecture_hall_booking.php','Lecture Hall Booking','building-2',$currentPage);
         echo '<p class="sidebar-label">Attendance &amp; Leave</p>';
         sidebar_link('non_academic/attendance.php','Manage Attendance','user-check',$currentPage);
         sidebar_link('non_academic/leave_records.php','Leave Records','history',$currentPage);
