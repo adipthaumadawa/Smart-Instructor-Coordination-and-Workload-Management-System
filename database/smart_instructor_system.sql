@@ -685,3 +685,6 @@ ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`);
 
 COMMIT;
+
+ALTER TABLE `timetable_requirements`
+    ADD COLUMN `finalized` TINYINT(1) NOT NULL DEFAULT 0 AFTER `status`;
