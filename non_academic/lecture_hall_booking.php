@@ -547,7 +547,7 @@ select.booking-form-control {
             <div class="booking-card-icon">
 
                 <img
-                    src="<?= app_url('assets/icons/lecture-hall.svg') ?>"
+                    src="<?= app_url('assets/icons/door.svg') ?>"
                     alt="Book Lecture Room"
                 >
 
