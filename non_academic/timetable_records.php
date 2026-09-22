@@ -37,7 +37,7 @@ function timetable_redirect(): void
 {
     header(
         'Location: ' .
-        app_url('non_academic/timetable_management.php')
+        app_url('non_academic/timetable_records.php')   // now this
     );
     exit;
 }
@@ -58,6 +58,71 @@ function normalize_year(string $year): string
     ];
 
     return $map[$year] ?? $year;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| SYNC WITH INSTRUCTOR COORDINATOR'S TIMETABLE REQUIREMENTS
+|--------------------------------------------------------------------------
+| Every slot a non-academic staff member posts here also needs to show
+| up on coordinator/timetable_requirements.php so the Instructor
+| Coordinator can assign an instructor to it. That page reads from
+| timetable_requirements / timetable_slots, a separate pair of tables
+| from the `timetables` table this page manages, so we keep a linked
+| requirement row in sync (create on add, update on edit, delete on
+| delete) via `timetables.requirement_id`.
+*/
+function sync_timetable_requirement(
+    PDO $pdo,
+    ?int $existingRequirementId,
+    string $subjectName,
+    string $course,
+    string $dayName,
+    string $startTime,
+    string $endTime,
+    string $room,
+    string $semester,
+    string $studentYear
+): ?int {
+
+    $streamStmt = $pdo->prepare(
+        "SELECT id FROM academic_streams WHERE code = ? LIMIT 1"
+    );
+    $streamStmt->execute([$course]);
+    $streamId = $streamStmt->fetchColumn();
+    $streamId = $streamId !== false ? (int)$streamId : null;
+
+    $studentYearInt = ctype_digit($studentYear) ? (int)$studentYear : null;
+
+    if ($existingRequirementId) {
+        $pdo->prepare("
+            UPDATE timetable_requirements
+            SET day_of_week = ?, start_time = ?, end_time = ?, subject = ?,
+                location = ?, academic_stream_id = ?, student_year = ?, semester = ?
+            WHERE id = ?
+        ")->execute([
+            $dayName, $startTime, $endTime, $subjectName,
+            $room, $streamId, $studentYearInt, $semester,
+            $existingRequirementId
+        ]);
+        refreshRequirementStatus($existingRequirementId);
+        return $existingRequirementId;
+    }
+
+    $pdo->prepare("
+        INSERT INTO timetable_requirements
+            (day_of_week, start_time, end_time, subject, location,
+             academic_stream_id, student_year, required_instructors,
+             semester, academic_year, status, created_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, 'Open', ?)
+    ")->execute([
+        $dayName, $startTime, $endTime, $subjectName, $room,
+        $streamId, $studentYearInt, $semester, DEFAULT_ACADEMIC_YEAR,
+        $_SESSION['user_id'] ?? null
+    ]);
+
+    return (int)$pdo->lastInsertId();
 }
 
 
@@ -159,9 +224,19 @@ if (
         |--------------------------------------------------------------------------
         */
 
+        $pdo->beginTransaction();
+
+        // Create the linked Timetable Requirement first, so the
+        // coordinator's assignment panel can see this slot.
+        $requirementId = sync_timetable_requirement(
+            $pdo, null, $subjectName, $course, $dayName,
+            $startTime, $endTime, $room, $semester, $academicYear
+        );
+
         $stmt = $pdo->prepare("
             INSERT INTO timetables
             (
+                requirement_id,
                 subject_name,
                 course,
                 day_name,
@@ -172,10 +247,11 @@ if (
                 academic_year
             )
             VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?)
+            (?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         $stmt->execute([
+            $requirementId,
             $subjectName,
             $course,
             $dayName,
@@ -186,11 +262,16 @@ if (
             $academicYear
         ]);
 
+        $pdo->commit();
 
         $_SESSION['success'] =
-            'Timetable slot added successfully.';
+            'Timetable slot added successfully. It is now visible to the Instructor Coordinator for assignment.';
 
     } catch (PDOException $e) {
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
 
         $_SESSION['error'] =
             'Unable to add timetable slot.';
@@ -250,7 +331,7 @@ if (
         */
 
         $find = $pdo->prepare("
-            SELECT id
+            SELECT id, requirement_id
             FROM timetables
             WHERE subject_name = ?
               AND course = ?
@@ -302,6 +383,12 @@ if (
             $record['id']
         ]);
 
+        // Also remove the linked coordinator-side requirement (and, via
+        // its ON DELETE CASCADE, any instructor already assigned to it).
+        if ($delete->rowCount() > 0 && !empty($record['requirement_id'])) {
+            $pdo->prepare("DELETE FROM timetable_requirements WHERE id = ?")
+                ->execute([$record['requirement_id']]);
+        }
 
         if ($delete->rowCount() > 0) {
 
@@ -451,7 +538,7 @@ if (
         */
 
         $findOld = $pdo->prepare("
-            SELECT id
+            SELECT id, requirement_id
             FROM timetables
             WHERE subject_name = ?
               AND course = ?
@@ -537,9 +624,21 @@ if (
         |--------------------------------------------------------------------------
         */
 
+        $pdo->beginTransaction();
+
+        $existingRequirementId = $oldRecord['requirement_id'] !== null
+            ? (int)$oldRecord['requirement_id']
+            : null;
+
+        $requirementId = sync_timetable_requirement(
+            $pdo, $existingRequirementId, $newSubject, $newCourse, $newDay,
+            $newStart, $newEnd, $newRoom, $newSemester, $newYear
+        );
+
         $update = $pdo->prepare("
             UPDATE timetables
             SET
+                requirement_id = ?,
                 subject_name = ?,
                 course = ?,
                 day_name = ?,
@@ -552,6 +651,7 @@ if (
         ");
 
         $update->execute([
+            $requirementId,
             $newSubject,
             $newCourse,
             $newDay,
@@ -563,11 +663,16 @@ if (
             $oldRecord['id']
         ]);
 
+        $pdo->commit();
 
         $_SESSION['success'] =
             'Timetable slot updated successfully.';
 
     } catch (PDOException $e) {
+
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
 
         $_SESSION['error'] =
             'Unable to update timetable slot.';

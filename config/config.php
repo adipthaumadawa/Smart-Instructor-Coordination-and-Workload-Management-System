@@ -55,6 +55,7 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
+define('DEFAULT_ACADEMIC_YEAR', '2025/2026');
 define('RECORDS_PER_PAGE', 10);
 define('DEFAULT_MAX_WEEKLY_HOURS', 40);
 define('ROLE_ADMIN', 1);
