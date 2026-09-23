@@ -22,7 +22,7 @@
                             <td data-label="Type"><?= htmlspecialchars($lr['leave_type']) ?></td>
                             <td data-label="From"><?= formatDate($lr['start_date']) ?></td>
                             <td data-label="To"><?= formatDate($lr['end_date']) ?></td>
-                            <td data-label="Status"><?= getLeaveStatusBadge($lr['status']) ?></td>
+                            <td data-label="Status"><?= getStatusBadge($lr['status']) ?></td>
                             <td data-label="Replacement">
                                 <?php if (empty($lr['rr_id'])): ?>
                                     <span class="text-muted small">None</span>
