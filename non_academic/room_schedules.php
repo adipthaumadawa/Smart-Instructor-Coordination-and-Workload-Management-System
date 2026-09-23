@@ -828,30 +828,25 @@ include __DIR__ . '/../includes/header.php';
 /* PRIMARY */
 
 .room-page .btn-primary {
-
-    background: #2563eb;
-
+    background: #000a1e;
+    border-color: #000a1e;
     color: #ffffff;
 }
 
 .room-page .btn-primary:hover {
-
-    background: #1d4ed8;
+    background: #001a3d;
+    border-color: #001a3d;
 }
 
-
-/* DANGER */
-
 .room-page .btn-danger {
-
-    background: #dc2626;
-
+    background: #8f1414;
+    border-color: #8f1414;
     color: #ffffff;
 }
 
 .room-page .btn-danger:hover {
-
-    background: #b91c1c;
+    background: #6f0f0f;
+    border-color: #6f0f0f;
 }
 
 
