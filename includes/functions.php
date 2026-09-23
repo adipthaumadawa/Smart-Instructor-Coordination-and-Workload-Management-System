@@ -681,4 +681,233 @@ function getStatusBadge($status) {
     
     return $badges[$status] ?? '<span class="badge bg-secondary">' . ucfirst($status) . '</span>';
 }
+
+/**
+ * Leave status badge. "Approved" is shown to users as "Confirmed"
+ * (a leave is confirmed once its replacement accepts).
+ */
+function getLeaveStatusBadge($status) {
+    $map = [
+        'pending'   => '<span class="badge bg-warning text-dark">Pending</span>',
+        'approved'  => '<span class="badge bg-success">Confirmed</span>',
+        'rejected'  => '<span class="badge bg-danger">Rejected</span>',
+        'cancelled' => '<span class="badge bg-secondary">Cancelled</span>',
+    ];
+    $key = strtolower((string)$status);
+    return $map[$key] ?? getStatusBadge($status);
+}
+
+/**
+ * Notify coordinators + chief coordinators (active accounts).
+ */
+function sic_notify_coordinators($title, $message, $type, $relatedId) {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE role_id IN (:coord, :chief) AND status = 'active'");
+    $stmt->execute([':coord' => ROLE_COORDINATOR, ':chief' => ROLE_CHIEF_COORDINATOR]);
+    foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $uid) {
+        createNotification($uid, $title, $message, $type, $relatedId);
+    }
+}
+
+/**
+ * Cancel a replacement request that is still Pending.
+ *
+ * Only the instructor who sent the request may cancel it, and only while the
+ * other instructor has not responded. For a leave-based request the leave
+ * itself is left alone (it stays Pending), so the instructor can pick a
+ * different replacement or cancel the leave separately.
+ *
+ * @return bool true on success; on failure $message explains why.
+ */
+function sic_cancel_replacement_request(PDO $pdo, $requestId, $instructorId, &$message) {
+    $requestId = (int)$requestId;
+    $instructorId = (int)$instructorId;
+    $requester = $_SESSION['full_name'] ?? 'An instructor';
+
+    try {
+        $pdo->beginTransaction();
+
+        $sel = $pdo->prepare("
+            SELECT rr.*, lr.leave_type, lr.start_date AS leave_start, lr.end_date AS leave_end
+            FROM replacement_requests rr
+            LEFT JOIN leave_records lr ON lr.id = rr.leave_record_id
+            WHERE rr.id = ? AND rr.requested_by_instructor_id = ?
+            FOR UPDATE
+        ");
+        $sel->execute([$requestId, $instructorId]);
+        $req = $sel->fetch(PDO::FETCH_ASSOC);
+
+        if (!$req) {
+            $pdo->rollBack();
+            $message = 'Replacement request not found.';
+            return false;
+        }
+        if ($req['status'] !== 'Pending') {
+            $pdo->rollBack();
+            $message = 'This request has already been ' . strtolower($req['status']) . ' and can no longer be cancelled.';
+            return false;
+        }
+
+        $upd = $pdo->prepare("UPDATE replacement_requests SET status = 'Cancelled' WHERE id = ? AND status = 'Pending'");
+        $upd->execute([$requestId]);
+        if ($upd->rowCount() === 0) {
+            // The other instructor responded a moment ago.
+            $pdo->rollBack();
+            $message = 'This request was just answered and can no longer be cancelled.';
+            return false;
+        }
+
+        $isLeave = !empty($req['leave_record_id']);
+        $what = $isLeave
+            ? 'to cover their ' . $req['leave_type'] . ' leave (' . formatDate($req['leave_start']) . ' to ' . formatDate($req['leave_end']) . ')'
+            : 'for a task';
+
+        if (!empty($req['suggested_instructor_id'])) {
+            $u = $pdo->prepare("SELECT user_id FROM instructors WHERE id = ?");
+            $u->execute([$req['suggested_instructor_id']]);
+            $suggestedUserId = $u->fetchColumn();
+            if ($suggestedUserId) {
+                createNotification($suggestedUserId, 'Replacement Request Cancelled', "{$requester} cancelled the replacement request {$what}. No action is needed from you.", 'replacement', $requestId);
+            }
+        }
+        // Coordinators were told about leave-based requests and requests with no
+        // named replacement, so tell them it was withdrawn.
+        if ($isLeave || empty($req['suggested_instructor_id'])) {
+            sic_notify_coordinators('Replacement Request Cancelled', "{$requester} cancelled a replacement request {$what}.", 'replacement', $requestId);
+        }
+
+        logActivity($_SESSION['user_id'] ?? null, 'Cancel Replacement Request', "Cancelled replacement request #{$requestId}");
+
+        $pdo->commit();
+        $message = $isLeave
+            ? 'Replacement request cancelled. Your leave is still pending — choose another replacement or cancel the leave.'
+            : 'Replacement request cancelled.';
+        return true;
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) { $pdo->rollBack(); }
+        error_log('sic_cancel_replacement_request failed: ' . $e->getMessage());
+        $message = 'Could not cancel the request. Please try again.';
+        return false;
+    }
+}
+
+/**
+ * Cancel a recorded leave (Pending or confirmed/Approved).
+ *
+ * - Any Pending replacement request for the leave is cancelled too.
+ * - If the leave was already confirmed, tasks that were handed to the
+ *   replacement when it was confirmed are returned to the original instructor
+ *   (only those still open and dated today or later).
+ * - A leave whose end date has passed can't be cancelled.
+ *
+ * @return bool true on success; on failure $message explains why.
+ */
+function sic_cancel_leave(PDO $pdo, $leaveId, $instructorId, &$message) {
+    $leaveId = (int)$leaveId;
+    $instructorId = (int)$instructorId;
+    $requester = $_SESSION['full_name'] ?? 'An instructor';
+
+    try {
+        $pdo->beginTransaction();
+
+        $sel = $pdo->prepare("SELECT * FROM leave_records WHERE id = ? AND instructor_id = ? FOR UPDATE");
+        $sel->execute([$leaveId, $instructorId]);
+        $leave = $sel->fetch(PDO::FETCH_ASSOC);
+
+        if (!$leave) {
+            $pdo->rollBack();
+            $message = 'Leave record not found.';
+            return false;
+        }
+        if ($leave['status'] === 'Cancelled') {
+            $pdo->rollBack();
+            $message = 'This leave has already been cancelled.';
+            return false;
+        }
+        if (!in_array($leave['status'], ['Pending', 'Approved'], true)) {
+            $pdo->rollBack();
+            $message = 'Only pending or confirmed leaves can be cancelled.';
+            return false;
+        }
+        if (strtotime($leave['end_date']) < strtotime(date('Y-m-d'))) {
+            $pdo->rollBack();
+            $message = 'This leave has already ended and can no longer be cancelled.';
+            return false;
+        }
+
+        $wasApproved = ($leave['status'] === 'Approved');
+        $period = formatDate($leave['start_date']) . ' to ' . formatDate($leave['end_date']);
+
+        $pdo->prepare("UPDATE leave_records SET status = 'Cancelled' WHERE id = ?")->execute([$leaveId]);
+
+        // 1) Withdraw any request still waiting on a reply.
+        $pendingStmt = $pdo->prepare("SELECT id, suggested_instructor_id FROM replacement_requests WHERE leave_record_id = ? AND status = 'Pending' FOR UPDATE");
+        $pendingStmt->execute([$leaveId]);
+        $pendingReqs = $pendingStmt->fetchAll(PDO::FETCH_ASSOC);
+        $cancelReq = $pdo->prepare("UPDATE replacement_requests SET status = 'Cancelled' WHERE id = ? AND status = 'Pending'");
+        $userLookup = $pdo->prepare("SELECT user_id FROM instructors WHERE id = ?");
+        foreach ($pendingReqs as $pr) {
+            $cancelReq->execute([$pr['id']]);
+            if (!empty($pr['suggested_instructor_id'])) {
+                $userLookup->execute([$pr['suggested_instructor_id']]);
+                $uid = $userLookup->fetchColumn();
+                if ($uid) {
+                    createNotification($uid, 'Replacement Request Cancelled', "{$requester} cancelled their leave ({$period}), so the request for you to cover it is withdrawn.", 'replacement', $pr['id']);
+                }
+            }
+        }
+
+        // 2) If it was confirmed, hand the reassigned tasks back and tell the replacement.
+        $returned = 0;
+        if ($wasApproved) {
+            $tasks = $pdo->prepare("
+                SELECT ltr.id, ltr.task_assignment_id, ltr.from_instructor_id
+                FROM leave_task_reassignments ltr
+                JOIN task_assignments ta ON ta.id = ltr.task_assignment_id
+                WHERE ltr.leave_record_id = ?
+                  AND ta.instructor_id = ltr.to_instructor_id
+                  AND ta.status IN ('Assigned','Accepted')
+                  AND ta.scheduled_date >= CURDATE()
+                FOR UPDATE
+            ");
+            $tasks->execute([$leaveId]);
+            $giveBack = $pdo->prepare("UPDATE task_assignments SET instructor_id = ? WHERE id = ?");
+            foreach ($tasks->fetchAll(PDO::FETCH_ASSOC) as $t) {
+                $giveBack->execute([$t['from_instructor_id'], $t['task_assignment_id']]);
+                $returned++;
+            }
+
+            $acc = $pdo->prepare("SELECT suggested_instructor_id FROM replacement_requests WHERE leave_record_id = ? AND status = 'Accepted' ORDER BY id DESC LIMIT 1");
+            $acc->execute([$leaveId]);
+            $accInstructor = $acc->fetchColumn();
+            if ($accInstructor) {
+                $userLookup->execute([$accInstructor]);
+                $uid = $userLookup->fetchColumn();
+                if ($uid) {
+                    $extra = $returned > 0 ? " {$returned} task(s) have been returned to them." : '';
+                    createNotification($uid, 'Leave Cancelled', "{$requester} cancelled their leave ({$period}) that you agreed to cover. You no longer need to cover it.{$extra}", 'leave', $leaveId);
+                }
+            }
+        }
+
+        // 3) Visibility for the people who were told about the leave.
+        sic_notify_coordinators('Leave Cancelled', "{$requester} cancelled their {$leave['leave_type']} leave ({$period}).", 'leave', $leaveId);
+        $na = $pdo->prepare("SELECT id FROM users WHERE role_id = :na AND status = 'active'");
+        $na->execute([':na' => ROLE_NON_ACADEMIC]);
+        foreach ($na->fetchAll(PDO::FETCH_COLUMN) as $uid) {
+            createNotification($uid, 'Instructor Leave Cancelled', "{$requester} cancelled their {$leave['leave_type']} leave ({$period}).", 'leave', $leaveId);
+        }
+
+        logActivity($_SESSION['user_id'] ?? null, 'Cancel Leave', "Cancelled leave #{$leaveId} ({$period})" . ($returned ? "; {$returned} task(s) returned" : ''));
+
+        $pdo->commit();
+        $message = 'Leave cancelled.' . ($returned > 0 ? " {$returned} task(s) were returned to you." : '');
+        return true;
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) { $pdo->rollBack(); }
+        error_log('sic_cancel_leave failed: ' . $e->getMessage());
+        $message = 'Could not cancel the leave. Please try again.';
+        return false;
+    }
+}
 ?>

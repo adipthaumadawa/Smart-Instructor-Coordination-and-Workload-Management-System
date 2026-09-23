@@ -38,8 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['respond'], $_POST['ac
             try {
                 $pdo->beginTransaction();
 
-                $upd = $pdo->prepare("UPDATE replacement_requests SET status = ?, responded_by = ?, responded_at = NOW() WHERE id = ?");
+                // Only a still-Pending request can be answered (the sender may have just cancelled it).
+                $upd = $pdo->prepare("UPDATE replacement_requests SET status = ?, responded_by = ?, responded_at = NOW() WHERE id = ? AND status = 'Pending'");
                 $upd->execute([$action, $_SESSION['user_id'], $reqId]);
+                if ($upd->rowCount() === 0) {
+                    $pdo->rollBack();
+                    $_SESSION['error'] = 'This request was cancelled or already handled.';
+                    header('Location: ' . app_url('instructor/replacement_request.php'));
+                    exit;
+                }
 
                 $requesterUserId = null;
                 $requesterStmt = $pdo->prepare("SELECT user_id, id FROM instructors WHERE id = ?");
@@ -62,14 +69,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['respond'], $_POST['ac
                         $leaveDates->execute([$reqRow['leave_record_id']]);
                         $ld = $leaveDates->fetch();
                         if ($ld) {
-                            $reassign = $pdo->prepare("
-                                UPDATE task_assignments
-                                SET instructor_id = ?
+                            // Remember exactly which tasks move, so cancelling the leave later can return them.
+                            $toMove = $pdo->prepare("
+                                SELECT id FROM task_assignments
                                 WHERE instructor_id = ?
                                   AND status IN ('Assigned','Accepted')
                                   AND scheduled_date BETWEEN ? AND ?
+                                FOR UPDATE
                             ");
-                            $reassign->execute([$instructorId, $reqRow['requested_by_instructor_id'], $ld['start_date'], $ld['end_date']]);
+                            $toMove->execute([$reqRow['requested_by_instructor_id'], $ld['start_date'], $ld['end_date']]);
+                            $track = $pdo->prepare("
+                                INSERT INTO leave_task_reassignments (leave_record_id, task_assignment_id, from_instructor_id, to_instructor_id)
+                                VALUES (?, ?, ?, ?)
+                            ");
+                            $moveTask = $pdo->prepare("UPDATE task_assignments SET instructor_id = ? WHERE id = ?");
+                            foreach ($toMove->fetchAll(PDO::FETCH_COLUMN) as $movedTaskId) {
+                                $track->execute([$reqRow['leave_record_id'], $movedTaskId, $reqRow['requested_by_instructor_id'], $instructorId]);
+                                $moveTask->execute([$instructorId, $movedTaskId]);
+                            }
                         }
 
                         if ($requesterUserId) {
@@ -107,6 +124,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['respond'], $_POST['ac
         } else {
             $_SESSION['error'] = 'Request not found or already handled.';
         }
+    }
+    header('Location: ' . app_url('instructor/replacement_request.php'));
+    exit;
+}
+
+// Handle cancelling one of MY pending requests (POST + CSRF).
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_request'])) {
+    csrf_verify();
+    $cancelMsg = '';
+    if (sic_cancel_replacement_request($pdo, (int)$_POST['cancel_request'], $instructorId, $cancelMsg)) {
+        $_SESSION['success'] = $cancelMsg;
+    } else {
+        $_SESSION['error'] = $cancelMsg;
     }
     header('Location: ' . app_url('instructor/replacement_request.php'));
     exit;
@@ -351,10 +381,10 @@ include __DIR__ . '/../includes/header.php';
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
-                            <thead><tr><th>Task / Leave</th><th>Period</th><th>Suggested Instructor</th><th>Status</th></tr></thead>
+                            <thead><tr><th>Task / Leave</th><th>Period</th><th>Suggested Instructor</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
                             <tbody>
                                 <?php if (empty($myRequests)): ?>
-                                    <tr><td colspan="4" class="text-muted">No replacement requests submitted yet.</td></tr>
+                                    <tr><td colspan="5" class="text-muted">No replacement requests submitted yet.</td></tr>
                                 <?php endif; ?>
                                 <?php foreach ($myRequests as $r): ?>
                                     <tr>
@@ -367,6 +397,15 @@ include __DIR__ . '/../includes/header.php';
                                         </td>
                                         <td data-label="Suggested"><?= htmlspecialchars($r['suggested_name'] ?? 'Coordinator to decide') ?></td>
                                         <td data-label="Status"><?= getStatusBadge($r['status']) ?></td>
+                                        <td data-label="Actions" class="text-end action-cell">
+                                            <?php if ($r['status'] === 'Pending'): ?>
+                                                <form method="POST" action="" style="display:inline-block;">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="cancel_request" value="<?= (int)$r['id'] ?>">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this replacement request?<?= !empty($r['leave_record_id']) ? ' Your leave will stay pending until you choose another replacement.' : '' ?>')">Cancel Request</button>
+                                                </form>
+                                            <?php endif; ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>
