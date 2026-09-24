@@ -141,10 +141,17 @@ if (!function_exists('sic_dashboard_cards')) {
                     ['Activity Logs Today',  sic_scalar("SELECT COUNT(*) FROM activity_logs WHERE DATE(created_at) = CURDATE()"), 'Audit entries',      'history',   'coral',  ''],
                 ];
             case 'instructor':
+                // Named placeholders can't be reused when PDO emulation is off, so use two.
+                $pendingReplacements = $instructorId ? (int)sic_scalar(
+                    "SELECT COUNT(*) FROM replacement_requests
+                     WHERE status = 'Pending'
+                       AND (requested_by_instructor_id = :iid1 OR suggested_instructor_id = :iid2)",
+                    [':iid1'=>$instructorId, ':iid2'=>$instructorId]
+                ) : 0;
                 return [
                     ["Today's Tasks",       $instructorId ? sic_scalar("SELECT COUNT(*) FROM task_assignments WHERE instructor_id = :iid AND scheduled_date = CURDATE() AND status IN ('Assigned','Accepted')", [':iid'=>$instructorId]) : 0, 'Scheduled for today', 'tasks',  'purple',''],
-                    ['Weekly Workload',      ($instructorId ? sic_scalar("SELECT COALESCE(SUM(duration_hours),0) FROM task_assignments WHERE instructor_id = :iid AND is_presentation_panel = 0 AND scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND status IN ('Assigned','Accepted','Completed')", [':iid'=>$instructorId]) : 0) . ' hrs', 'Next 7 days', 'chart','blue',''],
-                    ['Replacement Requests',$instructorId ? sic_scalar("SELECT COUNT(*) FROM replacement_requests WHERE status = 'Pending' AND (requested_by_instructor_id = :iid OR suggested_instructor_id = :iid)", [':iid'=>$instructorId]) : 0, 'Waiting response', 'swap','coral','danger'],
+                    ['Weekly Workload',      ($instructorId ? sic_scalar("SELECT COALESCE(SUM(duration_hours),0) FROM task_assignments WHERE instructor_id = :iid AND is_presentation_panel = 0 AND scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY) AND status IN ('Assigned','Accepted','Completed')", [':iid'=>$instructorId]) : 0) . ' hrs', 'Next 7 days', 'chart','blue',''],
+                    ['Replacement Requests',$pendingReplacements, 'Waiting response', 'swap','coral', $pendingReplacements > 0 ? 'danger' : ''],
                     ['Notifications',        sic_scalar("SELECT COUNT(*) FROM notifications WHERE user_id = :uid AND is_read = 0", [':uid'=>$uid]), 'Unread alerts', 'bell','teal',''],
                 ];
             case 'coordinator':
@@ -1390,6 +1397,7 @@ if (!function_exists('sic_render_instructor_dashboard')) {
                     FROM task_assignments ta
                     LEFT JOIN task_types tt ON ta.task_type_id = tt.id
                     WHERE ta.instructor_id = :iid
+                      AND ta.is_presentation_panel = 0
                       AND ta.scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY)
                       AND ta.status IN ('Assigned','Accepted','Completed')
                     GROUP BY type_name
