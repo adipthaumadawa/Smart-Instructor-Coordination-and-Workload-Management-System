@@ -141,10 +141,17 @@ if (!function_exists('sic_dashboard_cards')) {
                     ['Activity Logs Today',  sic_scalar("SELECT COUNT(*) FROM activity_logs WHERE DATE(created_at) = CURDATE()"), 'Audit entries',      'history',   'coral',  ''],
                 ];
             case 'instructor':
+                // Named placeholders can't be reused when PDO emulation is off, so use two.
+                $pendingReplacements = $instructorId ? (int)sic_scalar(
+                    "SELECT COUNT(*) FROM replacement_requests
+                     WHERE status = 'Pending'
+                       AND (requested_by_instructor_id = :iid1 OR suggested_instructor_id = :iid2)",
+                    [':iid1'=>$instructorId, ':iid2'=>$instructorId]
+                ) : 0;
                 return [
                     ["Today's Tasks",       $instructorId ? sic_scalar("SELECT COUNT(*) FROM task_assignments WHERE instructor_id = :iid AND scheduled_date = CURDATE() AND status IN ('Assigned','Accepted')", [':iid'=>$instructorId]) : 0, 'Scheduled for today', 'tasks',  'purple',''],
-                    ['Weekly Workload',      ($instructorId ? sic_scalar("SELECT COALESCE(SUM(duration_hours),0) FROM task_assignments WHERE instructor_id = :iid AND is_presentation_panel = 0 AND scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND status IN ('Assigned','Accepted','Completed')", [':iid'=>$instructorId]) : 0) . ' hrs', 'Next 7 days', 'chart','blue',''],
-                    ['Replacement Requests',$instructorId ? sic_scalar("SELECT COUNT(*) FROM replacement_requests WHERE status = 'Pending' AND (requested_by_instructor_id = :iid OR suggested_instructor_id = :iid)", [':iid'=>$instructorId]) : 0, 'Waiting response', 'swap','coral','danger'],
+                    ['Weekly Workload',      ($instructorId ? sic_scalar("SELECT COALESCE(SUM(duration_hours),0) FROM task_assignments WHERE instructor_id = :iid AND is_presentation_panel = 0 AND scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY) AND status IN ('Assigned','Accepted','Completed')", [':iid'=>$instructorId]) : 0) . ' hrs', 'Next 7 days', 'chart','blue',''],
+                    ['Replacement Requests',$pendingReplacements, 'Waiting response', 'swap','coral', $pendingReplacements > 0 ? 'danger' : ''],
                     ['Notifications',        sic_scalar("SELECT COUNT(*) FROM notifications WHERE user_id = :uid AND is_read = 0", [':uid'=>$uid]), 'Unread alerts', 'bell','teal',''],
                 ];
             case 'coordinator':
@@ -183,11 +190,15 @@ if (!function_exists('sic_dashboard_cards')) {
                     ['Leave Notifications',      sic_scalar("SELECT COUNT(*) FROM notifications WHERE user_id = :uid AND is_read = 0 AND type = 'leave'", [':uid'=>$uid]), 'Unread leave alerts', 'bell','teal',''],
                 ];
             case 'project':
+                $upcomingSessions = (int)sic_scalar("SELECT COUNT(*) FROM presentation_sessions WHERE status = 'Scheduled' AND session_date >= CURDATE()");
+                $incompletePanels = (int)sic_scalar("SELECT COUNT(*) FROM (SELECT ps.id FROM presentation_sessions ps LEFT JOIN presentation_panel_members ppm ON ppm.presentation_session_id = ps.id WHERE ps.status = 'Scheduled' AND ps.session_date >= CURDATE() GROUP BY ps.id HAVING COUNT(ppm.id) < 3) t");
+                $availableToday   = (int)sic_scalar("SELECT COUNT(*) FROM instructors i WHERE i.status = 'active' AND NOT EXISTS (SELECT 1 FROM leave_records lr WHERE lr.instructor_id = i.id AND lr.status = 'Approved' AND CURDATE() BETWEEN lr.start_date AND lr.end_date)");
+                $bookedVenues     = (int)sic_scalar("SELECT COUNT(DISTINCT venue) FROM presentation_sessions WHERE status = 'Scheduled' AND session_date >= CURDATE() AND venue IS NOT NULL AND venue <> ''");
                 return [
-                    ['Presentation Sessions', sic_scalar("SELECT COUNT(*) FROM presentation_sessions WHERE status = 'Scheduled'"), 'Scheduled sessions', 'display','purple',''],
-                    ['Pending Panels',         sic_scalar("SELECT COUNT(*) FROM presentation_sessions ps WHERE ps.status = 'Scheduled' AND NOT EXISTS (SELECT 1 FROM presentation_panel_members ppm WHERE ppm.presentation_session_id = ps.id)"), 'Need panel members', 'users-gear','coral','danger'],
-                    ['Available Instructors',  sic_scalar("SELECT COUNT(*) FROM instructors WHERE status = 'active'"), 'For panel selection', 'user-check','teal',''],
-                    ['Booked Venues',          sic_scalar("SELECT COUNT(DISTINCT venue) FROM presentation_sessions WHERE status = 'Scheduled' AND venue IS NOT NULL AND venue <> ''"), 'Presentation venues', 'location','blue',''],
+                    ['Upcoming Sessions',     $upcomingSessions, 'Scheduled from today',       'calendar',  'purple', ''],
+                    ['Incomplete Panels',     $incompletePanels, 'Fewer than 3 members',       'users',     'coral',  $incompletePanels > 0 ? 'danger' : ''],
+                    ['Available Instructors', $availableToday,   'Active and not on leave today','user-check','teal',   ''],
+                    ['Venues Booked',         $bookedVenues,     'For upcoming sessions',      'building',  'blue',   ''],
                 ];
             case 'director':
                 return [
@@ -982,7 +993,7 @@ if (!function_exists('sic_dashboard_styles')) {
    MAIN RENDER FUNCTION
    ───────────────────────────────────────────────────────────────────────────── */
 
-function sic_render_dashboard(string $heading, string $subtitle, array $cards = [], string $primaryActionUrl = '', string $primaryActionText = 'Quick Action') {
+function sic_render_dashboard(string $heading, string $subtitle, array $cards = [], string $primaryActionUrl = '', string $primaryActionText = 'Quick Action', bool $kpiOnly = false) {
     sic_dashboard_styles();
 
     $activeInstructors    = sic_count("SELECT COUNT(*) FROM instructors WHERE status='active'");
@@ -1074,6 +1085,8 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
         </div>
         <?php endforeach; ?>
     </div><!-- /.kpi-grid -->
+
+    <?php if ($kpiOnly) { echo '</section>'; return; } /* role-specific pages draw their own widgets */ ?>
 
     <!-- ── Row 1: Chart | Availability | Schedule ── -->
     <div class="dash-grid-row1">
@@ -1390,6 +1403,7 @@ if (!function_exists('sic_render_instructor_dashboard')) {
                     FROM task_assignments ta
                     LEFT JOIN task_types tt ON ta.task_type_id = tt.id
                     WHERE ta.instructor_id = :iid
+                      AND ta.is_presentation_panel = 0
                       AND ta.scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY)
                       AND ta.status IN ('Assigned','Accepted','Completed')
                     GROUP BY type_name

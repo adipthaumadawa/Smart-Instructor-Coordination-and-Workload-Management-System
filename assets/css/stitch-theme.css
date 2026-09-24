@@ -1529,3 +1529,16 @@ label {
     width: 100% !important;
   }
 }
+/* Make .text-end work inside tables (beats ".table th/td { text-align:left }") */
+.table th.text-end,
+.table td.text-end {
+  text-align: right;
+}
+
+/* Keep multiple action buttons on one line with a small gap */
+.table td.action-cell {
+  white-space: nowrap;
+}
+.table td.action-cell .btn + .btn {
+  margin-left: 6px;
+}
