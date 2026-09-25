@@ -147,7 +147,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
     $taskId = (int)($_POST['task_assignment_id'] ?? 0);
     $reason = sanitize($_POST['reason'] ?? '');
     $suggestedId = (int)($_POST['suggested_instructor_id'] ?? 0);
-    $suggestedId = $suggestedId > 0 ? $suggestedId : null;
 
     // Confirm the task belongs to this instructor and is still active
     $taskChk = $pdo->prepare("SELECT * FROM task_assignments WHERE id = ? AND instructor_id = ? AND status IN ('Assigned','Accepted')");
@@ -158,9 +157,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
         $error = 'Please select a valid, upcoming task of yours.';
     } elseif ($reason === '') {
         $error = 'Please provide a reason for the replacement request.';
+    } elseif ($suggestedId <= 0) {
+        $error = 'Please choose a replacement instructor before sending the request.';
     } elseif ($suggestedId === $instructorId) {
         $error = 'You cannot suggest yourself as the replacement.';
     } else {
+        // Confirm the chosen instructor is a real, active instructor.
+        $repChk = $pdo->prepare("SELECT id FROM instructors WHERE id = ? AND status = 'active'");
+        $repChk->execute([$suggestedId]);
+        if (!$repChk->fetch()) {
+            $error = 'The selected replacement instructor is not available. Please choose another.';
+        }
+    }
+
+    if ($error === '') {
         try {
             $stmt = $pdo->prepare("
                 INSERT INTO replacement_requests (task_assignment_id, requested_by_instructor_id, reason, suggested_instructor_id, status, created_at)
@@ -171,21 +181,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request'])) {
 
             logActivity($_SESSION['user_id'], 'Request Replacement', "Requested replacement for task assignment #{$taskId}");
 
-            if ($suggestedId) {
-                // Notify the suggested instructor directly
-                $userStmt = $pdo->prepare("SELECT user_id FROM instructors WHERE id = ?");
-                $userStmt->execute([$suggestedId]);
-                $suggestedUserId = $userStmt->fetchColumn();
-                if ($suggestedUserId) {
-                    createNotification($suggestedUserId, 'Replacement Request', "You have been suggested as a replacement for a task on " . formatDate($taskRow['scheduled_date']) . ".", 'replacement', $newId);
-                }
-            } else {
-                // Notify coordinators to find a suitable replacement
-                $notifyUsers = $pdo->prepare("SELECT id FROM users WHERE role_id IN (:coord, :chief) AND status = 'active'");
-                $notifyUsers->execute([':coord' => ROLE_COORDINATOR, ':chief' => ROLE_CHIEF_COORDINATOR]);
-                foreach ($notifyUsers->fetchAll(PDO::FETCH_COLUMN) as $uid) {
-                    createNotification($uid, 'Replacement Needed', ($_SESSION['full_name'] ?? 'An instructor') . " needs a replacement for a task on " . formatDate($taskRow['scheduled_date']) . ".", 'replacement', $newId);
-                }
+            // Notify the suggested instructor directly
+            $userStmt = $pdo->prepare("SELECT user_id FROM instructors WHERE id = ?");
+            $userStmt->execute([$suggestedId]);
+            $suggestedUserId = $userStmt->fetchColumn();
+            if ($suggestedUserId) {
+                createNotification($suggestedUserId, 'Replacement Request', "You have been suggested as a replacement for a task on " . formatDate($taskRow['scheduled_date']) . ".", 'replacement', $newId);
             }
 
             $_SESSION['success'] = 'Replacement request submitted successfully.';
@@ -303,9 +304,9 @@ include __DIR__ . '/../includes/header.php';
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Suggest a Replacement (optional)</label>
-                                    <select name="suggested_instructor_id" class="form-select">
-                                        <option value="">Let the coordinator decide</option>
+                                    <label class="form-label">Suggest a Replacement <span class="text-danger">*</span></label>
+                                    <select name="suggested_instructor_id" class="form-select" required>
+                                        <option value="">Choose a replacement instructor</option>
                                         <?php foreach ($otherInstructors as $oi): ?>
                                             <option value="<?= (int)$oi['id'] ?>"><?= htmlspecialchars($oi['display_name']) ?> — <?= htmlspecialchars($oi['stream_name']) ?></option>
                                         <?php endforeach; ?>
@@ -395,7 +396,7 @@ include __DIR__ . '/../includes/header.php';
                                                 &ndash; <?= formatDate($r['leave_end_date']) ?>
                                             <?php endif; ?>
                                         </td>
-                                        <td data-label="Suggested"><?= htmlspecialchars($r['suggested_name'] ?? 'Coordinator to decide') ?></td>
+                                        <td data-label="Suggested"><?= htmlspecialchars($r['suggested_name'] ?? '—') ?></td>
                                         <td data-label="Status"><?= getStatusBadge($r['status']) ?></td>
                                         <td data-label="Actions" class="text-end action-cell">
                                             <?php if ($r['status'] === 'Pending'): ?>

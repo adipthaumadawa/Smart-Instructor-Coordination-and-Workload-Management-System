@@ -1412,6 +1412,39 @@ if (!function_exists('sic_render_instructor_dashboard')) {
                 $stmt->execute([':iid' => $instructorId]);
                 $typeBreakdown = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 foreach ($typeBreakdown as $row) { $weekTotal += (int)$row['c']; }
+
+                // PLACEHOLDER: timetable_slots (lectures/labs) has no per-date rows or duration to
+                // total properly, so this just counts this instructor's weekly slots that fall on a
+                // day within the next 7 days, as one more slice, until workload/timetable data is unified.
+                $slotCount = (int)sic_scalar(
+                    "SELECT COUNT(*) FROM timetable_slots
+                     WHERE instructor_id = :iid
+                       AND day_of_week IN (
+                           SELECT DAYNAME(DATE_ADD(CURDATE(), INTERVAL n DAY))
+                           FROM (SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6) days
+                       )",
+                    [':iid' => $instructorId]
+                );
+                if ($slotCount > 0) {
+                    $typeBreakdown[] = ['type_name' => 'Lectures/Labs', 'c' => $slotCount];
+                    $weekTotal += $slotCount;
+                }
+
+                // PLACEHOLDER: presentation panels are excluded from the query above
+                // (is_presentation_panel = 0), same as the workload cards. Add them back
+                // here as their own slice so panel assignments are visible somewhere.
+                $panelCount = (int)sic_scalar(
+                    "SELECT COUNT(*) FROM task_assignments
+                     WHERE instructor_id = :iid
+                       AND is_presentation_panel = 1
+                       AND scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 6 DAY)
+                       AND status IN ('Assigned','Accepted','Completed')",
+                    [':iid' => $instructorId]
+                );
+                if ($panelCount > 0) {
+                    $typeBreakdown[] = ['type_name' => 'Presentation Panels', 'c' => $panelCount];
+                    $weekTotal += $panelCount;
+                }
             } catch (Throwable $e) { $typeBreakdown = []; }
         }
         $typeColors = ['#00b3c0','#3b82f6','#7c5fe6','#f59e0b','#ef5350','#22c55e','#94a3b8'];
