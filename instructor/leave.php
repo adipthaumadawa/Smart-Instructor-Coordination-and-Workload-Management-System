@@ -16,6 +16,10 @@
  *     accept does the leave become "Confirmed".
  *  4. If the chosen instructor rejects, the leave stays Pending and the
  *     requester can pick another replacement for the same leave record.
+ *  5. The instructor can cancel a pending replacement request (leave stays
+ *     Pending) or cancel the leave itself — pending or confirmed, as long as
+ *     it hasn't ended. Cancelling a confirmed leave returns the tasks that
+ *     were handed to the replacement.
  */
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
@@ -81,6 +85,25 @@ function sic_send_replacement_request($pdo, $instructorId, $leaveId, $leaveType,
     }
 
     return $requestId;
+}
+
+// -----------------------------------------------------------------
+// Cancel actions (POST + CSRF):
+//  - cancel_leave:   cancel a recorded leave (pending or confirmed)
+//  - cancel_request: withdraw a pending replacement request only; the
+//                    leave stays Pending so another replacement can be chosen
+// -----------------------------------------------------------------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['cancel_leave']) || isset($_POST['cancel_request']))) {
+    csrf_verify();
+    $cancelMsg = '';
+    if (isset($_POST['cancel_leave'])) {
+        $ok = sic_cancel_leave($pdo, (int)$_POST['cancel_leave'], $instructorId, $cancelMsg);
+    } else {
+        $ok = sic_cancel_replacement_request($pdo, (int)$_POST['cancel_request'], $instructorId, $cancelMsg);
+    }
+    $_SESSION[$ok ? 'success' : 'error'] = $cancelMsg;
+    header('Location: ' . app_url('instructor/leave.php'));
+    exit;
 }
 
 // -----------------------------------------------------------------
@@ -287,6 +310,9 @@ include __DIR__ . '/../includes/header.php';
 
             <?php if (isset($_SESSION['success'])): ?>
                 <div class="alert alert-success"><?= htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?></div>
+            <?php endif; ?>
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
             <?php endif; ?>
             <?php if ($error): ?>
                 <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>

@@ -1,10 +1,16 @@
+
 <?php
 /**
  * ============================================================
  * NON-ACADEMIC STAFF
  * LECTURE HALL BOOKING
- * Design Only
  * Smart Instructor Coordination and Workload Management System
+ *
+ * UI ONLY
+ * - Check Available UI
+ * - Book Lecture Room / Laboratory UI
+ * - Current Bookings UI
+ * - Cancel Booking button is UI only
  * ============================================================
  */
 
@@ -58,7 +64,7 @@ include __DIR__ . '/../includes/header.php';
 
 
 /* ============================================================
-   THIN DIVIDER BELOW HEADING
+   THIN DIVIDER
 ============================================================ */
 
 .lecture-booking-divider {
@@ -97,7 +103,10 @@ include __DIR__ . '/../includes/header.php';
     width: 44px;
     height: 44px;
     border-radius: 10px;
-    background: #eef2ff;
+
+    /* System dark-navy theme */
+    background: #eef2f7;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -173,6 +182,7 @@ include __DIR__ . '/../includes/header.php';
 .booking-form-control {
     width: 100%;
     min-height: 48px;
+
     padding: 11px 14px;
     box-sizing: border-box;
 
@@ -185,23 +195,20 @@ include __DIR__ . '/../includes/header.php';
     font-size: 15px;
 
     outline: none;
-    transition: border-color 0.2s ease,
-                box-shadow 0.2s ease;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .booking-form-control:focus {
-    border-color: #4338ca;
-    box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.10);
+    border-color: #000a1e;
+    box-shadow: 0 0 0 3px rgba(0, 10, 30, 0.10);
 }
 
 .booking-form-control::placeholder {
     color: #9ca3af;
 }
-
-
-/* ============================================================
-   SELECT
-============================================================ */
 
 select.booking-form-control {
     cursor: pointer;
@@ -223,13 +230,15 @@ select.booking-form-control {
 
 .booking-button-area {
     margin-top: 26px;
+
     display: flex;
     justify-content: flex-end;
 }
 
 
 /* ============================================================
-   BUTTON
+   NORMAL BUTTON
+   Same dark-navy style as the other system users
 ============================================================ */
 
 .booking-button {
@@ -238,10 +247,10 @@ select.booking-form-control {
 
     padding: 11px 24px;
 
-    border: none;
+    border: 1px solid #000a1e;
     border-radius: 9px;
 
-    background: #4338ca;
+    background: #000a1e;
     color: #ffffff;
 
     font-size: 15px;
@@ -251,21 +260,169 @@ select.booking-form-control {
 
     transition:
         background 0.2s ease,
+        border-color 0.2s ease,
         transform 0.2s ease;
 }
 
 .booking-button:hover {
-    background: #3730a3;
+    background: #001a3d;
+    border-color: #001a3d;
     transform: translateY(-1px);
 }
 
 
 /* ============================================================
-   SECOND CARD
+   CURRENT BOOKINGS
 ============================================================ */
 
-.book-room-card {
+.current-bookings-card {
     margin-top: 30px;
+}
+
+
+/* ============================================================
+   BOOKINGS TABLE WRAPPER
+============================================================ */
+
+.bookings-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+
+/* ============================================================
+   BOOKINGS TABLE
+============================================================ */
+
+.bookings-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+}
+
+.bookings-table th {
+    padding: 14px 15px;
+
+    background: #f3f5f8;
+
+    border-bottom: 1px solid #cbd5e1;
+
+    color: #111827;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-align: left;
+    white-space: nowrap;
+}
+
+.bookings-table td {
+    padding: 16px 15px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    vertical-align: middle;
+}
+
+.bookings-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.bookings-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ============================================================
+   ROOM NAME
+============================================================ */
+
+.booking-room-name {
+    font-weight: 700;
+    color: #111827;
+}
+
+
+/* ============================================================
+   PURPOSE
+============================================================ */
+
+.booking-purpose {
+    color: #374151;
+}
+
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+.booking-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 75px;
+
+    padding: 6px 11px;
+
+    border-radius: 999px;
+
+    background: #e7f5ec;
+    color: #166534;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   CANCEL BUTTON
+   UI ONLY
+============================================================ */
+
+.cancel-booking-button {
+    min-height: 38px;
+
+    padding: 8px 15px;
+
+    border: 1px solid #8f1414;
+    border-radius: 8px;
+
+    background: #8f1414;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.cancel-booking-button:hover {
+    background: #6f0f0f;
+    border-color: #6f0f0f;
+}
+
+
+/* ============================================================
+   NO BOOKINGS
+============================================================ */
+
+.no-bookings {
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color: #6b7280;
+
+    font-size: 14px;
 }
 
 
@@ -307,6 +464,10 @@ select.booking-form-control {
 
     .booking-button {
         width: 100%;
+    }
+
+    .bookings-table {
+        min-width: 800px;
     }
 
 }
@@ -353,8 +514,6 @@ select.booking-form-control {
 
     <div class="booking-card">
 
-        <!-- CARD HEADER -->
-
         <div class="booking-card-header">
 
             <div class="booking-card-icon">
@@ -373,12 +532,8 @@ select.booking-form-control {
         </div>
 
 
-        <!-- HEADER DIVIDER -->
-
         <div class="booking-card-line"></div>
 
-
-        <!-- CARD BODY -->
 
         <div class="booking-card-body">
 
@@ -540,8 +695,6 @@ select.booking-form-control {
 
     <div class="booking-card book-room-card">
 
-        <!-- CARD HEADER -->
-
         <div class="booking-card-header">
 
             <div class="booking-card-icon">
@@ -560,12 +713,8 @@ select.booking-form-control {
         </div>
 
 
-        <!-- HEADER DIVIDER -->
-
         <div class="booking-card-line"></div>
 
-
-        <!-- CARD BODY -->
 
         <div class="booking-card-body">
 
@@ -748,9 +897,250 @@ select.booking-form-control {
     </div>
 
 
+    <!-- ========================================================
+         CARD 3
+         CURRENT BOOKINGS
+    ======================================================== -->
+
+    <div class="booking-card current-bookings-card">
+
+        <div class="booking-card-header">
+
+            <div class="booking-card-icon">
+
+                <img
+                    src="<?= app_url('assets/icons/calendar.svg') ?>"
+                    alt="Current Bookings"
+                >
+
+            </div>
+
+            <h2>
+                Current Bookings
+            </h2>
+
+        </div>
+
+
+        <div class="booking-card-line"></div>
+
+
+        <div class="booking-card-body">
+
+            <div class="bookings-table-wrapper">
+
+                <table class="bookings-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Room / Laboratory
+                            </th>
+
+                            <th>
+                                Purpose
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        <!-- ==================================================
+                             SAMPLE BOOKING 1
+                             UI ONLY
+                        ================================================== -->
+
+                        <tr>
+
+                            <td>
+                                24 Sep 2026
+                            </td>
+
+                            <td>
+                                09:00 AM - 11:00 AM
+                            </td>
+
+                            <td>
+
+                                <span class="booking-room-name">
+                                    Lecture Hall 01
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span class="booking-purpose">
+                                    CS Lecture
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span class="booking-status">
+                                    Booked
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    type="button"
+                                    class="cancel-booking-button"
+                                >
+                                    Cancel Booking
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- ==================================================
+                             SAMPLE BOOKING 2
+                             UI ONLY
+                        ================================================== -->
+
+                        <tr>
+
+                            <td>
+                                25 Sep 2026
+                            </td>
+
+                            <td>
+                                01:00 PM - 03:00 PM
+                            </td>
+
+                            <td>
+
+                                <span class="booking-room-name">
+                                    Laboratory 02
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span class="booking-purpose">
+                                    Programming Practical
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span class="booking-status">
+                                    Booked
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    type="button"
+                                    class="cancel-booking-button"
+                                >
+                                    Cancel Booking
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- ==================================================
+                             SAMPLE BOOKING 3
+                             UI ONLY
+                        ================================================== -->
+
+                        <tr>
+
+                            <td>
+                                28 Sep 2026
+                            </td>
+
+                            <td>
+                                10:00 AM - 12:00 PM
+                            </td>
+
+                            <td>
+
+                                <span class="booking-room-name">
+                                    Lecture Hall 02
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span class="booking-purpose">
+                                    IS Lecture
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <span class="booking-status">
+                                    Booked
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <button
+                                    type="button"
+                                    class="cancel-booking-button"
+                                >
+                                    Cancel Booking
+                                </button>
+
+                            </td>
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
 </div>
 
 
 <?php
 include __DIR__ . '/../includes/footer.php';
 ?>
+```

@@ -245,6 +245,88 @@ function getSmartSuggestions($taskTypeId, $date, $startTime, $endTime, $streamId
 }
 
 /**
+ * =====================================================
+ * GET SMART LEAVE REPLACEMENT SUGGESTIONS
+ * =====================================================
+ * Suggests instructors who can replace someone on leave
+ * 1. Must be active instructor (not the requesting instructor)
+ * 2. Not on approved leave during the period
+ * 3. Preferably matching academic stream (if provided)
+ * 4. Sort by lowest current workload
+ */
+function getSmartLeaveReplacementSuggestions($instructorId, $startDate, $endDate, $streamId = null, $limit = 5) {
+    global $pdo;
+    
+    $suggestions = [];
+    
+    // Get all active instructors except the requesting instructor,
+    // who are not on approved leave during the specified period
+    $sql = "
+        SELECT i.id, u.full_name, i.employee_id, ast.name as stream, d.name as department, i.designation,
+               (SELECT COALESCE(SUM(ta.duration_hours), 0) 
+                FROM task_assignments ta 
+                WHERE ta.instructor_id = i.id 
+                  AND ta.is_presentation_panel = 0
+                  AND ta.scheduled_date BETWEEN DATE_SUB(:date_from, INTERVAL 30 DAY) AND :date_to
+               ) as current_workload
+        FROM instructors i
+        JOIN users u ON i.user_id = u.id
+        JOIN academic_streams ast ON i.academic_stream_id = ast.id
+        JOIN departments d ON i.department_id = d.id
+        WHERE i.status = 'active'
+          AND i.id != :self_instructor_id
+          AND NOT EXISTS (
+              SELECT 1 FROM leave_records lr 
+              WHERE lr.instructor_id = i.id 
+                AND lr.status = 'Approved'
+                AND NOT (lr.end_date < :start_date OR lr.start_date > :end_date)
+          )
+    ";
+    
+    $params = [
+        ':self_instructor_id' => $instructorId,
+        ':start_date' => $startDate,
+        ':end_date' => $endDate,
+        ':date_from' => $startDate,
+        ':date_to' => $endDate
+    ];
+    
+    // Optional: filter by same academic stream
+    if ($streamId) {
+        $sql .= " AND i.academic_stream_id = :stream_id";
+        $params[':stream_id'] = $streamId;
+    }
+    
+    // Sort by workload (lowest first)
+    $sql .= " ORDER BY current_workload ASC LIMIT :limit_val";
+    
+    $stmt = $pdo->prepare($sql);
+    
+    // Bind the limit parameter
+    foreach ($params as $key => $value) {
+        $stmt->bindValue($key, $value);
+    }
+    $stmt->bindValue(':limit_val', (int)$limit, PDO::PARAM_INT);
+    
+    $stmt->execute();
+    $instructors = $stmt->fetchAll();
+    
+    foreach ($instructors as $instructor) {
+        $suggestions[] = [
+            'instructor_id' => $instructor['id'],
+            'name' => $instructor['full_name'],
+            'employee_id' => $instructor['employee_id'],
+            'stream' => $instructor['stream'],
+            'department' => $instructor['department'],
+            'current_workload' => round($instructor['current_workload'], 1),
+            'designation' => $instructor['designation']
+        ];
+    }
+    
+    return $suggestions;
+}
+
+/**
  * Check if instructor has timetable conflict on given date/time
  */
 function hasTimetableConflict($instructorId, $date, $startTime, $endTime) {

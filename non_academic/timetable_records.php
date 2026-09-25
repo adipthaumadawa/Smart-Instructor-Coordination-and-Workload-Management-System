@@ -284,400 +284,42 @@ if (
 
 /*
 |--------------------------------------------------------------------------
-| DELETE TIMETABLE
+| DELETE TIMETABLE - BY ID
 |--------------------------------------------------------------------------
 */
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['delete_timetable'])
-) {
-
-    $subjectName  = trim($_POST['delete_subject_name'] ?? '');
-    $course       = trim($_POST['delete_course'] ?? '');
-    $dayName      = trim($_POST['delete_day_name'] ?? '');
-    $startTime    = trim($_POST['delete_start_time'] ?? '');
-    $endTime      = trim($_POST['delete_end_time'] ?? '');
-    $room         = trim($_POST['delete_room'] ?? '');
-    $semester     = trim($_POST['delete_semester'] ?? '');
-    $academicYear = normalize_year(
-        trim($_POST['delete_academic_year'] ?? '')
-    );
-
-
-    if (
-        $subjectName === '' ||
-        $course === '' ||
-        $dayName === '' ||
-        $startTime === '' ||
-        $endTime === '' ||
-        $room === '' ||
-        $semester === '' ||
-        $academicYear === ''
-    ) {
-
-        $_SESSION['error'] =
-            'Please provide all timetable details to delete.';
-
-        timetable_redirect();
-    }
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_timetable'])) {
+    $timetableId = (int)($_POST['timetable_id'] ?? 0);
 
     try {
+        if ($timetableId <= 0) {
+            throw new Exception('Invalid timetable record selected.');
+        }
 
-        /*
-        |--------------------------------------------------------------------------
-        | FIND RECORD FIRST
-        |--------------------------------------------------------------------------
-        */
-
-        $find = $pdo->prepare("
-            SELECT id, requirement_id
-            FROM timetables
-            WHERE subject_name = ?
-              AND course = ?
-              AND day_name = ?
-              AND start_time = ?
-              AND end_time = ?
-              AND room = ?
-              AND semester = ?
-              AND academic_year = ?
-            LIMIT 1
-        ");
-
-        $find->execute([
-            $subjectName,
-            $course,
-            $dayName,
-            $startTime,
-            $endTime,
-            $room,
-            $semester,
-            $academicYear
-        ]);
-
+        $find = $pdo->prepare("SELECT id, requirement_id FROM timetables WHERE id = ? LIMIT 1");
+        $find->execute([$timetableId]);
         $record = $find->fetch(PDO::FETCH_ASSOC);
 
-
         if (!$record) {
-
-            $_SESSION['error'] =
-                'No matching timetable slot was found.';
-
-            timetable_redirect();
+            throw new Exception('Timetable record not found.');
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DELETE
-        |--------------------------------------------------------------------------
-        */
-
-        $delete = $pdo->prepare("
-            DELETE FROM timetables
-            WHERE id = ?
-            LIMIT 1
-        ");
-
-        $delete->execute([
-            $record['id']
-        ]);
-
-        // Also remove the linked coordinator-side requirement (and, via
-        // its ON DELETE CASCADE, any instructor already assigned to it).
-        if ($delete->rowCount() > 0 && !empty($record['requirement_id'])) {
-            $pdo->prepare("DELETE FROM timetable_requirements WHERE id = ?")
-                ->execute([$record['requirement_id']]);
-        }
-
-        if ($delete->rowCount() > 0) {
-
-            $_SESSION['success'] =
-                'Timetable slot deleted successfully.';
-
-        } else {
-
-            $_SESSION['error'] =
-                'Unable to delete timetable slot.';
-        }
-
-    } catch (PDOException $e) {
-
-        /*
-        |--------------------------------------------------------------------------
-        | FOREIGN KEY / OTHER DATABASE ERROR
-        |--------------------------------------------------------------------------
-        */
-
-        if ((int)$e->errorInfo[1] === 1451) {
-
-            $_SESSION['error'] =
-                'This timetable slot cannot be deleted because it is already being used by another record.';
-
-        } else {
-
-            $_SESSION['error'] =
-                'Unable to delete timetable slot.';
-        }
-    }
-
-
-    timetable_redirect();
-}
-
-
-/*
-|--------------------------------------------------------------------------
-| UPDATE TIMETABLE
-|--------------------------------------------------------------------------
-*/
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['update_timetable'])
-) {
-
-    /*
-    |--------------------------------------------------------------------------
-    | OLD VALUES
-    |--------------------------------------------------------------------------
-    */
-
-    $oldSubject = trim($_POST['old_subject'] ?? '');
-    $oldCourse  = trim($_POST['old_course'] ?? '');
-    $oldDay     = trim($_POST['old_day'] ?? '');
-    $oldStart   = trim($_POST['old_start'] ?? '');
-    $oldEnd     = trim($_POST['old_end'] ?? '');
-    $oldRoom    = trim($_POST['old_room'] ?? '');
-    $oldSemester = trim($_POST['old_semester'] ?? '');
-    $oldYear    = normalize_year(
-        trim($_POST['old_year'] ?? '')
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | NEW VALUES
-    |--------------------------------------------------------------------------
-    */
-
-    $newSubject = trim($_POST['new_subject'] ?? '');
-    $newCourse  = trim($_POST['new_course'] ?? '');
-    $newDay     = trim($_POST['new_day'] ?? '');
-    $newStart   = trim($_POST['new_start'] ?? '');
-    $newEnd     = trim($_POST['new_end'] ?? '');
-    $newRoom    = trim($_POST['new_room'] ?? '');
-    $newSemester = trim($_POST['new_semester'] ?? '');
-    $newYear    = normalize_year(
-        trim($_POST['new_year'] ?? '')
-    );
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | OLD VALIDATION
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        $oldSubject === '' ||
-        $oldCourse === '' ||
-        $oldDay === '' ||
-        $oldStart === '' ||
-        $oldEnd === '' ||
-        $oldRoom === '' ||
-        $oldSemester === '' ||
-        $oldYear === ''
-    ) {
-
-        $_SESSION['error'] =
-            'Please complete all Old Timetable Slot fields.';
-
-        timetable_redirect();
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | NEW VALIDATION
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        $newSubject === '' ||
-        $newCourse === '' ||
-        $newDay === '' ||
-        $newStart === '' ||
-        $newEnd === '' ||
-        $newRoom === '' ||
-        $newSemester === '' ||
-        $newYear === ''
-    ) {
-
-        $_SESSION['error'] =
-            'Please complete all New Timetable Slot fields.';
-
-        timetable_redirect();
-    }
-
-
-    if ($newStart >= $newEnd) {
-
-        $_SESSION['error'] =
-            'New timetable end time must be later than start time.';
-
-        timetable_redirect();
-    }
-
-
-    try {
-
-        /*
-        |--------------------------------------------------------------------------
-        | FIND OLD RECORD
-        |--------------------------------------------------------------------------
-        */
-
-        $findOld = $pdo->prepare("
-            SELECT id, requirement_id
-            FROM timetables
-            WHERE subject_name = ?
-              AND course = ?
-              AND day_name = ?
-              AND start_time = ?
-              AND end_time = ?
-              AND room = ?
-              AND semester = ?
-              AND academic_year = ?
-            LIMIT 1
-        ");
-
-        $findOld->execute([
-            $oldSubject,
-            $oldCourse,
-            $oldDay,
-            $oldStart,
-            $oldEnd,
-            $oldRoom,
-            $oldSemester,
-            $oldYear
-        ]);
-
-        $oldRecord =
-            $findOld->fetch(PDO::FETCH_ASSOC);
-
-
-        if (!$oldRecord) {
-
-            $_SESSION['error'] =
-                'The Old Timetable Slot could not be found.';
-
-            timetable_redirect();
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | CHECK NEW RECORD
-        |--------------------------------------------------------------------------
-        */
-
-        $checkNew = $pdo->prepare("
-            SELECT id
-            FROM timetables
-            WHERE subject_name = ?
-              AND course = ?
-              AND day_name = ?
-              AND start_time = ?
-              AND end_time = ?
-              AND room = ?
-              AND semester = ?
-              AND academic_year = ?
-              AND id <> ?
-            LIMIT 1
-        ");
-
-        $checkNew->execute([
-            $newSubject,
-            $newCourse,
-            $newDay,
-            $newStart,
-            $newEnd,
-            $newRoom,
-            $newSemester,
-            $newYear,
-            $oldRecord['id']
-        ]);
-
-
-        if ($checkNew->fetch(PDO::FETCH_ASSOC)) {
-
-            $_SESSION['error'] =
-                'The New Timetable Slot already exists.';
-
-            timetable_redirect();
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE
-        |--------------------------------------------------------------------------
-        */
 
         $pdo->beginTransaction();
 
-        $existingRequirementId = $oldRecord['requirement_id'] !== null
-            ? (int)$oldRecord['requirement_id']
-            : null;
+        $delete = $pdo->prepare("DELETE FROM timetables WHERE id = ?");
+        $delete->execute([$timetableId]);
 
-        $requirementId = sync_timetable_requirement(
-            $pdo, $existingRequirementId, $newSubject, $newCourse, $newDay,
-            $newStart, $newEnd, $newRoom, $newSemester, $newYear
-        );
-
-        $update = $pdo->prepare("
-            UPDATE timetables
-            SET
-                requirement_id = ?,
-                subject_name = ?,
-                course = ?,
-                day_name = ?,
-                start_time = ?,
-                end_time = ?,
-                room = ?,
-                semester = ?,
-                academic_year = ?
-            WHERE id = ?
-        ");
-
-        $update->execute([
-            $requirementId,
-            $newSubject,
-            $newCourse,
-            $newDay,
-            $newStart,
-            $newEnd,
-            $newRoom,
-            $newSemester,
-            $newYear,
-            $oldRecord['id']
-        ]);
-
-        $pdo->commit();
-
-        $_SESSION['success'] =
-            'Timetable slot updated successfully.';
-
-    } catch (PDOException $e) {
-
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
+        if (!empty($record['requirement_id'])) {
+            $pdo->prepare("DELETE FROM timetable_requirements WHERE id = ?")
+                ->execute([(int)$record['requirement_id']]);
         }
 
-        $_SESSION['error'] =
-            'Unable to update timetable slot.';
-    }
+        $pdo->commit();
+        $_SESSION['success'] = 'Timetable record deleted successfully.';
 
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        $_SESSION['error'] = $e->getMessage();
+    }
 
     timetable_redirect();
 }
@@ -685,1885 +327,248 @@ if (
 
 /*
 |--------------------------------------------------------------------------
-| VIEW TIMETABLE
+| UPDATE TIMETABLE - BY ID
 |--------------------------------------------------------------------------
 */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_timetable'])) {
+    $timetableId = (int)($_POST['timetable_id'] ?? 0);
 
-$viewRows = [];
+    $subjectName = trim($_POST['subject_name'] ?? '');
+    $course      = trim($_POST['course'] ?? '');
+    $dayName     = trim($_POST['day_name'] ?? '');
+    $startTime   = trim($_POST['start_time'] ?? '');
+    $endTime     = trim($_POST['end_time'] ?? '');
+    $room        = trim($_POST['room'] ?? '');
+    $semester    = trim($_POST['semester'] ?? '');
+    $academicYear = normalize_year(trim($_POST['academic_year'] ?? ''));
 
-$viewSemester = '';
-$viewYear = '';
+    if ($timetableId <= 0 || $subjectName === '' || $course === '' || $dayName === '' ||
+        $startTime === '' || $endTime === '' || $room === '' || $semester === '' || $academicYear === '') {
+        $_SESSION['error'] = 'Please complete all timetable fields.';
+        timetable_redirect();
+    }
 
-$viewSubmitted = false;
+    if ($startTime >= $endTime) {
+        $_SESSION['error'] = 'End time must be later than start time.';
+        timetable_redirect();
+    }
 
+    try {
+        $find = $pdo->prepare("SELECT id, requirement_id FROM timetables WHERE id = ? LIMIT 1");
+        $find->execute([$timetableId]);
+        $oldRecord = $find->fetch(PDO::FETCH_ASSOC);
 
-if (
-    $_SERVER['REQUEST_METHOD'] === 'POST' &&
-    isset($_POST['view_timetable'])
-) {
+        if (!$oldRecord) {
+            throw new Exception('Timetable record not found.');
+        }
 
-    $viewSubmitted = true;
+        $check = $pdo->prepare("SELECT id FROM timetables
+            WHERE subject_name = ? AND course = ? AND day_name = ? AND start_time = ?
+              AND end_time = ? AND room = ? AND semester = ? AND academic_year = ? AND id <> ?
+            LIMIT 1");
+        $check->execute([$subjectName, $course, $dayName, $startTime, $endTime, $room,
+                        $semester, $academicYear, $timetableId]);
 
-    $viewSemester =
-        trim($_POST['view_semester'] ?? '');
+        if ($check->fetch(PDO::FETCH_ASSOC)) {
+            throw new Exception('Another timetable record with the same details already exists.');
+        }
 
-    $viewYear =
-        normalize_year(
-            trim($_POST['view_academic_year'] ?? '')
+        $pdo->beginTransaction();
+
+        $existingRequirementId = !empty($oldRecord['requirement_id'])
+            ? (int)$oldRecord['requirement_id'] : null;
+
+        $requirementId = sync_timetable_requirement(
+            $pdo, $existingRequirementId, $subjectName, $course, $dayName,
+            $startTime, $endTime, $room, $semester, $academicYear
         );
 
+        $update = $pdo->prepare("UPDATE timetables SET
+            requirement_id = ?, subject_name = ?, course = ?, day_name = ?,
+            start_time = ?, end_time = ?, room = ?, semester = ?, academic_year = ?
+            WHERE id = ?");
 
-    if (
-        $viewSemester === '' ||
-        $viewYear === ''
-    ) {
+        $update->execute([$requirementId, $subjectName, $course, $dayName, $startTime,
+                          $endTime, $room, $semester, $academicYear, $timetableId]);
 
-        $errorMessage =
-            'Please select semester and year.';
+        $pdo->commit();
+        $_SESSION['success'] = 'Timetable record updated successfully.';
 
-    } else {
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        $_SESSION['error'] = $e->getMessage();
+    }
 
-        try {
+    timetable_redirect();
+}
 
-            $stmt = $pdo->prepare("
-                SELECT
-                    id,
-                    subject_name,
-                    course,
-                    day_name,
-                    start_time,
-                    end_time,
-                    room,
-                    semester,
-                    academic_year
-                FROM timetables
-                WHERE semester = ?
-                  AND academic_year = ?
-                ORDER BY
-                    FIELD(
-                        day_name,
-                        'Monday',
-                        'Tuesday',
-                        'Wednesday',
-                        'Thursday',
-                        'Friday',
-                        'Saturday',
-                        'Sunday'
-                    ),
-                    start_time ASC
-            ");
 
-            $stmt->execute([
-                $viewSemester,
-                $viewYear
-            ]);
+/*
+|--------------------------------------------------------------------------
+| GET RECORD FOR EDIT
+|--------------------------------------------------------------------------
+*/
+$editTimetable = null;
 
-            $viewRows =
-                $stmt->fetchAll(PDO::FETCH_ASSOC);
+if (isset($_GET['edit']) && (int)$_GET['edit'] > 0) {
+    try {
+        $stmt = $pdo->prepare("SELECT id, subject_name, course, day_name, start_time,
+            end_time, room, semester, academic_year FROM timetables WHERE id = ? LIMIT 1");
+        $stmt->execute([(int)$_GET['edit']]);
+        $editTimetable = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        } catch (PDOException $e) {
-
-            $errorMessage =
-                'Unable to load timetable records.';
-        }
+        if (!$editTimetable) $errorMessage = 'Timetable record not found.';
+    } catch (Throwable $e) {
+        $errorMessage = 'Unable to load the selected timetable record.';
     }
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| PAGE CONTENT
+| VIEW FILTER - YEAR + SEMESTER
 |--------------------------------------------------------------------------
-|
-| IMPORTANT:
-| No sidebar.
-| No <html>.
-| No <body>.
-| No separate header.
-|
-| header.php already provides the common dashboard layout.
-|
 */
+$viewYear = normalize_year(trim($_GET['year'] ?? ''));
+$viewSemester = trim($_GET['semester'] ?? '');
+$viewRequested = isset($_GET['view']);
 
+$viewRows = [];
+
+if ($viewRequested && $viewYear !== '' && $viewSemester !== '') {
+    try {
+        $stmt = $pdo->prepare("
+            SELECT id, subject_name, course, day_name, start_time, end_time,
+                   room, semester, academic_year
+            FROM timetables
+            WHERE academic_year = ? AND semester = ?
+            ORDER BY FIELD(day_name,'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'),
+                     start_time, subject_name
+        ");
+        $stmt->execute([$viewYear, $viewSemester]);
+        $viewRows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $e) {
+        $errorMessage = 'Unable to load timetable records.';
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| PAGE
+|--------------------------------------------------------------------------
+*/
 include __DIR__ . '/../includes/header.php';
-
 ?>
-
 
 <style>
-
-.timetable-page {
-    width: 100%;
-}
-
-.timetable-page * {
-    box-sizing: border-box;
-}
-
-.timetable-page .page-toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-}
-
-.timetable-page .page-toolbar h1 {
-    margin: 0;
-    font-size: 28px;
-    font-weight: 700;
-}
-
-.timetable-page .page-toolbar p {
-    margin: 7px 0 0;
-    color: #6b7280;
-    font-size: 14px;
-}
-
-.timetable-page .card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    margin-bottom: 24px;
-    overflow: hidden;
-}
-
-.timetable-page .card-body {
-    padding: 25px;
-}
-
-.timetable-page .section-heading {
-    margin-bottom: 22px;
-}
-
-.timetable-page .section-heading h2 {
-    margin: 0;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.timetable-page .section-heading p {
-    margin: 6px 0 0;
-    color: #6b7280;
-    font-size: 14px;
-}
-
-.timetable-page .form-grid {
-    display: grid;
-    grid-template-columns: repeat(
-        auto-fit,
-        minmax(180px, 1fr)
-    );
-    gap: 18px;
-}
-
-.timetable-page .form-group {
-    min-width: 0;
-}
-
-.timetable-page .form-group label {
-    display: block;
-    margin-bottom: 7px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #111827;
-}
-
-.timetable-page .form-control {
-    width: 100%;
-    min-height: 44px;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 9px;
-    background: #ffffff;
-    color: #111827;
-    font-size: 14px;
-    outline: none;
-}
-
-.timetable-page .form-control:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(
-        37,
-        99,
-        235,
-        0.10
-    );
-}
-
-.timetable-page .button-area {
-    margin-top: 20px;
-}
-
-.timetable-page .btn {
-    border: none;
-    border-radius: 8px;
-    padding: 11px 22px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.timetable-page .btn-primary {
-    background: #2563eb;
-    color: #ffffff;
-}
-
-.timetable-page .btn-primary:hover {
-    background: #1d4ed8;
-}
-
-.timetable-page .btn-danger {
-    background: #dc2626;
-    color: #ffffff;
-}
-
-.timetable-page .btn-danger:hover {
-    background: #b91c1c;
-}
-
-.timetable-page .old-box,
-.timetable-page .new-box {
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 22px;
-}
-
-.timetable-page .old-box {
-    background: #fafafa;
-}
-
-.timetable-page .new-box {
-    background: #ffffff;
-}
-
-.timetable-page .box-title {
-    margin: 0 0 20px;
-    font-size: 17px;
-    font-weight: 700;
-    color: #111827;
-}
-
-.timetable-page .divider {
-    height: 1px;
-    background: #e5e7eb;
-    margin: 24px 0;
-}
-
-.timetable-page .alert {
-    border-radius: 9px;
-    padding: 13px 16px;
-    margin-bottom: 20px;
-    font-size: 14px;
-}
-
-.timetable-page .alert-success {
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    color: #047857;
-}
-
-.timetable-page .alert-danger {
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-    color: #b91c1c;
-}
-
-.timetable-page .table-wrapper {
-    overflow-x: auto;
-    margin-top: 24px;
-}
-
-.timetable-page table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 800px;
-}
-
-.timetable-page th {
-    text-align: left;
-    background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 13px 14px;
-    font-size: 13px;
-    color: #374151;
-}
-
-.timetable-page td {
-    padding: 14px;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 14px;
-    color: #374151;
-}
-
-.timetable-page tr:last-child td {
-    border-bottom: none;
-}
-
-.timetable-page .empty-state {
-    margin-top: 20px;
-    border: 1px dashed #d1d5db;
-    border-radius: 10px;
-    padding: 30px;
-    text-align: center;
-}
-
-.timetable-page .empty-state h3 {
-    margin: 0;
-    font-size: 17px;
-}
-
-.timetable-page .empty-state p {
-    color: #6b7280;
-    margin-bottom: 0;
-}
-
-@media (max-width: 700px) {
-
-    .timetable-page .card-body {
-        padding: 18px;
-    }
-
-    .timetable-page .page-toolbar h1 {
-        font-size: 23px;
-    }
-
-}
-
+.timetable-page{width:100%}.timetable-page *{box-sizing:border-box}
+.timetable-page .page-toolbar{margin-bottom:25px}.timetable-page h1{margin:0;font-size:28px;font-weight:700}.timetable-page .page-toolbar p{margin:7px 0 0;color:#6b7280;font-size:14px}
+.timetable-page .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;margin-bottom:24px;overflow:hidden}.timetable-page .card-body{padding:25px}
+.timetable-page .section-heading{margin-bottom:22px}.timetable-page .section-heading h2{margin:0;font-size:20px;font-weight:700}.timetable-page .section-heading p{margin:6px 0 0;color:#6b7280;font-size:14px}
+.timetable-page .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px}.timetable-page label{display:block;margin-bottom:7px;font-size:14px;font-weight:600;color:#111827}
+.timetable-page .form-control{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d1d5db;border-radius:9px;background:#fff;color:#111827;font-size:14px}.timetable-page .readonly-control{background:#f3f4f6;color:#4b5563}
+.timetable-page .button-area{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}.timetable-page .btn{display:inline-block;border:0;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none}
+.timetable-page .btn-primary{background:#000a1e;color:#fff}.timetable-page .btn-danger{background:#8f1414;color:#fff}.timetable-page .btn-outline{background:#fff;border:1px solid #d1d5db;color:#374151}
+.timetable-page .old-box{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:22px}.timetable-page .new-box{background:#fff;border:1px solid #dbeafe;border-radius:12px;padding:22px}.timetable-page .box-title{margin:0 0 18px;font-size:17px;font-weight:700}.timetable-page .divider{height:1px;background:#e5e7eb;margin:22px 0}
+.timetable-page .alert{border-radius:9px;padding:13px 16px;margin-bottom:20px;font-size:14px}.timetable-page .alert-success{background:#ecfdf5;border:1px solid #a7f3d0;color:#047857}.timetable-page .alert-danger{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c}
+.timetable-page .table-wrapper{overflow-x:auto;margin-top:20px}.timetable-page table{width:100%;border-collapse:collapse;min-width:1000px}.timetable-page th{text-align:left;background:#f9fafb;border-bottom:1px solid #e5e7eb;padding:13px 14px;font-size:13px;color:#374151}.timetable-page td{padding:14px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#374151;vertical-align:middle}.timetable-page .action-buttons{display:flex;gap:8px;flex-wrap:wrap}.timetable-page .action-buttons .btn{padding:8px 14px;font-size:13px}.timetable-page .empty-state{border:1px dashed #d1d5db;border-radius:10px;padding:30px;text-align:center}.timetable-page .empty-state h3{margin:0;font-size:17px}.timetable-page .empty-state p{color:#6b7280;margin-bottom:0}
 </style>
 
-
 <div class="timetable-page">
-
-
-    <!-- ======================================================
-         PAGE HEADER
-    ======================================================= -->
-
-    <div class="page-toolbar">
-
-        <div>
-
-            <h1>
-                Timetable Management
-            </h1>
-
-            <p>
-                Add, update, delete and view timetable records.
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <!-- ======================================================
-         MESSAGES
-    ======================================================= -->
-
-    <?php if ($successMessage !== ''): ?>
-
-        <div class="alert alert-success">
-
-            <?= htmlspecialchars($successMessage) ?>
-
-        </div>
-
-    <?php endif; ?>
-
-
-    <?php if ($errorMessage !== ''): ?>
-
-        <div class="alert alert-danger">
-
-            <?= htmlspecialchars($errorMessage) ?>
-
-        </div>
-
-    <?php endif; ?>
-
-
-    <!-- ======================================================
-         ADD
-    ======================================================= -->
-
-    <div class="card">
-
-        <div class="card-body">
-
-            <div class="section-heading">
-
-                <h2>
-                    Add Timetable Slot
-                </h2>
-
-                <p>
-                    Create a new timetable record.
-                </p>
-
-            </div>
-
-
-            <form method="POST">
-
-                <div class="form-grid">
-
-                    <div class="form-group">
-
-                        <label>
-                            Subject
-                        </label>
-
-                        <input
-                            type="text"
-                            name="subject_name"
-                            class="form-control"
-                            placeholder="Subject"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            IS / CS / SE
-                        </label>
-
-                        <select
-                            name="course"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
-                                IS / CS / SE
-                            </option>
-
-                            <option value="IS">
-                                IS
-                            </option>
-
-                            <option value="CS">
-                                CS
-                            </option>
-
-
-                            <option value="SE">
-
-
-                                SE
-
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Day
-                        </label>
-
-                        <select
-                            name="day_name"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
-                                Select Day
-                            </option>
-
-                            <option value="Monday">
-                                Monday
-                            </option>
-
-                            <option value="Tuesday">
-                                Tuesday
-                            </option>
-
-                            <option value="Wednesday">
-                                Wednesday
-                            </option>
-
-                            <option value="Thursday">
-                                Thursday
-                            </option>
-
-                            <option value="Friday">
-                                Friday
-                            </option>
-
-
-                            <option value="Saturday">
-
-
-                                Saturday
-
-
-                            </option>
-
-
-
-                            <option value="Sunday">
-
-
-                                Sunday
-
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Start Time
-                        </label>
-
-                        <input
-                            type="time"
-                            name="start_time"
-                            class="form-control"
-                            required
-                            step="3600"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            End Time
-                        </label>
-
-                        <input
-                            type="time"
-                            name="end_time"
-                            class="form-control"
-                            required
-                            step="3600"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Room / Lab
-                        </label>
-
-                        <input
-                            type="text"
-                            name="room"
-                            class="form-control"
-                            placeholder="Room / Lab"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Semester
-                        </label>
-
-                        <select
-                            name="semester"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
-                                Semester
-                            </option>
-
-                            <option value="Semester 1">
-                                Semester 1
-                            </option>
-
-                            <option value="Semester 2">
-                                Semester 2
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Year
-                        </label>
-
-                        <select
-                            name="academic_year"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
-                                Select Year
-                            </option>
-
-                            <option value="1">
-                                1st Year
-                            </option>
-
-                            <option value="2">
-                                2nd Year
-                            </option>
-
-                            <option value="3">
-                                3rd Year
-                            </option>
-
-                            <option value="4">
-                                4th Year
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <div class="button-area">
-
-                    <button
-                        type="submit"
-                        name="add_timetable"
-                        class="btn btn-primary"
-                    >
-                        Save
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-    <!-- ======================================================
-         DELETE
-    ======================================================= -->
-
-    <div class="card">
-
-        <div class="card-body">
-
-            <div class="section-heading">
-
-                <h2>
-                    Delete Timetable Slot
-                </h2>
-
-                <p>
-                    Enter the exact timetable details to delete.
-                </p>
-
-            </div>
-
-
-            <form
-                method="POST"
-                onsubmit="
-                    return confirm(
-                        'Are you sure you want to delete this timetable slot?'
-                    );
-                "
-            >
-
-                <div class="form-grid">
-
-                    <div class="form-group">
-
-                        <label>
-                            Subject
-                        </label>
-
-                        <input
-                            type="text"
-                            name="delete_subject_name"
-                            class="form-control"
-                            placeholder="Subject"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            IS / CS / SE
-                        </label>
-
-                        <select
-                            name="delete_course"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
-                                IS / CS / SE
-                            </option>
-
-                            <option value="IS">
-                                IS
-                            </option>
-
-                            <option value="CS">
-                                CS
-                            </option>
-
-
-                            <option value="SE">
-
-
-                                SE
-
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Day
-                        </label>
-
-                        <select
-                            name="delete_day_name"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
-                                Select Day
-                            </option>
-
-                            <option value="Monday">
-                                Monday
-                            </option>
-
-                            <option value="Tuesday">
-                                Tuesday
-                            </option>
-
-                            <option value="Wednesday">
-                                Wednesday
-                            </option>
-
-                            <option value="Thursday">
-                                Thursday
-                            </option>
-
-                            <option value="Friday">
-                                Friday
-                            </option>
-
-
-                            <option value="Saturday">
-
-
-                                Saturday
-
-
-                            </option>
-
-
-
-                            <option value="Sunday">
-
-
-                                Sunday
-
-
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Start Time
-                        </label>
-
-                        <input
-                            type="time"
-                            name="delete_start_time"
-                            class="form-control"
-                            required
-                            step="3600"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            End Time
-                        </label>
-
-                        <input
-                            type="time"
-                            name="delete_end_time"
-                            class="form-control"
-                            required
-                            step="3600"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Room / Lab
-                        </label>
-
-                        <input
-                            type="text"
-                            name="delete_room"
-                            class="form-control"
-                            placeholder="Room / Lab"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Semester
-                        </label>
-
-                        <select
-                            name="delete_semester"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
-                                Semester
-                            </option>
-
-                            <option value="Semester 1">
-                                Semester 1
-                            </option>
-
-                            <option value="Semester 2">
-                                Semester 2
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Year
-                        </label>
-
-                        <select
-                            name="delete_academic_year"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
-                                Select Year
-                            </option>
-
-                            <option value="1">
-                                1st Year
-                            </option>
-
-                            <option value="2">
-                                2nd Year
-                            </option>
-
-                            <option value="3">
-                                3rd Year
-                            </option>
-
-                            <option value="4">
-                                4th Year
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <div class="button-area">
-
-                    <button
-                        type="submit"
-                        name="delete_timetable"
-                        class="btn btn-danger"
-                    >
-                        Delete
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-    <!-- ======================================================
-         UPDATE
-    ======================================================= -->
-
-    <div class="card">
-
-        <div class="card-body">
-
-            <div class="section-heading">
-
-                <h2>
-                    Update Timetable Slot
-                </h2>
-
-                <p>
-                    Enter the old record and then enter the new record.
-                </p>
-
-            </div>
-
-
-            <form method="POST">
-
-
-                <!-- OLD -->
-
-                <div class="old-box">
-
-                    <h3 class="box-title">
-                        Old Timetable Slot
-                    </h3>
-
-
-                    <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label>
-                                Subject
-                            </label>
-
-                            <input
-                                type="text"
-                                name="old_subject"
-                                class="form-control"
-                                placeholder="Subject"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                IS / CS / SE
-                            </label>
-
-                            <select
-                                name="old_course"
-                                class="form-control"
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    selected
-                                    disabled
-                                >
-                                    IS / CS / SE
-                                </option>
-
-                                <option value="IS">
-                                    IS
-                                </option>
-
-                                <option value="CS">
-                                    CS
-                                </option>
-
-
-                                <option value="SE">
-
-
-                                    SE
-
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Day
-                            </label>
-
-                            <select
-                                name="old_day"
-                                class="form-control"
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    selected
-                                    disabled
-                                >
-                                    Select Day
-                                </option>
-
-                                <option value="Monday">
-                                    Monday
-                                </option>
-
-                                <option value="Tuesday">
-                                    Tuesday
-                                </option>
-
-                                <option value="Wednesday">
-                                    Wednesday
-                                </option>
-
-                                <option value="Thursday">
-                                    Thursday
-                                </option>
-
-                                <option value="Friday">
-                                    Friday
-                                </option>
-
-
-                                <option value="Saturday">
-
-
-                                    Saturday
-
-
-                                </option>
-
-
-
-                                <option value="Sunday">
-
-
-                                    Sunday
-
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Start Time
-                            </label>
-
-                            <input
-                                type="time"
-                                name="old_start"
-                                class="form-control"
-                                required
-                                step="3600"
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                End Time
-                            </label>
-
-                            <input
-                                type="time"
-                                name="old_end"
-                                class="form-control"
-                                required
-                                step="3600"
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Room / Lab
-                            </label>
-
-                            <input
-                                type="text"
-                                name="old_room"
-                                class="form-control"
-                                placeholder="Room / Lab"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Semester
-                            </label>
-
-                            <select
-                                name="old_semester"
-                                class="form-control"
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    selected
-                                    disabled
-                                >
-                                    Semester
-                                </option>
-
-                                <option value="Semester 1">
-                                    Semester 1
-                                </option>
-
-                                <option value="Semester 2">
-                                    Semester 2
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Year
-                            </label>
-
-                            <select
-                                name="old_year"
-                                class="form-control"
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    selected
-                                    disabled
-                                >
-                                    Select Year
-                                </option>
-
-                                <option value="1">
-                                    1st Year
-                                </option>
-
-                                <option value="2">
-                                    2nd Year
-                                </option>
-
-                                <option value="3">
-                                    3rd Year
-                                </option>
-
-                                <option value="4">
-                                    4th Year
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div class="divider"></div>
-
-
-                <!-- NEW -->
-
-                <div class="new-box">
-
-                    <h3 class="box-title">
-                        New Timetable Slot
-                    </h3>
-
-
-                    <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label>
-                                Subject
-                            </label>
-
-                            <input
-                                type="text"
-                                name="new_subject"
-                                class="form-control"
-                                placeholder="Subject"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                IS / CS / SE
-                            </label>
-
-                            <select
-                                name="new_course"
-                                class="form-control"
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    selected
-                                    disabled
-                                >
-                                    IS / CS / SE
-                                </option>
-
-                                <option value="IS">
-                                    IS
-                                </option>
-
-                                <option value="CS">
-                                    CS
-                                </option>
-
-
-                                <option value="SE">
-
-
-                                    SE
-
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Day
-                            </label>
-
-                            <select
-                                name="new_day"
-                                class="form-control"
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    selected
-                                    disabled
-                                >
-                                    Select Day
-                                </option>
-
-                                <option value="Monday">
-                                    Monday
-                                </option>
-
-                                <option value="Tuesday">
-                                    Tuesday
-                                </option>
-
-                                <option value="Wednesday">
-                                    Wednesday
-                                </option>
-
-                                <option value="Thursday">
-                                    Thursday
-                                </option>
-
-                                <option value="Friday">
-                                    Friday
-                                </option>
-
-
-                                <option value="Saturday">
-
-
-                                    Saturday
-
-
-                                </option>
-
-
-
-                                <option value="Sunday">
-
-
-                                    Sunday
-
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Start Time
-                            </label>
-
-                            <input
-                                type="time"
-                                name="new_start"
-                                class="form-control"
-                                required
-                                step="3600"
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                End Time
-                            </label>
-
-                            <input
-                                type="time"
-                                name="new_end"
-                                class="form-control"
-                                required
-                                step="3600"
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Room / Lab
-                            </label>
-
-                            <input
-                                type="text"
-                                name="new_room"
-                                class="form-control"
-                                placeholder="Room / Lab"
-                                required
-                            >
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Semester
-                            </label>
-
-                            <select
-                                name="new_semester"
-                                class="form-control"
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    selected
-                                    disabled
-                                >
-                                    Semester
-                                </option>
-
-                                <option value="Semester 1">
-                                    Semester 1
-                                </option>
-
-                                <option value="Semester 2">
-                                    Semester 2
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <div class="form-group">
-
-                            <label>
-                                Year
-                            </label>
-
-                            <select
-                                name="new_year"
-                                class="form-control"
-                                required
-                            >
-
-                                <option
-                                    value=""
-                                    selected
-                                    disabled
-                                >
-                                    Select Year
-                                </option>
-
-                                <option value="1">
-                                    1st Year
-                                </option>
-
-                                <option value="2">
-                                    2nd Year
-                                </option>
-
-                                <option value="3">
-                                    3rd Year
-                                </option>
-
-                                <option value="4">
-                                    4th Year
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="button-area">
-
-                        <button
-                            type="submit"
-                            name="update_timetable"
-                            class="btn btn-primary"
-                        >
-                            Update
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </form>
-
-        </div>
-
-    </div>
-
-
-    <!-- ======================================================
-         VIEW
-    ======================================================= -->
-
-    <div class="card">
-
-        <div class="card-body">
-
-            <div class="section-heading">
-
-                <h2>
-                    View Timetable Slot
-                </h2>
-
-                <p>
-                    Select a semester and year to view records.
-                </p>
-
-            </div>
-
-
-            <form method="POST">
-
-                <div class="form-grid">
-
-                    <div class="form-group">
-
-                        <label>
-                            Semester
-                        </label>
-
-                        <select
-                            name="view_semester"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                disabled
-                                <?= $viewSemester === ''
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-                                Semester
-                            </option>
-
-                            <option
-                                value="Semester 1"
-                                <?= $viewSemester === 'Semester 1'
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-                                Semester 1
-                            </option>
-
-                            <option
-                                value="Semester 2"
-                                <?= $viewSemester === 'Semester 2'
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-                                Semester 2
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label>
-                            Year
-                        </label>
-
-                        <select
-                            name="view_academic_year"
-                            class="form-control"
-                            required
-                        >
-
-                            <option
-                                value=""
-                                disabled
-                                <?= $viewYear === ''
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-                                Select Year
-                            </option>
-
-                            <option
-                                value="1"
-                                <?= $viewYear === '1'
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-                                1st Year
-                            </option>
-
-                            <option
-                                value="2"
-                                <?= $viewYear === '2'
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-                                2nd Year
-                            </option>
-
-                            <option
-                                value="3"
-                                <?= $viewYear === '3'
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-                                3rd Year
-                            </option>
-
-                            <option
-                                value="4"
-                                <?= $viewYear === '4'
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-                                4th Year
-                            </option>
-
-                        </select>
-
-                    </div>
-
-                </div>
-
-
-                <div class="button-area">
-
-                    <button
-                        type="submit"
-                        name="view_timetable"
-                        class="btn btn-primary"
-                    >
-                        View
-                    </button>
-
-                </div>
-
-            </form>
-
-
-            <?php if ($viewSubmitted): ?>
-
-                <div class="divider"></div>
-
-
-                <h3>
-
-                    <?= htmlspecialchars($viewSemester) ?>
-
-                    -
-
-                    <?= htmlspecialchars(
-                        [
-                            '1' => '1st Year',
-                            '2' => '2nd Year',
-                            '3' => '3rd Year',
-                            '4' => '4th Year'
-                        ][$viewYear] ?? $viewYear
-                    ) ?>
-
-                </h3>
-
-
-                <?php if (empty($viewRows)): ?>
-
-                    <div class="empty-state">
-
-                        <h3>
-                            No timetable records found
-                        </h3>
-
-                        <p>
-                            No records were found for the
-                            selected semester and year.
-                        </p>
-
-                    </div>
-
-                <?php else: ?>
-
-                    <div class="table-wrapper">
-
-                        <table>
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>
-                                        Subject
-                                    </th>
-
-                                    <th>
-                                        Course
-                                    </th>
-
-                                    <th>
-                                        Day
-                                    </th>
-
-                                    <th>
-                                        Start Time
-                                    </th>
-
-                                    <th>
-                                        End Time
-                                    </th>
-
-                                    <th>
-                                        Room / Lab
-                                    </th>
-
-                                </tr>
-
-                            </thead>
-
-
-                            <tbody>
-
-                            <?php foreach ($viewRows as $row): ?>
-
-                                <tr>
-
-                                    <td>
-
-                                        <strong>
-                                            <?= htmlspecialchars(
-                                                $row['subject_name']
-                                            ) ?>
-                                        </strong>
-
-                                    </td>
-
-
-                                    <td>
-                                        <?= htmlspecialchars(
-                                            $row['course']
-                                        ) ?>
-                                    </td>
-
-
-                                    <td>
-                                        <?= htmlspecialchars(
-                                            $row['day_name']
-                                        ) ?>
-                                    </td>
-
-
-                                    <td>
-
-                                        <?= htmlspecialchars(
-                                            date(
-                                                'h:i A',
-                                                strtotime(
-                                                    $row['start_time']
-                                                )
-                                            )
-                                        ) ?>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        <?= htmlspecialchars(
-                                            date(
-                                                'h:i A',
-                                                strtotime(
-                                                    $row['end_time']
-                                                )
-                                            )
-                                        ) ?>
-
-                                    </td>
-
-
-                                    <td>
-                                        <?= htmlspecialchars(
-                                            $row['room']
-                                        ) ?>
-                                    </td>
-
-                                </tr>
-
-                            <?php endforeach; ?>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                <?php endif; ?>
-
-            <?php endif; ?>
-
-        </div>
-
-    </div>
+<div class="page-toolbar"><h1>Timetable Management</h1><p>Manage timetable records.</p></div>
+
+<?php if ($successMessage !== ''): ?><div class="alert alert-success"><?= htmlspecialchars($successMessage) ?></div><?php endif; ?>
+<?php if ($errorMessage !== ''): ?><div class="alert alert-danger"><?= htmlspecialchars($errorMessage) ?></div><?php endif; ?>
+
+<!-- ADD: unchanged logic -->
+<div class="card"><div class="card-body">
+<div class="section-heading"><h2>Add Timetable Record</h2><p>Create a new timetable record.</p></div>
+<form method="POST"><div class="form-grid">
+<div><label>Subject</label><input type="text" name="subject_name" class="form-control" required></div>
+<div><label>Course</label><select name="course" class="form-control" required><option value="" disabled selected>Select Course</option><option value="IS">IS</option><option value="CS">CS</option><option value="SE">SE</option></select></div>
+<div><label>Day</label><select name="day_name" class="form-control" required><option value="" disabled selected>Select Day</option><?php foreach(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] as $d): ?><option value="<?= $d ?>"><?= $d ?></option><?php endforeach; ?></select></div>
+<div><label>Start Time</label><input type="time" name="start_time" class="form-control" required></div>
+<div><label>End Time</label><input type="time" name="end_time" class="form-control" required></div>
+<div><label>Room / Lab</label><input type="text" name="room" class="form-control" placeholder="e.g. S104" required></div>
+<div><label>Semester</label><select name="semester" class="form-control" required><option value="" disabled selected>Select Semester</option><option value="Semester 1">Semester 1</option><option value="Semester 2">Semester 2</option></select></div>
+<div><label>Year</label><select name="academic_year" class="form-control" required><option value="" disabled selected>Select Year</option><option value="1">1st Year</option><option value="2">2nd Year</option><option value="3">3rd Year</option><option value="4">4th Year</option></select></div>
+</div><div class="button-area"><button type="submit" name="add_timetable" class="btn btn-primary">Add Timetable</button></div></form>
+</div></div>
+
+<!-- VIEW FILTER -->
+<div class="card"><div class="card-body">
+<div class="section-heading"><h2>View Timetable</h2><p>Select year and semester, then click View.</p></div>
+<form method="GET"><div class="form-grid">
+<div><label>Academic Year</label><select name="year" class="form-control" required><option value="" disabled <?= $viewYear === '' ? 'selected' : '' ?>>Select Year</option><?php for($y=1;$y<=4;$y++): ?><option value="<?= $y ?>" <?= $viewYear===(string)$y?'selected':'' ?>><?= $y ?><?= $y===1?'st':($y===2?'nd':($y===3?'rd':'th')) ?> Year</option><?php endfor; ?></select></div>
+<div><label>Semester</label><select name="semester" class="form-control" required><option value="" disabled <?= $viewSemester === '' ? 'selected' : '' ?>>Select Semester</option><option value="Semester 1" <?= $viewSemester==='Semester 1'?'selected':'' ?>>Semester 1</option><option value="Semester 2" <?= $viewSemester==='Semester 2'?'selected':'' ?>>Semester 2</option></select></div>
+</div><div class="button-area"><button type="submit" name="view" value="1" class="btn btn-primary">View</button></div></form>
+</div></div>
+
+<!-- UPDATE: room_schedules-style old/current + new/editable -->
+<?php if ($editTimetable): ?>
+<div class="card"><div class="card-body">
+<div class="section-heading"><h2>Update Timetable</h2><p>Current details are shown first. Edit the details below.</p></div>
+<form method="POST">
+
+<div class="old-box">
+<h3 class="box-title">Current Timetable Details</h3>
+<div class="form-grid">
+<div><label>Subject</label><input class="form-control readonly-control" value="<?= htmlspecialchars($editTimetable['subject_name']) ?>" readonly></div>
+<div><label>Course</label><input class="form-control readonly-control" value="<?= htmlspecialchars($editTimetable['course']) ?>" readonly></div>
+<div><label>Day</label><input class="form-control readonly-control" value="<?= htmlspecialchars($editTimetable['day_name']) ?>" readonly></div>
+<div><label>Time</label><input class="form-control readonly-control" value="<?= htmlspecialchars(substr($editTimetable['start_time'],0,5).' - '.substr($editTimetable['end_time'],0,5)) ?>" readonly></div>
+<div><label>Room / Lab</label><input class="form-control readonly-control" value="<?= htmlspecialchars($editTimetable['room']) ?>" readonly></div>
+<div><label>Semester</label><input class="form-control readonly-control" value="<?= htmlspecialchars($editTimetable['semester']) ?>" readonly></div>
+<div><label>Academic Year</label><input class="form-control readonly-control" value="<?= htmlspecialchars(['1'=>'1st Year','2'=>'2nd Year','3'=>'3rd Year','4'=>'4th Year'][(string)$editTimetable['academic_year']] ?? $editTimetable['academic_year']) ?>" readonly></div>
+</div></div>
+
+<div class="divider"></div>
+
+<div class="new-box">
+<h3 class="box-title">New Timetable Details</h3>
+<input type="hidden" name="timetable_id" value="<?= (int)$editTimetable['id'] ?>">
+<div class="form-grid">
+<div><label>Subject</label><input type="text" name="subject_name" class="form-control" value="<?= htmlspecialchars($editTimetable['subject_name']) ?>" required></div>
+<div><label>Course</label><select name="course" class="form-control" required><?php foreach(['IS','CS','SE'] as $c): ?><option value="<?= $c ?>" <?= $editTimetable['course']===$c?'selected':'' ?>><?= $c ?></option><?php endforeach; ?></select></div>
+<div><label>Day</label><select name="day_name" class="form-control" required><?php foreach(['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] as $d): ?><option value="<?= $d ?>" <?= $editTimetable['day_name']===$d?'selected':'' ?>><?= $d ?></option><?php endforeach; ?></select></div>
+<div><label>Start Time</label><input type="time" name="start_time" class="form-control" value="<?= htmlspecialchars(substr($editTimetable['start_time'],0,5)) ?>" required></div>
+<div><label>End Time</label><input type="time" name="end_time" class="form-control" value="<?= htmlspecialchars(substr($editTimetable['end_time'],0,5)) ?>" required></div>
+<div><label>Room / Lab</label><input type="text" name="room" class="form-control" value="<?= htmlspecialchars($editTimetable['room']) ?>" required></div>
+<div><label>Semester</label><select name="semester" class="form-control" required><option value="Semester 1" <?= $editTimetable['semester']==='Semester 1'?'selected':'' ?>>Semester 1</option><option value="Semester 2" <?= $editTimetable['semester']==='Semester 2'?'selected':'' ?>>Semester 2</option></select></div>
+<div><label>Academic Year</label><select name="academic_year" class="form-control" required><?php for($y=1;$y<=4;$y++): ?><option value="<?= $y ?>" <?= (string)$editTimetable['academic_year']===(string)$y?'selected':'' ?>><?= $y ?><?= $y===1?'st':($y===2?'nd':($y===3?'rd':'th')) ?> Year</option><?php endfor; ?></select></div>
+</div>
+<div class="button-area"><button type="submit" name="update_timetable" class="btn btn-primary">Update</button></div>
+</div>
+</form>
+<div class="button-area"><a href="timetable_records.php" class="btn btn-outline">Cancel</a></div>
+</div></div>
+<?php endif; ?>
+
+<!-- ONLY SHOW RECORDS AFTER VIEW -->
+<?php if ($viewRequested && $viewYear !== '' && $viewSemester !== ''): ?>
+<div class="card"><div class="card-body">
+<div class="section-heading"><h2>Timetable Records</h2><p><?= htmlspecialchars(['1'=>'1st Year','2'=>'2nd Year','3'=>'3rd Year','4'=>'4th Year'][$viewYear] ?? $viewYear) ?> - <?= htmlspecialchars($viewSemester) ?></p></div>
+<?php if (empty($viewRows)): ?>
+<div class="empty-state"><h3>No Timetable Records</h3><p>No records found for the selected year and semester.</p></div>
+<?php else: ?>
+<div class="table-wrapper"><table><thead><tr><th>Subject</th><th>Course</th><th>Day</th><th>Time</th><th>Room</th><th>Semester</th><th>Year</th><th>Actions</th></tr></thead><tbody>
+<?php foreach($viewRows as $row): ?>
+<tr>
+<td><strong><?= htmlspecialchars($row['subject_name']) ?></strong></td>
+<td><?= htmlspecialchars($row['course']) ?></td><td><?= htmlspecialchars($row['day_name']) ?></td>
+<td><?= htmlspecialchars(substr($row['start_time'],0,5)) ?> - <?= htmlspecialchars(substr($row['end_time'],0,5)) ?></td>
+<td><?= htmlspecialchars($row['room']) ?></td><td><?= htmlspecialchars($row['semester']) ?></td>
+<td><?= htmlspecialchars(['1'=>'1st Year','2'=>'2nd Year','3'=>'3rd Year','4'=>'4th Year'][(string)$row['academic_year']] ?? $row['academic_year']) ?></td>
+<td><div class="action-buttons">
+<a href="timetable_records.php?edit=<?= (int)$row['id'] ?>&view=1&year=<?= urlencode($viewYear) ?>&semester=<?= urlencode($viewSemester) ?>" class="btn btn-primary">Edit</a>
+<form method="POST" style="margin:0" onsubmit="return confirm('Are you sure you want to delete this timetable record?');"><input type="hidden" name="timetable_id" value="<?= (int)$row['id'] ?>"><button type="submit" name="delete_timetable" class="btn btn-danger">Delete</button></form>
+</div></td>
+</tr>
+<?php endforeach; ?>
+</tbody></table></div>
+<?php endif; ?>
+</div></div>
+<?php endif; ?>
 
 </div>
-
-
-<?php
-
-include __DIR__ . '/../includes/footer.php';
-
-?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
