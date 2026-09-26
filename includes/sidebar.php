@@ -101,6 +101,7 @@ if (!function_exists('sidebar_link')) {
       if ($currentRole === ROLE_PROJECT_COORDINATOR) {
         echo '<p class="sidebar-label">Presentation Coordination</p>';
         sidebar_link('project_coordinator/sessions.php', 'Sessions & Venues', 'calendar', $currentPage);
+        sidebar_link('project_coordinator/panels.php', 'Panel Assignments', 'user-check', $currentPage);
         echo '<p class="sidebar-label">Account</p>';
         sidebar_link('project_coordinator/setting.php', 'Settings', 'settings', $currentPage);
       }
