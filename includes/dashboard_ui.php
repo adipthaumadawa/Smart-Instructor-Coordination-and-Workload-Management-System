@@ -1087,7 +1087,7 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     </div><!-- /.kpi-grid -->
 
     <?php if ($kpiOnly) { echo '</section>'; return; } /* role-specific pages draw their own widgets */ ?>
-
+    <?php if ((int)($_SESSION['role_id'] ?? 0) !== ROLE_NON_ACADEMIC): ?>
     <!-- ── Row 1: Chart | Availability | Schedule ── -->
     <div class="dash-grid-row1">
 
@@ -1354,7 +1354,7 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
             </table>
         </div>
     </div>
-
+    <?php endif; ?>
 </section>
 <?php
 }
