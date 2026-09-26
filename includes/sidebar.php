@@ -79,7 +79,6 @@ if (!function_exists('sidebar_link')) {
         echo '<p class="sidebar-label">Timetable</p>';
         sidebar_link('non_academic/timetable_records.php', 'Timetable Requirements', 'calendar', $currentPage);
         sidebar_link('non_academic/room_schedules.php', 'Room & Lab Schedules', 'square-pen', $currentPage);
-        sidebar_link('non_academic/lecture_hall_booking.php', 'Lecture Hall Booking', 'calendar', $currentPage);
         echo '<p class="sidebar-label">Attendance &amp; Leave</p>';
         sidebar_link('non_academic/attendance.php', 'Manage Attendance', 'user-check', $currentPage);
         sidebar_link('non_academic/leave_records.php', 'Leave Records', 'history', $currentPage);
@@ -91,6 +90,7 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('instructor/my_tasks.php', 'My Tasks', 'briefcase-business', $currentPage);
         sidebar_link('instructor/timetable.php', 'Timetable', 'calendar', $currentPage);
         sidebar_link('instructor/workload.php', 'Workload', 'chart-column', $currentPage);
+        sidebar_link('instructor/room_booking.php', 'Room Booking', 'door', $currentPage);
         echo '<p class="sidebar-label">Coordination</p>';
         sidebar_link('instructor/leave.php', 'Leave', 'calendar', $currentPage);
         sidebar_link('instructor/notifications.php', 'Notifications', 'bell', $currentPage);
