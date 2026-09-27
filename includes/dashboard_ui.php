@@ -159,7 +159,7 @@ if (!function_exists('sic_dashboard_cards')) {
                     ['Available Instructors', sic_scalar("SELECT COUNT(*) FROM instructors WHERE status = 'active'"), 'Ready for allocation', 'group','teal',''],
                     ['Pending Task Requests', sic_scalar("SELECT COUNT(*) FROM additional_task_requests WHERE status = 'Pending'"), 'Need assignment', 'clipboard','purple',''],
                     ['Urgent Replacements',   sic_scalar("SELECT COUNT(*) FROM replacement_requests WHERE status = 'Pending'") + sic_scalar("SELECT COUNT(*) FROM additional_task_requests WHERE urgency = 'Urgent' AND status = 'Pending'"), 'Requires action', 'warning','coral','danger'],
-                    ['Total Workload Hours',  sic_scalar("SELECT COALESCE(SUM(duration_hours),0) FROM task_assignments WHERE is_presentation_panel = 0 AND scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND status IN ('Assigned','Accepted','Completed')") . ' hrs', 'This week', 'clock','blue',''],
+                    ['Total Workload Hours',  sic_scalar("SELECT COALESCE(SUM(duration_hours),0) FROM task_assignments WHERE is_presentation_panel = 0 AND scheduled_date BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) AND status IN ('Assigned','Accepted','Completed')") . ' hrs', 'This semester', 'gauge','blue',''],
                 ];
             case 'chief':
                 return [
@@ -587,16 +587,22 @@ if (!function_exists('sic_dashboard_styles')) {
     box-shadow: var(--d-shadow);
     overflow: hidden;
     transition: transform .2s ease, box-shadow .2s ease;
+
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
 }
 .d-card:hover { transform: translateY(-1px); box-shadow: var(--d-shadow-hover); }
 
 /* ── Dashboard main grids ── */
 .dash-grid-row1 {
     display: grid;
-    grid-template-columns: 2fr 1.1fr 1.3fr;
+    grid-template-columns: 1fr 1fr;
     gap: 16px;
+    width: 100%;
     margin-bottom: 16px;
-    align-items: start;
+    box-sizing: border-box;
 }
 
 .chart-area { padding: 20px 20px 14px; }
@@ -785,6 +791,14 @@ if (!function_exists('sic_dashboard_styles')) {
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin-bottom: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: stretch;
+}
+
+.dash-grid-row2 > .d-card {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* ── Leave requests ── */
@@ -963,7 +977,347 @@ if (!function_exists('sic_dashboard_styles')) {
 .sic-icon { display: inline-flex; align-items: center; line-height: 1; }
 .svg-icon, .sic-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; display: block; }
 
+/* ─────────────────────────────────────────────
+   Management Semester Workload Chart
+   ───────────────────────────────────────────── */
+
+.workload-chart-card {
+    min-width: 0;
+}
+
+.management-workload-bars {
+    min-height: 205px;
+    height: 205px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 8px 4px 0;
+}
+
+.management-bar-col {
+    flex: 0 0 58px;
+    min-width: 58px;
+    position: relative;
+}
+
+.management-chart-bar {
+    width: 34px;
+    max-width: 34px;
+    background: var(--d-teal);
+    border-radius: 5px 5px 0 0;
+}
+
+.management-chart-bar:hover {
+    opacity: .78;
+}
+
+.management-bar-label {
+    width: 62px;
+    max-width: 62px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--d-muted);
+}
+
+.bar-value {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--d-text);
+    white-space: nowrap;
+    margin-bottom: 4px;
+    min-height: 12px;
+}
+
+.management-bar-col .bar-wrap {
+    min-height: 145px;
+}
+
+.management-workload-bars::-webkit-scrollbar {
+    height: 6px;
+}
+
+.management-workload-bars::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.management-workload-bars::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+@media (max-width: 680px) {
+
+    .management-workload-bars {
+        min-height: 190px;
+        height: 190px;
+    }
+
+    .management-bar-col {
+        flex-basis: 52px;
+        min-width: 52px;
+    }
+
+    .management-bar-label {
+        width: 56px;
+        max-width: 56px;
+    }
+
+    .management-chart-bar {
+        width: 30px;
+        max-width: 30px;
+    }
+}
+
+/* ─────────────────────────────────────────────
+   FULL-ROW MANAGEMENT WORKLOAD CARD
+   ───────────────────────────────────────────── */
+
+.management-workload-full-row {
+    grid-column: 1 / -1;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+/* ─────────────────────────────────────────────
+   Management workload chart
+   ───────────────────────────────────────────── */
+
+.management-workload-wrapper {
+    width: 100%;
+}
+
+.management-workload-bars {
+    min-height: 260px;
+    height: 260px;
+
+    display: flex;
+    align-items: flex-end;
+
+    justify-content: flex-start;
+
+    gap: 18px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    padding: 15px 10px 0;
+}
+
+.management-bar-col {
+    flex: 0 0 72px;
+    min-width: 72px;
+
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    justify-content: flex-end;
+
+    gap: 7px;
+}
+
+.management-bar-col .bar-wrap {
+    width: 100%;
+    min-height: 185px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    flex: 1;
+}
+
+.management-chart-bar {
+    width: 38px;
+    max-width: 38px;
+
+    background: var(--d-teal);
+
+    border-radius: 5px 5px 0 0;
+
+    min-height: 3px;
+
+    transition:
+        height .25s ease,
+        opacity .2s ease;
+}
+
+.management-chart-bar:hover {
+    opacity: .78;
+}
+
+.management-bar-label {
+    width: 72px;
+    max-width: 72px;
+
+    text-align: center;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    color: var(--d-text);
+}
+
+.bar-value {
+    font-size: 10px;
+    font-weight: 800;
+
+    color: var(--d-text);
+
+    white-space: nowrap;
+
+    min-height: 14px;
+
+    text-align: center;
+}
+
+
+/* ─────────────────────────────────────────────
+   Workload footer
+   ───────────────────────────────────────────── */
+
+.management-workload-footer {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-top: 18px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid var(--d-line);
+}
+
+.workload-period {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: var(--d-muted);
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.management-workload-footer .chart-summary {
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 12px;
+    color: var(--d-muted);
+}
+
+.management-workload-footer .chart-summary strong {
+    font-size: 15px;
+    color: var(--d-text);
+    font-weight: 800;
+}
+
+
+/* Empty state */
+
+.workload-empty-state {
+    min-height: 220px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--d-muted);
+
+    font-size: 13px;
+    text-align: center;
+}
+
+
+/* Scrollbar */
+
+.management-workload-bars::-webkit-scrollbar {
+    height: 7px;
+}
+
+.management-workload-bars::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.management-workload-bars::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.management-workload-bars::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
 /* ── Responsive ── */
+
+@media (max-width: 680px) {
+
+    .management-workload-full-row {
+        grid-column: auto;
+    }
+
+    .management-workload-bars {
+        min-height: 230px;
+        height: 230px;
+
+        gap: 12px;
+    }
+
+    .management-bar-col {
+        flex: 0 0 62px;
+        min-width: 62px;
+    }
+
+    .management-bar-col .bar-wrap {
+        min-height: 160px;
+    }
+
+    .management-chart-bar {
+        width: 32px;
+        max-width: 32px;
+    }
+
+    .management-bar-label {
+        width: 62px;
+        max-width: 62px;
+
+        font-size: 10px;
+    }
+
+    .management-workload-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .management-workload-footer .chart-summary {
+        margin-left: 0;
+    }
+}
+
 @media (max-width: 1150px) {
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .dash-grid-row1 { grid-template-columns: 1fr 1fr; }
@@ -1014,17 +1368,223 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     $weekStart = date('M d');
     $weekEnd   = date('M d, Y', strtotime('+6 days'));
 
-    /* Bar chart data */
-    $barData   = [
-        ['Mon', 55, false], ['Tue', 76, false], ['Wed', 62, false],
+   /* ─────────────────────────────────────────────────────────────
+   WORKLOAD BAR CHART
+   Coordinator / Chief Coordinator / Director:
+       Current-semester workload for each instructor.
+
+   Instructor dashboard:
+       NOT affected here because instructors use
+       sic_render_instructor_dashboard().
+   ───────────────────────────────────────────────────────────── */
+
+/* ─────────────────────────────────────────────────────────────
+   MANAGEMENT SEMESTER WORKLOAD
+   Coordinator / Chief Coordinator / Director
+   ───────────────────────────────────────────────────────────── */
+
+$roleHeading = strtolower(trim($heading));
+
+$isManagementWorkloadView =
+    ($roleHeading === 'instructor coordinator dashboard') ||
+    ($roleHeading === 'admin dashboard') ||
+    ($roleHeading === 'director / department head dashboard') ||
+    ($roleHeading === 'chief instructor coordinator dashboard');
+
+$barData = [];
+$maxBar  = 1;
+
+$currentAcademicYear = '';
+$currentSemester     = '';
+$totalSemesterHours  = 0;
+
+global $pdo;
+
+if ($isManagementWorkloadView) {
+
+    try {
+
+        /*
+         * Find the academic year + semester currently represented
+         * in timetable_slots.
+         *
+         * We first prefer records for the current calendar year.
+         */
+        $periodStmt = $pdo->prepare("
+            SELECT
+                academic_year,
+                semester,
+                COUNT(*) AS slot_count
+            FROM timetable_slots
+            WHERE academic_year IS NOT NULL
+              AND TRIM(academic_year) <> ''
+              AND semester IS NOT NULL
+              AND TRIM(semester) <> ''
+            GROUP BY academic_year, semester
+            ORDER BY
+                CASE
+                    WHEN academic_year LIKE CONCAT('%', YEAR(CURDATE()), '%')
+                    THEN 0
+                    ELSE 1
+                END,
+                academic_year DESC,
+                semester DESC
+            LIMIT 1
+        ");
+
+        $periodStmt->execute();
+
+        $period = $periodStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($period) {
+            $currentAcademicYear = trim((string)$period['academic_year']);
+            $currentSemester     = trim((string)$period['semester']);
+        }
+
+        /*
+         * Fallback if there are currently no timetable records.
+         */
+        if ($currentAcademicYear === '') {
+            $currentAcademicYear =
+                date('Y') . '/' . (date('Y') + 1);
+        }
+
+        if ($currentSemester === '') {
+            $currentSemester =
+                (date('n') <= 6)
+                    ? 'Semester 1'
+                    : 'Semester 2';
+        }
+
+        /*
+         * Get every active instructor.
+         *
+         * Employee ID is displayed on the horizontal axis.
+         *
+         * Workload is calculated only from timetable_slots
+         * belonging to the selected academic year + semester.
+         */
+        $stmt = $pdo->prepare("
+            SELECT
+                i.id,
+                i.employee_id,
+                u.full_name,
+
+                COALESCE(
+                    SUM(
+                        TIME_TO_SEC(
+                            TIMEDIFF(
+                                ts.end_time,
+                                ts.start_time
+                            )
+                        ) / 3600
+                    ),
+                    0
+                ) AS semester_hours
+
+            FROM instructors i
+
+            INNER JOIN users u
+                ON u.id = i.user_id
+
+            LEFT JOIN timetable_slots ts
+                ON ts.instructor_id = i.id
+                AND TRIM(ts.academic_year) = :academic_year
+                AND LOWER(TRIM(ts.semester))
+                    = LOWER(TRIM(:semester))
+
+            WHERE i.status = 'active'
+
+            GROUP BY
+                i.id,
+                i.employee_id,
+                u.full_name
+
+            ORDER BY
+                semester_hours DESC,
+                i.employee_id ASC
+        ");
+
+        $stmt->execute([
+            ':academic_year' => $currentAcademicYear,
+            ':semester'      => $currentSemester
+        ]);
+
+        $semesterWorkloads = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($semesterWorkloads as $row) {
+
+            $employeeId = trim(
+                (string)($row['employee_id'] ?? '')
+            );
+
+            if ($employeeId === '') {
+                $employeeId = 'N/A';
+            }
+
+            $hours = round(
+                (float)($row['semester_hours'] ?? 0),
+                1
+            );
+
+            /*
+             * Store:
+             *   0 = employee ID
+             *   1 = workload hours
+             *   2 = instructor name
+             */
+            $barData[] = [
+                $employeeId,
+                $hours,
+                $row['full_name'] ?? ''
+            ];
+
+            $totalSemesterHours += $hours;
+        }
+
+        $maxBar = !empty($barData)
+            ? max(
+                1,
+                max(array_column($barData, 1))
+            )
+            : 1;
+
+    } catch (Throwable $e) {
+
+        $barData = [];
+        $maxBar = 1;
+        $totalSemesterHours = 0;
+
+    }
+
+} else {
+
+    /*
+     * Normal weekly chart for other dashboards.
+     */
+    $barData = [
+        ['Mon', 55, false],
+        ['Tue', 76, false],
+        ['Wed', 62, false],
         ['Thu', 42, false],
-        ['Fri', 50, date('N') == 5],
-        ['Sat', 70, false], ['Sun', 52, false],
+        ['Fri', 50, false],
+        ['Sat', 70, false],
+        ['Sun', 52, false],
     ];
-    $todayIdx   = (int)date('N') - 1;
-    foreach ($barData as $bi => &$bd) { $bd[2] = ($bi === $todayIdx); }
+
+    $todayIdx = (int)date('N') - 1;
+
+    foreach ($barData as $bi => &$bd) {
+        $bd[2] = ($bi === $todayIdx);
+    }
+
     unset($bd);
-    $maxBar    = max(array_column($barData, 1));
+
+    $maxBar = max(
+        1,
+        max(array_column($barData, 1))
+    );
+}
 
     /* Donut SVG circle math */
     $donutR    = 52;
@@ -1091,30 +1651,246 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     <!-- ── Row 1: Chart | Availability | Schedule ── -->
     <div class="dash-grid-row1">
 
-        <!-- Workload Chart -->
-        <div class="d-card">
-            <div class="section-head">
-                <h2 class="section-title"><?= sic_icon('chart') ?>Workload Overview <span style="font-weight:400;color:var(--d-muted);font-size:13px;">(Hours)</span></h2>
-                <span class="section-badge">This Week</span>
-            </div>
-            <div class="chart-area">
-                <div class="chart-bars">
-                    <?php foreach ($barData as [$dayLabel, $barH, $isToday]): ?>
-                    <div class="bar-col <?= $isToday ? 'today' : '' ?>">
-                        <div class="bar-wrap">
-                            <div class="chart-bar" style="height:<?= round(($barH / $maxBar) * 100) ?>%;" title="<?= $barH ?> hrs"></div>
-                        </div>
-                        <span class="bar-label"><?= htmlspecialchars($dayLabel) ?></span>
+<!-- ─────────────────────────────────────────────────────────────
+     WORKLOAD OVERVIEW
+     ───────────────────────────────────────────────────────────── -->
+
+<div class="d-card workload-chart-card <?= $isManagementWorkloadView ? 'management-workload-full-row' : '' ?>">
+
+    <div class="section-head">
+
+        <h2 class="section-title">
+            <?= sic_icon('chart') ?>
+
+            Workload Overview
+
+            <span style="
+                font-weight:400;
+                color:var(--d-muted);
+                font-size:13px;
+            ">
+                (Hours)
+            </span>
+        </h2>
+
+        <?php if ($isManagementWorkloadView): ?>
+
+            <span class="section-badge">
+                <?= htmlspecialchars($currentAcademicYear) ?>
+                &nbsp;•&nbsp;
+                <?= htmlspecialchars($currentSemester) ?>
+            </span>
+
+        <?php else: ?>
+
+            <span class="section-badge">
+                This Week
+            </span>
+
+        <?php endif; ?>
+
+    </div>
+
+
+    <div class="chart-area">
+
+        <?php if ($isManagementWorkloadView): ?>
+
+            <?php if (empty($barData)): ?>
+
+                <div class="workload-empty-state">
+
+                    No instructor workload data available for
+                    <?= htmlspecialchars($currentAcademicYear) ?>
+                    -
+                    <?= htmlspecialchars($currentSemester) ?>.
+
+                </div>
+
+            <?php else: ?>
+
+                <div class="management-workload-wrapper">
+
+                    <div class="chart-bars management-workload-bars">
+
+                        <?php foreach ($barData as $bar): ?>
+
+                            <?php
+
+                            $employeeId = $bar[0];
+                            $barH      = (float)$bar[1];
+                            $fullName  = $bar[2];
+
+                            $barHeight = $barH > 0
+                                ? max(
+                                    6,
+                                    round(($barH / $maxBar) * 100)
+                                )
+                                : 3;
+
+                            ?>
+
+                            <div
+                                class="bar-col management-bar-col"
+                                title="<?= htmlspecialchars(
+                                    $fullName . ' (' . $employeeId . ')'
+                                ) ?>"
+                            >
+
+                                <!-- Workload value -->
+                                <div class="bar-value">
+                                    <?= number_format($barH, 1) ?> hrs
+                                </div>
+
+                                <!-- Bar -->
+                                <div class="bar-wrap">
+
+                                    <div
+                                        class="chart-bar management-chart-bar"
+                                        style="height:<?= $barHeight ?>%;"
+                                        title="<?= htmlspecialchars(
+                                            $fullName
+                                            . ' - '
+                                            . number_format($barH, 1)
+                                            . ' hrs'
+                                        ) ?>"
+                                    ></div>
+
+                                </div>
+
+                                <!-- Employee ID on horizontal axis -->
+                                <span
+                                    class="bar-label management-bar-label"
+                                    title="<?= htmlspecialchars($employeeId) ?>"
+                                >
+                                    <?= htmlspecialchars($employeeId) ?>
+                                </span>
+
+                            </div>
+
+                        <?php endforeach; ?>
+
                     </div>
-                    <?php endforeach; ?>
+
+
+                    <!-- Bottom summary -->
+                    <div class="chart-legend management-workload-footer">
+
+                        <div class="workload-period">
+
+                            <span
+                                class="legend-dot"
+                                style="background:var(--d-teal)"
+                            ></span>
+
+                            Semester Workload of Instructor
+
+                        </div>
+
+
+                        <div class="chart-summary">
+
+                            <span>
+                                Total semester workload:
+                            </span>
+
+                            <strong>
+                                <?= number_format(
+                                    $totalSemesterHours,
+                                    1
+                                ) ?>
+                                hrs
+                            </strong>
+
+                        </div>
+
+                    </div>
+
                 </div>
-                <div class="chart-legend">
-                    <span><span class="legend-dot" style="background:var(--d-teal)"></span>Regular</span>
-                    <span><span class="legend-dot" style="background:var(--d-blue)"></span>Today</span>
-                    <div class="chart-summary">Total this week: <strong><?= $weeklyHours ?> hrs</strong></div>
-                </div>
+
+            <?php endif; ?>
+
+
+        <?php else: ?>
+
+            <!-- Normal weekly workload chart -->
+
+            <div class="chart-bars">
+
+                <?php foreach ($barData as $bar): ?>
+
+                    <?php
+                    $dayLabel = $bar[0];
+                    $barH     = $bar[1];
+                    $isToday  = $bar[2];
+                    ?>
+
+                    <div
+                        class="bar-col <?= $isToday ? 'today' : '' ?>"
+                    >
+
+                        <div class="bar-wrap">
+
+                            <div
+                                class="chart-bar"
+                                style="
+                                    height:<?= round(
+                                        ($barH / $maxBar) * 100
+                                    ) ?>%;
+                                "
+                                title="<?= $barH ?> hrs"
+                            ></div>
+
+                        </div>
+
+                        <span class="bar-label">
+                            <?= htmlspecialchars($dayLabel) ?>
+                        </span>
+
+                    </div>
+
+                <?php endforeach; ?>
+
             </div>
-        </div>
+
+
+            <div class="chart-legend">
+
+                <span>
+                    <span
+                        class="legend-dot"
+                        style="background:var(--d-teal)"
+                    ></span>
+
+                    Regular
+                </span>
+
+                <span>
+                    <span
+                        class="legend-dot"
+                        style="background:var(--d-blue)"
+                    ></span>
+
+                    Today
+                </span>
+
+                <div class="chart-summary">
+
+                    Total this week:
+
+                    <strong>
+                        <?= $weeklyHours ?> hrs
+                    </strong>
+
+                </div>
+
+            </div>
+
+        <?php endif; ?>
+
+    </div>
+
+</div>
 
         <!-- Instructor Availability Donut -->
         <div class="d-card">
@@ -1198,98 +1974,151 @@ function sic_render_dashboard(string $heading, string $subtitle, array $cards = 
     <!-- ── Row 2: Leave | Alerts | Venues ── -->
     <div class="dash-grid-row2">
 
-        <!-- Recent Leave Requests -->
-        <div class="d-card">
-            <div class="section-head">
-                <h2 class="section-title"><?= sic_icon('user-check') ?>Leave Requests</h2>
-                <a href="<?= app_url('system/unavailable.php') ?>" class="section-link"><?= sic_icon('eye') ?>View all</a>
-            </div>
-            <div class="leave-list">
-                <?php
-                $leaves = [
-                    ['C','Dr. Chamila Wijesooriya','May 19 – 21, 2025','Medical Leave','s-pill-blue','Pending','s-pill-orange', null],
-                    ['I','Mr. Isuru Madushan',     'May 16, 2025 (1 day)','Casual Leave','s-pill-teal','Pending','s-pill-orange', null],
-                    ['H','Dr. Harini Silva',        'May 23 – 24, 2025','Medical Leave','s-pill-blue','Approved','s-pill-green', null],
-                    ['S','Mr. Sachintha Perera',    'May 15, 2025 (1 day)','Casual Leave','s-pill-teal','Declined','s-pill-red', null],
-                ];
-                foreach ($leaves as $li => $l):
-                    $avatarBg = $avatarColors[$li % count($avatarColors)];
-                    $imgUrl = $l[7] ?? null;
-                ?>
-                <div class="leave-item">
-                    <div class="lv-avatar" style="background:<?= $avatarBg ?>">
-                        <?php if ($imgUrl): ?>
-                            <img src="<?= htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($l[1], ENT_QUOTES, 'UTF-8') ?>">
-                        <?php else: ?>
-                            <?= htmlspecialchars($l[0]) ?>
-                        <?php endif; ?>
-                    </div>
-                    <div class="lv-info">
-                        <span class="lv-name"><?= htmlspecialchars($l[1]) ?></span>
-                        <span class="lv-date"><?= htmlspecialchars($l[2]) ?></span>
-                    </div>
-                    <div class="lv-badges">
-                        <span class="s-pill <?= $l[4] ?>"><?= $l[3] ?></span>
-                        <span class="s-pill <?= $l[6] ?>"><?= $l[5] ?></span>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
+    <!-- Recent Leave Requests -->
+    <div class="d-card">
+        <div class="section-head">
+            <h2 class="section-title"><?= sic_icon('user-check') ?>Leave Requests</h2>
+            <a href="<?= app_url('system/unavailable.php') ?>" class="section-link">
+                <?= sic_icon('eye') ?>View all
+            </a>
         </div>
 
-        <!-- Urgent Replacement Alerts -->
-        <div class="d-card">
-            <div class="section-head">
-                <h2 class="section-title"><?= sic_icon('warning') ?>Replacement Alerts</h2>
-                <a href="<?= app_url('system/unavailable.php') ?>" class="section-link"><?= sic_icon('eye') ?>View all</a>
-            </div>
-            <div class="alert-list">
-                <?php foreach ([
-                    ['CO3210 – Database Systems',   'May 14 • 10:30 – 12:00 • LT-3'],
-                    ['CO2220 – Data Structures',    'May 15 • 09:00 – 10:30 • LT-2'],
-                    ['CO4230 – Software Eng.',      'May 16 • 14:00 – 15:30 • LT-1'],
-                ] as $a): ?>
-                <div class="alert-item">
-                    <div class="alert-icon-wrap"><?= sic_icon('warning') ?></div>
-                    <div class="alert-info">
-                        <span class="alert-course"><?= htmlspecialchars($a[0]) ?></span>
-                        <span class="alert-meta"><?= htmlspecialchars($a[1]) ?></span>
-                    </div>
-                    <span class="s-pill s-pill-red">Urgent</span>
-                </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
+        <div class="leave-list">
+            <?php
+            $leaves = [
+                ['C','Dr. Chamila Wijesooriya','May 19 – 21, 2025','Medical Leave','s-pill-blue','Pending','s-pill-orange', null],
+                ['I','Mr. Isuru Madushan','May 16, 2025 (1 day)','Casual Leave','s-pill-teal','Pending','s-pill-orange', null],
+                ['H','Dr. Harini Silva','May 23 – 24, 2025','Medical Leave','s-pill-blue','Approved','s-pill-green', null],
+                ['S','Mr. Sachintha Perera','May 15, 2025 (1 day)','Casual Leave','s-pill-teal','Declined','s-pill-red', null],
+            ];
 
-        <!-- Lecture Hall Bookings -->
-        <div class="d-card">
-            <div class="section-head">
-                <h2 class="section-title"><?= sic_icon('building') ?>Hall Bookings</h2>
-                <a href="<?= app_url('system/unavailable.php') ?>" class="section-link"><?= sic_icon('eye') ?>View all</a>
-            </div>
-            <div class="venue-list">
-                <?php foreach ([
-                    ['LT-1 (120 seats)', '72%', '6 / 8', 72, false],
-                    ['LT-2 (80 seats)',  '65%', '5 / 8', 65, false],
-                    ['LT-3 (60 seats)',  '83%', '5 / 6', 83, true],
-                    ['LT-4 (100 seats)', '40%', '2 / 5', 40, false],
-                ] as $b): ?>
-                <div class="venue-item">
-                    <div class="venue-row1">
-                        <span class="venue-name"><?= htmlspecialchars($b[0]) ?></span>
-                        <span class="venue-pct"><?= $b[1] ?></span>
-                    </div>
-                    <div class="venue-row2">
-                        <div class="venue-bar-wrap">
-                            <div class="venue-bar-fill <?= $b[4] ? 'high' : '' ?>" style="width:<?= $b[3] ?>%"></div>
-                        </div>
-                        <span class="venue-sessions"><?= $b[2] ?> today</span>
-                    </div>
+            foreach ($leaves as $li => $l):
+                $avatarBg = $avatarColors[$li % count($avatarColors)];
+                $imgUrl = $l[7] ?? null;
+            ?>
+
+            <div class="leave-item">
+
+                <div class="lv-avatar" style="background:<?= $avatarBg ?>">
+                    <?php if ($imgUrl): ?>
+                        <img
+                            src="<?= htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') ?>"
+                            alt="<?= htmlspecialchars($l[1], ENT_QUOTES, 'UTF-8') ?>"
+                        >
+                    <?php else: ?>
+                        <?= htmlspecialchars($l[0]) ?>
+                    <?php endif; ?>
                 </div>
-                <?php endforeach; ?>
+
+                <div class="lv-info">
+                    <span class="lv-name">
+                        <?= htmlspecialchars($l[1]) ?>
+                    </span>
+
+                    <span class="lv-date">
+                        <?= htmlspecialchars($l[2]) ?>
+                    </span>
+                </div>
+
+                <div class="lv-badges">
+                    <span class="s-pill <?= $l[4] ?>">
+                        <?= $l[3] ?>
+                    </span>
+
+                    <span class="s-pill <?= $l[6] ?>">
+                        <?= $l[5] ?>
+                    </span>
+                </div>
+
             </div>
+
+            <?php endforeach; ?>
         </div>
     </div>
+
+
+    <!-- Urgent Replacement Alerts -->
+    <div class="d-card">
+        <div class="section-head">
+            <h2 class="section-title"><?= sic_icon('warning') ?>Replacement Alerts</h2>
+            <a href="<?= app_url('system/unavailable.php') ?>" class="section-link"><?= sic_icon('eye') ?>View all</a>
+        </div>
+        <div class="alert-list">
+            <?php foreach ([
+                ['CO3210 – Database Systems',   'May 14 • 10:30 – 12:00 • LT-3'],
+                ['CO2220 – Data Structures',    'May 15 • 09:00 – 10:30 • LT-2'],
+                ['CO4230 – Software Eng.',      'May 16 • 14:00 – 15:30 • LT-1'],
+            ] as $a): ?>
+            <div class="alert-item">
+                <div class="alert-icon-wrap"><?= sic_icon('warning') ?></div>
+                <div class="alert-info">
+                    <span class="alert-course"><?= htmlspecialchars($a[0]) ?></span>
+                    <span class="alert-meta"><?= htmlspecialchars($a[1]) ?></span>
+                </div>
+                <span class="s-pill s-pill-red">Urgent</span>
+            </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+
+    <!-- Lecture Hall Bookings -->
+    <div class="d-card">
+
+        <div class="section-head">
+            <h2 class="section-title">
+                <?= sic_icon('building') ?>Hall Bookings
+            </h2>
+
+            <a href="<?= app_url('system/unavailable.php') ?>" class="section-link">
+                <?= sic_icon('eye') ?>View all
+            </a>
+        </div>
+
+        <div class="venue-list">
+
+            <?php foreach ([
+                ['LT-1 (120 seats)', '72%', '6 / 8', 72, false],
+                ['LT-2 (80 seats)',  '65%', '5 / 8', 65, false],
+                ['LT-3 (60 seats)',  '83%', '5 / 6', 83, true],
+                ['LT-4 (100 seats)', '40%', '2 / 5', 40, false],
+            ] as $b): ?>
+
+            <div class="venue-item">
+
+                <div class="venue-row1">
+                    <span class="venue-name">
+                        <?= htmlspecialchars($b[0]) ?>
+                    </span>
+
+                    <span class="venue-pct">
+                        <?= $b[1] ?>
+                    </span>
+                </div>
+
+                <div class="venue-row2">
+
+                    <div class="venue-bar-wrap">
+                        <div
+                            class="venue-bar-fill <?= $b[4] ? 'high' : '' ?>"
+                            style="width:<?= $b[3] ?>%"
+                        ></div>
+                    </div>
+
+                    <span class="venue-sessions">
+                        <?= $b[2] ?> today
+                    </span>
+
+                </div>
+
+            </div>
+
+            <?php endforeach; ?>
+
+        </div>
+    </div>
+
+</div>
 
     <!-- ── Recent Activity Table ── -->
     <div class="d-card">
@@ -1632,7 +2461,7 @@ if (!function_exists('sic_render_instructor_dashboard')) {
                     $role = ((int)$a['requested_by_instructor_id'] === $instructorId) ? 'You requested' : 'Suggested for you';
                 ?>
                 <div class="alert-item">
-                    <div class="alert-icon-wrap"><?= sic_icon('warning') ?></div>
+                    <div class="alert-icon-wrap"><?= sic_icon('swap') ?></div>
                     <div class="alert-info">
                         <span class="alert-course"><?= htmlspecialchars($a['task_title']) ?></span>
                         <span class="alert-meta"><?= htmlspecialchars($role) ?> • <?= htmlspecialchars(formatDate($a['scheduled_date'])) ?></span>

@@ -43,12 +43,15 @@ if (!function_exists('sidebar_link')) {
         echo '<p class="sidebar-label">Overview &amp; Allocations</p>';
         sidebar_link('chief_coordinator/allocations.php', 'Allocations', 'users', $currentPage);
         sidebar_link('chief_coordinator/workload_monitoring.php', 'Workload Monitoring', 'chart-column', $currentPage);
-        
+        sidebar_link('chief_coordinator/lecture_hall_booking.php', 'Lecture Hall Booking', 'door', $currentPage);
+
         echo '<p class="sidebar-label">Coordination &amp; Records</p>';
         sidebar_link('chief_coordinator/leave_records.php', 'Leave Records', 'history', $currentPage);
         
         echo '<p class="sidebar-label">Analytics</p>';
         sidebar_link('chief_coordinator/reports.php', 'System Reports', 'history', $currentPage);
+        echo '<p class="sidebar-label">Account</p>';
+        sidebar_link('chief_coordinator/setting.php', 'System Settings', 'settings', $currentPage);
       }
 
       if ($currentRole === ROLE_ADMIN) {
@@ -69,6 +72,7 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('coordinator/smart_suggestions.php', 'Smart Suggestions', 'search', $currentPage);
         sidebar_link('coordinator/replacements.php', 'Replacement Requests', 'user-check', $currentPage);
         sidebar_link('coordinator/urgency_replacements.php', 'Urgency Replacements', 'bell', $currentPage);
+        sidebar_link('coordinator/lecture_hall_booking.php', 'Lecture Hall Booking', 'door', $currentPage);
         echo '<p class="sidebar-label">Records</p>';
         sidebar_link('coordinator/leave_records.php', 'Leave Records', 'history', $currentPage);
         echo '<p class="sidebar-label">Account</p>';
