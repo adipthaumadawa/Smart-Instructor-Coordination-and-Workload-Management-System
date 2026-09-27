@@ -1864,24 +1864,29 @@ function taskFieldValue(
              LOCATION
         ===================================================== -->
 
-        <div class="col-md-2">
+  <div class="col-md-2">
+    <label class="form-label">Location</label>
 
-            <label class="form-label">
-                Location
-            </label>
+    <select name="location" id="location" class="form-select">
+        <option value="">Select Lecture Room</option>
 
-            <input
-                name="location"
-                class="form-control"
-                placeholder="Location"
-                maxlength="150"
-                value="<?= taskFieldValue(
-                    $clean,
-                    'location'
-                ) ?>"
-            >
+        <?php
+        $lectureRooms = $pdo->query("
+            SELECT id, room_name
+            FROM lecture_rooms
+            WHERE status = 'Available'
+            ORDER BY room_name ASC
+        ")->fetchAll(PDO::FETCH_ASSOC);
 
-        </div>
+        foreach ($lectureRooms as $room):
+        ?>
+            <option value="<?= htmlspecialchars($room['room_name']) ?>"
+                <?= taskFieldValue($clean, 'location') === $room['room_name'] ? 'selected' : '' ?>>
+                <?= htmlspecialchars($room['room_name']) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+</div>
 
 
         <!-- ====================================================
