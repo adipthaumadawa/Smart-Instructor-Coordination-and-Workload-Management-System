@@ -19,9 +19,7 @@ if (isLoggedIn()) {
 }
 
 $error = '';
-$success = isset($_GET['reset'])
-    ? 'Your password was reset. Sign in with your new password.'
-    : (isset($_GET['logged_out']) ? 'You have been logged out successfully.' : '');
+$success = isset($_GET['logged_out']) ? 'You have been logged out successfully.' : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
@@ -36,15 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$demoAccounts = [
-    'admin@example.com'            => 'Admin',
-    'coordinator@example.com'      => 'Coordinator',
-    'instructor@example.com'       => 'Instructor',
-    'chief@example.com'            => 'Chief',
-    'nonacademic@example.com'      => 'Non-Academic',
-    'projectcoordinator@example.com' => 'Project',
-    'director@example.com'         => 'Director',
-];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -134,18 +123,6 @@ $demoAccounts = [
       </form>
 
       <div class="portal-footer-sec">
-        <!-- Demo Accounts Quick Bar -->
-        <div class="portal-demo-card">
-          <div class="portal-demo-title">Quick Demo Login (<small>Pass: <code>password123</code></small>)</div>
-          <div class="portal-demo-grid">
-            <?php foreach ($demoAccounts as $demoEmail => $demoRole): ?>
-              <button type="button" class="portal-demo-chip" data-email="<?= htmlspecialchars($demoEmail) ?>">
-                <?= htmlspecialchars($demoRole) ?>
-              </button>
-            <?php endforeach; ?>
-          </div>
-        </div>
-
         <div class="portal-security-note">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
           <span>Restricted to authorized UCSC academic staff. All sessions are monitored.</span>
@@ -180,7 +157,6 @@ $demoAccounts = [
 
   var pw = document.getElementById('password');
   var btn = document.getElementById('togglePwBtn');
-  var emailInput = document.getElementById('email');
 
   if (btn && pw) {
     btn.addEventListener('click', function () {
@@ -204,18 +180,6 @@ $demoAccounts = [
       submitBtn.querySelector('span').textContent = 'Authenticating...';
     });
   }
-
-  // Quick fill demo accounts on pill click
-  document.querySelectorAll('.portal-demo-chip').forEach(function (pill) {
-    pill.addEventListener('click', function () {
-      if (emailInput) {
-        emailInput.value = this.getAttribute('data-email');
-      }
-      if (pw) {
-        pw.value = 'password123';
-      }
-    });
-  });
 })();
 </script>
 </body>
