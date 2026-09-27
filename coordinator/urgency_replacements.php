@@ -192,8 +192,16 @@ include __DIR__ . '/../includes/header.php';
 
                         <!-- Separate row below with vertical top margin -->
                         <div class="row mt-4">
+                            
                             <div class="col-12 text-end">
-                                <button type="submit" class="btn btn-danger px-4 py-2 fw-bold">Assign</button>
+                                                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+
+                    Assign
+
+                </button>
                             </div>
                         </div>
                     </form>

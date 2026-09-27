@@ -22,9 +22,7 @@ $workloads = $pdo->query("
 ?>
 
 <div class="container-fluid">
-    <div class="row">
-        <?php include __DIR__ . '/../includes/sidebar.php'; ?>
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+    <main class="main-content">
             <h1 class="h2 mb-4"><i class="fas fa-chart-bar me-2"></i>Workload Monitoring</h1>
 
             <div class="card shadow-sm">

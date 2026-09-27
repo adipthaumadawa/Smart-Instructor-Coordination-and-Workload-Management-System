@@ -20,82 +20,68 @@ checkRole(ROLE_PROJECT_COORDINATOR);
 // Get current user from session (getCurrentUser() is the app's real session helper)
 $currentUser = getCurrentUser() ?: [];
 
+// Business rule: a presentation panel needs at least this many members
+$minPanelSize = 3;
+
 // Initialize data variables
 $upcomingSessions = [];
 $sessionsNeedingAttention = [];
 $recentActivity = [];
 
 try {
-    // Upcoming sessions (next 5 scheduled presentations)
+    // Next 5 scheduled presentations, with their current panel size
     $upcomingQuery = "
-        SELECT
-            ps.id,
-            ps.course_code,
-            ps.title,
-            ps.session_date,
-            ps.start_time,
-            ps.end_time,
-            ps.venue,
-            ps.status
+        SELECT ps.id, ps.course_code, ps.title, ps.session_date, ps.start_time, ps.end_time, ps.venue,
+               (SELECT COUNT(*) FROM presentation_panel_members ppm
+                 WHERE ppm.presentation_session_id = ps.id) AS panel_count
         FROM presentation_sessions ps
         WHERE ps.status = 'Scheduled'
-            AND ps.session_date >= CURDATE()
+          AND ps.session_date >= CURDATE()
         ORDER BY ps.session_date ASC, ps.start_time ASC
         LIMIT 5
     ";
-    $result = $pdo->query($upcomingQuery);
-    if ($result) {
-        $upcomingSessions = $result->fetchAll();
-    }
+    $upcomingSessions = $pdo->query($upcomingQuery)->fetchAll();
 
-    // Sessions needing attention (scheduled sessions with fewer than 3 panel members)
+    // Upcoming sessions whose panel is still incomplete (same rule as the "Incomplete Panels" card)
     $attentionQuery = "
-        SELECT
-            ps.id,
-            ps.course_code,
-            ps.title,
-            ps.session_date,
-            COUNT(ppm.id) AS panel_members_count
+        SELECT ps.id, ps.course_code, ps.title, ps.session_date, COUNT(ppm.id) AS panel_members_count
         FROM presentation_sessions ps
         LEFT JOIN presentation_panel_members ppm ON ps.id = ppm.presentation_session_id
         WHERE ps.status = 'Scheduled'
+          AND ps.session_date >= CURDATE()
         GROUP BY ps.id, ps.course_code, ps.title, ps.session_date
-        HAVING panel_members_count < 3
+        HAVING COUNT(ppm.id) < " . (int)$minPanelSize . "
         ORDER BY ps.session_date ASC
         LIMIT 5
     ";
-    $result = $pdo->query($attentionQuery);
-    if ($result) {
-        $sessionsNeedingAttention = $result->fetchAll();
-    }
+    $sessionsNeedingAttention = $pdo->query($attentionQuery)->fetchAll();
 
-    // Recent activity for this coordinator
-    $activityQuery = "
+    // This coordinator's own recent actions
+    $stmt = $pdo->prepare("
         SELECT action, description, created_at
         FROM activity_logs
         WHERE user_id = :uid
         ORDER BY created_at DESC
         LIMIT 10
-    ";
-    $stmt = $pdo->prepare($activityQuery);
+    ");
     $stmt->execute([':uid' => $currentUser['id'] ?? 0]);
     $recentActivity = $stmt->fetchAll();
 
 } catch (Throwable $e) {
-    // Log error and continue with defaults
     error_log("Dashboard data loading error: " . $e->getMessage());
 }
 
 $pageTitle = 'Project Coordinator Dashboard';
 include __DIR__ . '/../includes/header.php';
 
-// Renders the hero header + KPI cards using the app's shared dashboard design system
+// Hero header + the four KPI cards only (no generic/sample widgets for this role)
 sic_render_dashboard(
     'Presentation Management Dashboard',
     'Manage final year project presentations and panel assignments',
     sic_dashboard_cards('project'),
     app_url('project_coordinator/sessions.php'),
-    'Create New Session'
+    'Create New Session',
+    true
 );
 ?>
 
@@ -111,7 +97,9 @@ sic_render_dashboard(
             <div class="schedule-list">
                 <?php if (empty($upcomingSessions)): ?>
                     <p class="text-muted" style="padding:14px 16px;">No upcoming presentation sessions.</p>
-                <?php else: foreach ($upcomingSessions as $s): ?>
+                <?php else: foreach ($upcomingSessions as $s):
+                    $count = (int)$s['panel_count'];
+                    $ready = $count >= $minPanelSize; ?>
                     <div class="sched-item">
                         <div class="sched-time">
                             <span class="sched-time-start"><?= htmlspecialchars(formatTime($s['start_time'])) ?></span>
@@ -125,7 +113,10 @@ sic_render_dashboard(
                                 • <?= htmlspecialchars(formatDate($s['session_date'])) ?>
                             </span>
                         </div>
-                        <span class="s-pill s-pill-blue">Scheduled</span>
+                        <a class="s-pill <?= $ready ? 's-pill-green' : 's-pill-orange' ?>" style="text-decoration:none;"
+                           href="<?= app_url('project_coordinator/panel.php?session_id=' . (int)$s['id']) ?>">
+                            <?= $count ?>/<?= (int)$minPanelSize ?> panel
+                        </a>
                     </div>
                 <?php endforeach; endif; ?>
             </div>
@@ -135,11 +126,11 @@ sic_render_dashboard(
         <div class="d-card">
             <div class="section-head">
                 <h2 class="section-title"><?= sic_icon('warning') ?>Sessions Needing Attention</h2>
-                <a href="<?= app_url('project_coordinator/presentation_panels.php') ?>" class="section-link"><?= sic_icon('eye') ?>Manage panels</a>
+                <a href="<?= app_url('project_coordinator/panels.php?view=incomplete') ?>" class="section-link"><?= sic_icon('eye') ?>Manage panels</a>
             </div>
             <div class="alert-list">
                 <?php if (empty($sessionsNeedingAttention)): ?>
-                    <p class="text-muted" style="padding:14px 16px;">All scheduled sessions have a full panel assigned.</p>
+                    <p class="text-muted" style="padding:14px 16px;">All upcoming sessions have a complete panel.</p>
                 <?php else: foreach ($sessionsNeedingAttention as $s): ?>
                     <div class="alert-item">
                         <div class="alert-icon-wrap"><?= sic_icon('warning') ?></div>
@@ -148,10 +139,11 @@ sic_render_dashboard(
                             <span class="alert-meta">
                                 <?= htmlspecialchars($s['course_code'] ?? '') ?>
                                 • <?= htmlspecialchars(formatDate($s['session_date'])) ?>
-                                • <?= (int)$s['panel_members_count'] ?>/3 panel members
+                                • <?= (int)$s['panel_members_count'] ?>/<?= (int)$minPanelSize ?> panel members
                             </span>
                         </div>
-                        <span class="s-pill s-pill-red">Needs Panel</span>
+                        <a class="s-pill s-pill-red" style="text-decoration:none;"
+                           href="<?= app_url('project_coordinator/panel.php?session_id=' . (int)$s['id']) ?>">Assign Panel</a>
                     </div>
                 <?php endforeach; endif; ?>
             </div>

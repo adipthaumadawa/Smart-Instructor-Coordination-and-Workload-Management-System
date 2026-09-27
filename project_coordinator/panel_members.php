@@ -1,1 +1,4 @@
-<?php header('Location: presentation_panels.php' . (isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '')); exit; ?>
+<?php
+// Empty legacy page; use panels.php / panel.php.
+header('Location: panels.php');
+exit;

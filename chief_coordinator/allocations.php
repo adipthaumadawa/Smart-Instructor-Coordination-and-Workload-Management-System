@@ -22,8 +22,8 @@ ob_start(); ?>
 </tbody></table></div></div><?php $content=ob_get_clean();
 
 ?>
-<div class="container-fluid"><div class="row"><?php include __DIR__ . '/../includes/sidebar.php'; ?>
-<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+<div class="container-fluid">
+    <main class="main-content">
 <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom"><h1 class="h2"><i class="fas fa-tasks me-2"></i>Instructor Allocations</h1></div>
 <?php echo $content; ?>
 </main></div></div>

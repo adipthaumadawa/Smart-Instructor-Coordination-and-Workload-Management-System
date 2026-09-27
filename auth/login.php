@@ -19,7 +19,9 @@ if (isLoggedIn()) {
 }
 
 $error = '';
-$success = isset($_GET['logged_out']) ? 'You have been logged out successfully.' : '';
+$success = isset($_GET['reset'])
+    ? 'Your password was reset. Sign in with your new password.'
+    : (isset($_GET['logged_out']) ? 'You have been logged out successfully.' : '');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');

@@ -19,25 +19,6 @@ if (!$instructorId) {
     exit;
 }
 
-// Handle "Accept task" action BEFORE header/navbar output
-if (isset($_GET['accept']) && is_numeric($_GET['accept'])) {
-    $taskId = (int)$_GET['accept'];
-    $stmt = $pdo->prepare("SELECT * FROM task_assignments WHERE id = ? AND instructor_id = ? AND status = 'Assigned'");
-    $stmt->execute([$taskId, $instructorId]);
-    $task = $stmt->fetch();
-
-    if ($task) {
-        $upd = $pdo->prepare("UPDATE task_assignments SET status = 'Accepted' WHERE id = ?");
-        $upd->execute([$taskId]);
-        logActivity($_SESSION['user_id'] ?? null, 'Accept Task', "Accepted task assignment ID: {$taskId}");
-        $_SESSION['success'] = 'Task accepted successfully.';
-    } else {
-        $_SESSION['error'] = 'Task not found or cannot be accepted.';
-    }
-    header('Location: ' . app_url('instructor/my_tasks.php'));
-    exit;
-}
-
 // Filter (All / Upcoming / Completed)
 $filter = $_GET['filter'] ?? 'upcoming';
 $allowedFilters = ['all', 'upcoming', 'completed'];
@@ -131,9 +112,6 @@ include __DIR__ . '/../includes/header.php';
                                         <td data-label="Location"><?= htmlspecialchars($t['location'] ?: 'N/A') ?></td>
                                         <td data-label="Status"><?= getStatusBadge($t['status']) ?></td>
                                         <td data-label="Actions" class="text-end action-cell">
-                                            <?php if ($t['status'] === 'Assigned'): ?>
-                                                <a href="?accept=<?= (int)$t['id'] ?>" class="btn btn-sm btn-success">Accept</a>
-                                            <?php endif; ?>
                                             <?php if (in_array($t['status'], ['Assigned', 'Accepted'], true) && strtotime($t['scheduled_date']) >= strtotime(date('Y-m-d'))): ?>
                                                 <a href="<?= app_url('instructor/replacement_request.php?task_id=' . (int)$t['id']) ?>" class="btn btn-sm btn-outline-danger">Replacement</a>
                                             <?php endif; ?>

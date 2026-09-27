@@ -42,7 +42,7 @@ $instructors = $stmt->fetchAll();
             <div class="page-toolbar">
                 <div>
                     <h1>Instructor Availability</h1>
-                    <p>Instructors available today (<?= formatDate($today) ?>) — anyone on approved leave for today is hidden automatically.</p>
+                    <p>Instructors available today (<?= formatDate($today) ?>)</p>
                 </div>
             </div>
 
@@ -74,7 +74,7 @@ $instructors = $stmt->fetchAll();
                                     <td data-label="Action" class="text-end">
                                         <div class="menu-wrap">
                                             <button class="btn btn-sm btn-primary" type="button" data-menu-button="assignMenu<?= (int)$inst['id'] ?>" aria-expanded="false">
-                                                <span class="ui-dot" aria-hidden="true"></span>Assign Task
+                                                Assign Task
                                             </button>
                                             <div class="dropdown-menu" id="assignMenu<?= (int)$inst['id'] ?>" hidden>
                                                 <a href="<?= app_url('coordinator/additional_tasks.php') ?>?instructor_id=<?= (int)$inst['id'] ?>&instructor_name=<?= urlencode($inst['full_name']) ?>">

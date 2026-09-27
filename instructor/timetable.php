@@ -54,7 +54,7 @@ include __DIR__ . '/../includes/header.php';
             <div class="page-toolbar">
                 <div>
                     <h1>My Timetable</h1>
-                    <p>Your recurring weekly schedule and upcoming assigned tasks.</p>
+                    <p>Your upcoming assigned tasks and recurring weekly schedule.</p>
                 </div>
             </div>
 
@@ -63,6 +63,37 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <div class="card" style="margin-bottom:20px;">
+                <div class="card-header">
+                    <h5>Upcoming Tasks (Next 14 Days)</h5>
+                    <span class="text-muted small"><?= count($upcomingTasks) ?> task(s)</span>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr><th>Task</th><th>Type</th><th>Date</th><th>Time</th><th>Location</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                <?php if (empty($upcomingTasks)): ?>
+                                    <tr><td colspan="6" class="text-muted">No upcoming tasks in this period.</td></tr>
+                                <?php endif; ?>
+                                <?php foreach ($upcomingTasks as $t): ?>
+                                    <tr>
+                                        <td data-label="Task"><?= htmlspecialchars($t['task_title']) ?></td>
+                                        <td data-label="Type"><?= htmlspecialchars($t['type_name'] ?? 'N/A') ?></td>
+                                        <td data-label="Date"><?= formatDate($t['scheduled_date']) ?></td>
+                                        <td data-label="Time"><?= formatTime($t['start_time']) ?> - <?= formatTime($t['end_time']) ?></td>
+                                        <td data-label="Location"><?= htmlspecialchars($t['location'] ?: 'N/A') ?></td>
+                                        <td data-label="Status"><?= getStatusBadge($t['status']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
                 <div class="card-header">
                     <h5>Weekly Recurring Schedule</h5>
                     <span class="text-muted small"><?= count($slots) ?> slot(s)</span>
@@ -93,37 +124,6 @@ include __DIR__ . '/../includes/header.php';
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
-                    <h5>Upcoming Tasks (Next 14 Days)</h5>
-                    <span class="text-muted small"><?= count($upcomingTasks) ?> task(s)</span>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle">
-                            <thead>
-                                <tr><th>Task</th><th>Type</th><th>Date</th><th>Time</th><th>Location</th><th>Status</th></tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($upcomingTasks)): ?>
-                                    <tr><td colspan="6" class="text-muted">No upcoming tasks in this period.</td></tr>
-                                <?php endif; ?>
-                                <?php foreach ($upcomingTasks as $t): ?>
-                                    <tr>
-                                        <td data-label="Task"><?= htmlspecialchars($t['task_title']) ?></td>
-                                        <td data-label="Type"><?= htmlspecialchars($t['type_name'] ?? 'N/A') ?></td>
-                                        <td data-label="Date"><?= formatDate($t['scheduled_date']) ?></td>
-                                        <td data-label="Time"><?= formatTime($t['start_time']) ?> - <?= formatTime($t['end_time']) ?></td>
-                                        <td data-label="Location"><?= htmlspecialchars($t['location'] ?: 'N/A') ?></td>
-                                        <td data-label="Status"><?= getStatusBadge($t['status']) ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </div>
 
