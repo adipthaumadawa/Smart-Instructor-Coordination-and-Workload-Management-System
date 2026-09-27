@@ -76,7 +76,7 @@ include __DIR__ . '/../includes/header.php';
             <div class="page-toolbar">
                 <div>
                     <h1>Workload Summary</h1>
-                    <p>Your teaching and task workload, calculated from assigned academic hours.</p>
+                    <p>Your weekly and monthly working hours, calculated from assigned academic tasks.</p>
                 </div>
             </div>
 
@@ -87,16 +87,16 @@ include __DIR__ . '/../includes/header.php';
             <div class="row g-4" style="margin-bottom:4px;">
                 <div class="col-md-4">
                     <div class="card"><div class="card-body">
-                        <p class="text-muted small mb-1">This Week</p>
+                        <p class="text-muted small mb-1">This Week's Working Hours</p>
                         <h3 class="mb-0"><?= $weekHours ?> / <?= $maxWeekly ?> hrs</h3>
-                        <p class="small mt-1"><?= $weekPercent ?>% of your weekly capacity</p>
+                        <p class="small mt-1"><?= $weekPercent ?>% of your weekly working hours capacity</p>
                     </div></div>
                 </div>
                 <div class="col-md-4">
                     <div class="card"><div class="card-body">
-                        <p class="text-muted small mb-1">This Month</p>
+                        <p class="text-muted small mb-1">This Month's Working Hours</p>
                         <h3 class="mb-0"><?= $monthHours ?> hrs</h3>
-                        <p class="small mt-1">Total assigned academic hours</p>
+                        <p class="small mt-1">Total assigned working (academic) hours</p>
                     </div></div>
                 </div>
                 <div class="col-md-4">
@@ -111,17 +111,17 @@ include __DIR__ . '/../includes/header.php';
                                 <span class="badge bg-success">Balanced</span>
                             <?php endif; ?>
                         </h3>
-                        <p class="small mt-1">Based on this week's load</p>
+                        <p class="small mt-1">Based on this week's working hours</p>
                     </div></div>
                 </div>
             </div>
 
             <p class="small text-muted" style="margin-bottom:16px;">
-                Note: Presentation panel duties are not counted toward normal workload calculations.
+                Note: Presentation panel duties are not counted toward normal working-hours calculations. All hour figures on this page are working hours (hours actually assigned to teaching/task duties), not clock-in/attendance time.
             </p>
 
             <div class="card" style="margin-bottom:20px;">
-                <div class="card-header"><h5>Daily Hours This Week</h5></div>
+                <div class="card-header"><h5>Daily Working Hours This Week</h5></div>
                 <div class="card-body">
                     <div class="d-flex align-items-end gap-3" style="height:140px;">
                         <?php foreach ($dailyHours as $date => $hrs): ?>
@@ -136,20 +136,20 @@ include __DIR__ . '/../includes/header.php';
             </div>
 
             <div class="card">
-                <div class="card-header"><h5>Breakdown by Task Type (This Month)</h5></div>
+                <div class="card-header"><h5>Working Hours Breakdown by Task Type (This Month)</h5></div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle">
-                            <thead><tr><th>Task Type</th><th>Number of Tasks</th><th>Total Hours</th></tr></thead>
+                            <thead><tr><th>Task Type</th><th>Number of Tasks</th><th>Total Working Hours</th></tr></thead>
                             <tbody>
                                 <?php if (empty($breakdown)): ?>
-                                    <tr><td colspan="3" class="text-muted">No workload recorded this month.</td></tr>
+                                    <tr><td colspan="3" class="text-muted">No working hours recorded this month.</td></tr>
                                 <?php endif; ?>
                                 <?php foreach ($breakdown as $b): ?>
                                     <tr>
                                         <td data-label="Type"><?= htmlspecialchars($b['type_name']) ?></td>
                                         <td data-label="Count"><?= (int)$b['task_count'] ?></td>
-                                        <td data-label="Hours"><?= $b['total_hours'] ?> hrs</td>
+                                        <td data-label="Working Hours"><?= $b['total_hours'] ?> hrs</td>
                                     </tr>
                                 <?php endforeach; ?>
                             </tbody>

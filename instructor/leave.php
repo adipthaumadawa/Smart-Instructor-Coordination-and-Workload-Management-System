@@ -44,12 +44,13 @@ $error = '';
  * Notify a user and log the action in one place, so both the "new leave"
  * path and the "pick another replacement" path stay in sync.
  */
-function sic_send_replacement_request($pdo, $instructorId, $leaveId, $leaveType, $startDate, $endDate, $suggestedId) {
+function sic_send_replacement_request($pdo, $instructorId, $leaveId, $leaveType, $startDate, $endDate, $suggestedId, $durationType = 'Full Day', $halfDaySession = null) {
     $stmt = $pdo->prepare("
         INSERT INTO replacement_requests (task_assignment_id, leave_record_id, requested_by_instructor_id, reason, suggested_instructor_id, status, created_at)
         VALUES (NULL, ?, ?, ?, ?, 'Pending', NOW())
     ");
-    $reason = "Cover for {$leaveType} leave from {$startDate} to {$endDate}.";
+    $durationLabel = ($durationType === 'Half Day' && $halfDaySession) ? "Half Day - {$halfDaySession}" : 'Full Day';
+    $reason = "Cover for {$leaveType} leave ({$durationLabel}) from {$startDate} to {$endDate}.";
     $stmt->execute([$leaveId, $instructorId, $reason, $suggestedId]);
     $requestId = (int)$pdo->lastInsertId();
 
@@ -116,9 +117,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_leave_request'
     $leaveType = sanitize($_POST['leave_type'] ?? 'Casual');
     $startDate = sanitize($_POST['start_date'] ?? '');
     $endDate = sanitize($_POST['end_date'] ?? '');
+    $durationType = sanitize($_POST['duration_type'] ?? 'Full Day');
+    $halfDaySession = sanitize($_POST['half_day_session'] ?? '');
     $reason = sanitize($_POST['reason'] ?? '');
     $resumeLeaveId = (int)($_POST['leave_id'] ?? 0);
     $suggestedId = (int)($_POST['suggested_instructor_id'] ?? 0);
+
+    // A half day leave is always a single day; force the end date to match
+    // so a stray/edited hidden field can't slip a multi-day half-day through.
+    if ($durationType === 'Half Day') {
+        $endDate = $startDate;
+    } else {
+        $halfDaySession = '';
+    }
 
     if ($suggestedId <= 0) {
         $error = 'Please choose a replacement instructor before sending the request.';
@@ -147,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_leave_request'
             if ($pendingChk->fetch()) {
                 $error = 'A replacement request for this leave is already pending a response.';
             } else {
-                sic_send_replacement_request($pdo, $instructorId, $resumeLeaveId, $leaveRow['leave_type'], $leaveRow['start_date'], $leaveRow['end_date'], $suggestedId);
+                sic_send_replacement_request($pdo, $instructorId, $resumeLeaveId, $leaveRow['leave_type'], $leaveRow['start_date'], $leaveRow['end_date'], $suggestedId, $leaveRow['duration_type'] ?? 'Full Day', $leaveRow['half_day_session'] ?? null);
                 $_SESSION['success'] = 'Replacement request sent. Your leave will be confirmed once they accept.';
                 header('Location: ' . app_url('instructor/leave.php'));
                 exit;
@@ -161,6 +172,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_leave_request'
             $error = 'Please select both start and end dates.';
         } elseif (strtotime($endDate) < strtotime($startDate)) {
             $error = 'End date cannot be before the start date.';
+        } elseif (!in_array($durationType, ['Full Day', 'Half Day'], true)) {
+            $error = 'Invalid leave duration selected.';
+        } elseif ($durationType === 'Half Day' && !in_array($halfDaySession, ['Morning', 'Afternoon'], true)) {
+            $error = 'Please select a Morning or Afternoon session for a half day leave.';
         } elseif ($reason === '') {
             $error = 'Please provide a reason for the leave.';
         } else {
@@ -168,13 +183,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_leave_request'
                 $pdo->beginTransaction();
 
                 $stmt = $pdo->prepare("
-                    INSERT INTO leave_records (instructor_id, leave_type, start_date, end_date, reason, status, created_at)
-                    VALUES (?, ?, ?, ?, ?, 'Pending', NOW())
+                    INSERT INTO leave_records (instructor_id, leave_type, start_date, end_date, duration_type, half_day_session, reason, status, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())
                 ");
-                $stmt->execute([$instructorId, $leaveType, $startDate, $endDate, $reason]);
+                $stmt->execute([
+                    $instructorId, $leaveType, $startDate, $endDate,
+                    $durationType, $durationType === 'Half Day' ? $halfDaySession : null,
+                    $reason
+                ]);
                 $leaveId = (int)$pdo->lastInsertId();
 
-                sic_send_replacement_request($pdo, $instructorId, $leaveId, $leaveType, $startDate, $endDate, $suggestedId);
+                sic_send_replacement_request($pdo, $instructorId, $leaveId, $leaveType, $startDate, $endDate, $suggestedId, $durationType, $durationType === 'Half Day' ? $halfDaySession : null);
 
                 $pdo->commit();
 
@@ -198,6 +217,8 @@ $showStep2 = false;
 $draftLeaveType = 'Casual';
 $draftStart = '';
 $draftEnd = '';
+$draftDurationType = 'Full Day';
+$draftHalfDaySession = '';
 $draftReason = '';
 $excludeSuggestedIds = [];
 
@@ -211,6 +232,8 @@ if ($resumeLeaveId > 0) {
         $draftLeaveType = $leaveRow['leave_type'];
         $draftStart = $leaveRow['start_date'];
         $draftEnd = $leaveRow['end_date'];
+        $draftDurationType = $leaveRow['duration_type'] ?? 'Full Day';
+        $draftHalfDaySession = $leaveRow['half_day_session'] ?? '';
         $draftReason = $leaveRow['reason'];
 
         // Don't re-suggest instructors who already rejected this leave.
@@ -224,7 +247,15 @@ if ($resumeLeaveId > 0) {
     $leaveType = sanitize($_GET['leave_type'] ?? 'Casual');
     $startDate = sanitize($_GET['start_date'] ?? '');
     $endDate = sanitize($_GET['end_date'] ?? '');
+    $durationType = sanitize($_GET['duration_type'] ?? 'Full Day');
+    $halfDaySession = sanitize($_GET['half_day_session'] ?? '');
     $reason = sanitize($_GET['reason'] ?? '');
+
+    if ($durationType === 'Half Day') {
+        $endDate = $startDate;
+    } else {
+        $halfDaySession = '';
+    }
 
     if (!in_array($leaveType, $validLeaveTypes, true)) {
         $error = 'Invalid leave type selected.';
@@ -232,6 +263,10 @@ if ($resumeLeaveId > 0) {
         $error = 'Please select both start and end dates.';
     } elseif (strtotime($endDate) < strtotime($startDate)) {
         $error = 'End date cannot be before the start date.';
+    } elseif (!in_array($durationType, ['Full Day', 'Half Day'], true)) {
+        $error = 'Invalid leave duration selected.';
+    } elseif ($durationType === 'Half Day' && !in_array($halfDaySession, ['Morning', 'Afternoon'], true)) {
+        $error = 'Please select a Morning or Afternoon session for a half day leave.';
     } elseif ($reason === '') {
         $error = 'Please provide a reason for the leave.';
     } else {
@@ -239,6 +274,8 @@ if ($resumeLeaveId > 0) {
         $draftLeaveType = $leaveType;
         $draftStart = $startDate;
         $draftEnd = $endDate;
+        $draftDurationType = $durationType;
+        $draftHalfDaySession = $halfDaySession;
         $draftReason = $reason;
     }
 }
@@ -336,15 +373,29 @@ include __DIR__ . '/../includes/header.php';
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Duration <span class="text-danger">*</span></label>
+                                        <select name="duration_type" id="leaveDurationType" class="form-select">
+                                            <option value="Full Day">Full Day</option>
+                                            <option value="Half Day">Half Day</option>
+                                        </select>
+                                    </div>
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <label class="form-label">Start Date <span class="text-danger">*</span></label>
-                                            <input type="date" name="start_date" class="form-control" required min="<?= date('Y-m-d') ?>">
+                                            <input type="date" name="start_date" id="leaveStartDate" class="form-control" required min="<?= date('Y-m-d') ?>">
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-6" id="leaveEndDateWrap">
                                             <label class="form-label">End Date <span class="text-danger">*</span></label>
-                                            <input type="date" name="end_date" class="form-control" required min="<?= date('Y-m-d') ?>">
+                                            <input type="date" name="end_date" id="leaveEndDate" class="form-control" required min="<?= date('Y-m-d') ?>">
                                         </div>
+                                    </div>
+                                    <div class="mb-3 mt-3" id="halfDaySessionWrap" style="display:none;">
+                                        <label class="form-label">Half Day Session <span class="text-danger">*</span></label>
+                                        <select name="half_day_session" id="halfDaySession" class="form-select">
+                                            <option value="Morning">Morning</option>
+                                            <option value="Afternoon">Afternoon</option>
+                                        </select>
                                     </div>
                                     <div class="mb-3 mt-3">
                                         <label class="form-label">Reason <span class="text-danger">*</span></label>
@@ -355,6 +406,38 @@ include __DIR__ . '/../includes/header.php';
                                         Continue — Choose a Replacement
                                     </button>
                                 </form>
+                                <script>
+                                (function() {
+                                    var durationSelect = document.getElementById('leaveDurationType');
+                                    var endDateWrap = document.getElementById('leaveEndDateWrap');
+                                    var endDateInput = document.getElementById('leaveEndDate');
+                                    var startDateInput = document.getElementById('leaveStartDate');
+                                    var sessionWrap = document.getElementById('halfDaySessionWrap');
+                                    var sessionSelect = document.getElementById('halfDaySession');
+
+                                    function syncHalfDay() {
+                                        var isHalfDay = durationSelect.value === 'Half Day';
+                                        sessionWrap.style.display = isHalfDay ? '' : 'none';
+                                        sessionSelect.required = isHalfDay;
+                                        if (isHalfDay) {
+                                            endDateInput.value = startDateInput.value;
+                                            endDateInput.readOnly = true;
+                                            endDateWrap.style.opacity = '0.6';
+                                        } else {
+                                            endDateInput.readOnly = false;
+                                            endDateWrap.style.opacity = '1';
+                                        }
+                                    }
+
+                                    durationSelect.addEventListener('change', syncHalfDay);
+                                    startDateInput.addEventListener('change', function() {
+                                        if (durationSelect.value === 'Half Day') {
+                                            endDateInput.value = startDateInput.value;
+                                        }
+                                    });
+                                    syncHalfDay();
+                                })();
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -373,7 +456,14 @@ include __DIR__ . '/../includes/header.php';
                     <div class="card-body">
                         <p>
                             <strong><?= htmlspecialchars($draftLeaveType) ?> Leave</strong>
-                            &nbsp;&middot;&nbsp; <?= formatDate($draftStart) ?> to <?= formatDate($draftEnd) ?>
+                            &nbsp;&middot;&nbsp;
+                            <?php if ($draftDurationType === 'Half Day'): ?>
+                                <span class="badge bg-info">Half Day &ndash; <?= htmlspecialchars($draftHalfDaySession) ?></span>
+                                &nbsp;<?= formatDate($draftStart) ?>
+                            <?php else: ?>
+                                <span class="badge bg-secondary">Full Day</span>
+                                &nbsp;<?= formatDate($draftStart) ?> to <?= formatDate($draftEnd) ?>
+                            <?php endif; ?>
                             <br><span class="text-muted small"><?= htmlspecialchars($draftReason) ?></span>
                         </p>
                         <a href="<?= app_url('instructor/leave.php') ?>" class="btn btn-sm btn-outline-secondary">&larr; Change Leave Details</a>
@@ -391,6 +481,8 @@ include __DIR__ . '/../includes/header.php';
                                 <input type="hidden" name="leave_type" value="<?= htmlspecialchars($draftLeaveType) ?>">
                                 <input type="hidden" name="start_date" value="<?= htmlspecialchars($draftStart) ?>">
                                 <input type="hidden" name="end_date" value="<?= htmlspecialchars($draftEnd) ?>">
+                                <input type="hidden" name="duration_type" value="<?= htmlspecialchars($draftDurationType) ?>">
+                                <input type="hidden" name="half_day_session" value="<?= htmlspecialchars($draftHalfDaySession) ?>">
                                 <input type="hidden" name="reason" value="<?= htmlspecialchars($draftReason) ?>">
                             <?php endif; ?>
                             <div class="col-md-9">

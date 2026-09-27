@@ -12,14 +12,21 @@
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover align-middle">
-                <thead><tr><th>Type</th><th>From</th><th>To</th><th>Status</th><th>Replacement</th><th class="text-end">Actions</th></tr></thead>
+                <thead><tr><th>Type</th><th>Duration</th><th>From</th><th>To</th><th>Status</th><th>Replacement</th><th class="text-end">Actions</th></tr></thead>
                 <tbody>
                     <?php if (empty($leaveRecords)): ?>
-                        <tr><td colspan="6" class="text-muted">No leave records yet.</td></tr>
+                        <tr><td colspan="7" class="text-muted">No leave records yet.</td></tr>
                     <?php endif; ?>
                     <?php foreach ($leaveRecords as $lr): ?>
                         <tr>
                             <td data-label="Type"><?= htmlspecialchars($lr['leave_type']) ?></td>
+                            <td data-label="Duration">
+                                <?php if (($lr['duration_type'] ?? 'Full Day') === 'Half Day'): ?>
+                                    <span class="badge bg-info">Half Day<?= !empty($lr['half_day_session']) ? ' &ndash; ' . htmlspecialchars($lr['half_day_session']) : '' ?></span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">Full Day</span>
+                                <?php endif; ?>
+                            </td>
                             <td data-label="From"><?= formatDate($lr['start_date']) ?></td>
                             <td data-label="To"><?= formatDate($lr['end_date']) ?></td>
                             <td data-label="Status"><?= getStatusBadge($lr['status']) ?></td>

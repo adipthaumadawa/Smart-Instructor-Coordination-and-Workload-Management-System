@@ -16,6 +16,8 @@
         <input type="hidden" name="leave_type" value="<?= htmlspecialchars($draftLeaveType) ?>">
         <input type="hidden" name="start_date" value="<?= htmlspecialchars($draftStart) ?>">
         <input type="hidden" name="end_date" value="<?= htmlspecialchars($draftEnd) ?>">
+        <input type="hidden" name="duration_type" value="<?= htmlspecialchars($draftDurationType) ?>">
+        <input type="hidden" name="half_day_session" value="<?= htmlspecialchars($draftHalfDaySession) ?>">
         <input type="hidden" name="reason" value="<?= htmlspecialchars($draftReason) ?>">
     <?php endif; ?>
     <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Send a replacement request to this instructor?')">
