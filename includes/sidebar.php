@@ -84,6 +84,8 @@ if (!function_exists('sidebar_link')) {
         sidebar_link('non_academic/attendance.php', 'Manage Attendance', 'user-check', $currentPage);
         sidebar_link('non_academic/leave_records.php', 'Leave Records', 'history', $currentPage);
         sidebar_link('non_academic/leave_notifications.php', 'Leave Notifications', 'bell', $currentPage);
+           echo '<p class="sidebar-label">Account</p>';
+        sidebar_link('non_academic/setting.php', 'Settings', 'settings', $currentPage);
       }
 
       if ($currentRole === ROLE_INSTRUCTOR) {
