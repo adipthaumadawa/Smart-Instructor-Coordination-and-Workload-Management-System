@@ -710,3 +710,12 @@ COMMIT;
 
 ALTER TABLE `timetable_requirements`
     ADD COLUMN `finalized` TINYINT(1) NOT NULL DEFAULT 0 AFTER `status`;
+
+
+CREATE TABLE IF NOT EXISTS timetable_settings (
+    id INT PRIMARY KEY,
+    active_semester VARCHAR(20) DEFAULT NULL
+);
+
+INSERT IGNORE INTO timetable_settings (id, active_semester)
+VALUES (1, NULL);
