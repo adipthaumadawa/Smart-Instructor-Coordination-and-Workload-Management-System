@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <title>Forgot Password | <?= htmlspecialchars(SITE_NAME) ?></title>
+  <title>Forgot Password | <?= htmlspecialchars(sic_site_name()) ?></title>
   <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
   <style>
     .recovery-card { width:min(100% - 32px,480px); margin:auto; padding:36px; background:#fff; border-radius:18px; box-shadow:0 12px 36px rgba(13,35,62,.1); }

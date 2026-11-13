@@ -10,6 +10,7 @@
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/settings.php';
 
 /**
  * Renders a user's avatar for the topbar/menus.
@@ -150,8 +151,8 @@ function calculateWorkload($instructorId, $fromDate = null, $toDate = null) {
  */
 function getWorkloadPercentage($instructorId) {
     $current = calculateWorkload($instructorId);
-    $max = DEFAULT_MAX_WEEKLY_HOURS; // from config.php
-    
+    $max = (float) getSetting('max_weekly_workload_hours', DEFAULT_MAX_WEEKLY_HOURS);
+
     if ($max <= 0) return 0;
     
     $percentage = ($current / $max) * 100;
@@ -453,8 +454,88 @@ function getAvailableRooms($date, $startTime, $endTime) {
         ':start_time' => $startTime,
         ':end_time' => $endTime
     ]);
-    
+
     return $stmt->fetchAll();
+}
+
+/**
+ * Validate a booking slot against the administrator-defined booking rules
+ * (earliest start, latest end, maximum duration, advance booking window).
+ * Expects already format-validated Y-m-d date and HH:MM times.
+ * Returns an error message, or null when the slot is allowed.
+ */
+function sic_booking_window_error($date, $startTime, $endTime) {
+    $parsedDate = DateTime::createFromFormat('!Y-m-d', $date);
+    if (!$parsedDate || $parsedDate->format('Y-m-d') !== $date) {
+        return 'Please select a valid booking date.';
+    }
+    if (!preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $startTime)
+        || !preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $endTime)) {
+        return 'Please enter valid start and end times.';
+    }
+
+    $earliest = getSetting('booking_start_time', '08:00');
+    $latest = getSetting('booking_end_time', '18:00');
+    $maxHours = (float) getSetting('max_booking_duration_hours', 4);
+    $advanceDays = (int) getSetting('booking_advance_days', 30);
+
+    if ($startTime < $earliest) {
+        return 'Bookings cannot start before ' . formatTime($earliest) . '.';
+    }
+    if ($endTime > $latest) {
+        return 'Bookings must end by ' . formatTime($latest) . '.';
+    }
+
+    $hours = (strtotime($endTime) - strtotime($startTime)) / 3600;
+    if ($hours > $maxHours) {
+        return 'Bookings cannot be longer than ' . rtrim(rtrim(number_format($maxHours, 1), '0'), '.') . ' hours.';
+    }
+
+    $latestDate = date('Y-m-d', strtotime('+' . max(1, $advanceDays) . ' days'));
+    if ($date > $latestDate) {
+        return 'Bookings can only be made up to ' . max(1, $advanceDays) . ' days in advance.';
+    }
+
+    return null;
+}
+
+/**
+ * Number of leave days a single leave record covers (half day = 0.5).
+ */
+function sic_leave_span_days($startDate, $endDate, $durationType = 'Full Day') {
+    if ($durationType === 'Half Day') {
+        return 0.5;
+    }
+    $days = (strtotime($endDate) - strtotime($startDate)) / 86400 + 1;
+    return max(0, $days);
+}
+
+/** Trim trailing zeros from a leave-day count (e.g. 3.0 -> "3", 2.5 -> "2.5"). */
+function sic_leave_days_label($days) {
+    return rtrim(rtrim(number_format((float) $days, 1), '0'), '.');
+}
+
+/**
+ * Leave days already used by an instructor in a calendar year,
+ * counting pending and confirmed leave (half days count as 0.5).
+ */
+function sic_leave_days_used($instructorId, $year) {
+    global $pdo;
+
+    $stmt = $pdo->prepare("
+        SELECT start_date, end_date, duration_type
+        FROM leave_records
+        WHERE instructor_id = ?
+          AND status IN ('Pending', 'Confirmed')
+          AND YEAR(start_date) = ?
+    ");
+    $stmt->execute([$instructorId, $year]);
+
+    $used = 0.0;
+    foreach ($stmt->fetchAll() as $row) {
+        $used += sic_leave_span_days($row['start_date'], $row['end_date'], $row['duration_type'] ?? 'Full Day');
+    }
+    return $used;
 }
 
 /**

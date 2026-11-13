@@ -5,6 +5,7 @@
  */
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/settings.php';
 
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
@@ -12,6 +13,19 @@ ini_set('session.cookie_secure', 0); // XAMPP HTTP. Set to 1 in HTTPS production
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
+
+// Sign out users who have been idle longer than the configured timeout.
+if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+    $idleLimit = max(5, (int) getSetting('session_timeout_minutes', 60)) * 60;
+    $lastActivity = (int) ($_SESSION['last_activity'] ?? 0);
+    if ($lastActivity > 0 && (time() - $lastActivity) > $idleLimit) {
+        $_SESSION = [];
+        session_destroy();
+        header('Location: ' . app_url('auth/login.php?expired=1'));
+        exit();
+    }
+    $_SESSION['last_activity'] = time();
 }
 
 function isLoggedIn() {
@@ -78,6 +92,7 @@ function loginUser($email, $password) {
     $_SESSION['role_name'] = $user['role_name'];
     $_SESSION['full_name'] = $user['full_name'];
     $_SESSION['email'] = $user['email'];
+    $_SESSION['last_activity'] = time();
 
     require_once __DIR__ . '/functions.php';
     logActivity((int)$user['id'], 'Login', 'User logged in successfully');

@@ -26,7 +26,12 @@ define('MAIL_FROM_NAME', 'UCSC Smart Instructor System');
  */
 function sendEmailNotification($to, $subject, $body, $userId = null) {
     global $pdo;
-    
+
+    require_once __DIR__ . '/../includes/settings.php';
+    if (getSetting('email_notifications_enabled', '1') !== '1') {
+        return false;
+    }
+
     try {
         $stmt = $pdo->prepare("
             INSERT INTO email_logs (to_email, subject, body, status, sent_at) 

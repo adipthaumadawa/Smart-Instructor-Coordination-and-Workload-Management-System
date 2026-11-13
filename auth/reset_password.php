@@ -32,8 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid) {
     $confirm = (string)($_POST['confirm_password'] ?? '');
     if (!hash_equals($_SESSION['reset_csrf'], (string)($_POST['csrf'] ?? ''))) {
         $error = 'This form expired. Open your reset link again.';
-    } elseif (strlen($password) < 12) {
-        $error = 'Choose a password with at least 12 characters.';
+    } elseif (strlen($password) < sic_password_min_length()) {
+        $error = 'Choose a password with at least ' . sic_password_min_length() . ' characters.';
     } elseif (!hash_equals($password, $confirm)) {
         $error = 'Passwords do not match.';
     } else {
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <title>Reset Password | <?= htmlspecialchars(SITE_NAME) ?></title>
+  <title>Reset Password | <?= htmlspecialchars(sic_site_name()) ?></title>
   <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
   <style>
     .recovery-card { width:min(100% - 32px,480px); margin:auto; padding:36px; background:#fff; border-radius:18px; box-shadow:0 12px 36px rgba(13,35,62,.1); }
@@ -92,8 +92,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid) {
     <form class="portal-form" method="post" action="<?= app_url('auth/reset_password.php') ?>">
       <input type="hidden" name="csrf" value="<?= htmlspecialchars($_SESSION['reset_csrf']) ?>">
       <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
-      <div class="portal-field"><label class="portal-label" for="password">New Password</label><input class="portal-control" id="password" type="password" name="password" minlength="12" autocomplete="new-password" required></div>
-      <div class="portal-field"><label class="portal-label" for="confirm_password">Confirm Password</label><input class="portal-control" id="confirm_password" type="password" name="confirm_password" minlength="12" autocomplete="new-password" required></div>
+      <div class="portal-field"><label class="portal-label" for="password">New Password</label><input class="portal-control" id="password" type="password" name="password" minlength="<?= sic_password_min_length() ?>" autocomplete="new-password" required></div>
+      <div class="portal-field"><label class="portal-label" for="confirm_password">Confirm Password</label><input class="portal-control" id="confirm_password" type="password" name="confirm_password" minlength="<?= sic_password_min_length() ?>" autocomplete="new-password" required></div>
       <button class="portal-submit-btn" type="submit">Save New Password</button>
     </form>
   <?php endif; ?>

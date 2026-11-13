@@ -200,10 +200,10 @@ if (
         $error =
             'Current password is incorrect.';
 
-    } elseif (strlen($newPassword) < 6) {
+    } elseif (strlen($newPassword) < sic_password_min_length()) {
 
         $error =
-            'New password must contain at least 6 characters.';
+            'New password must contain at least ' . sic_password_min_length() . ' characters.';
 
     } elseif ($newPassword !== $confirmPassword) {
 
@@ -513,12 +513,12 @@ include __DIR__ . '/../includes/header.php';
                             type="password"
                             name="new_password"
                             class="form-control"
-                            minlength="6"
+                            minlength="<?= sic_password_min_length() ?>"
                             required
                         >
 
                         <div class="form-text">
-                            Minimum 6 characters.
+                            Minimum <?= sic_password_min_length() ?> characters.
                         </div>
 
                     </div>
@@ -535,7 +535,7 @@ include __DIR__ . '/../includes/header.php';
                             type="password"
                             name="confirm_password"
                             class="form-control"
-                            minlength="6"
+                            minlength="<?= sic_password_min_length() ?>"
                             required
                         >
 

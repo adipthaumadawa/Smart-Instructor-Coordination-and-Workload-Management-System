@@ -515,7 +515,7 @@ ALTER TABLE `presentation_panel_members` MODIFY `id` int(11) NOT NULL AUTO_INCRE
 ALTER TABLE `presentation_sessions` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `replacement_requests` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `roles` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-ALTER TABLE `system_settings` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `system_settings` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 ALTER TABLE `task_assignments` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ALTER TABLE `task_types` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 ALTER TABLE `timetables` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
@@ -555,7 +555,17 @@ INSERT INTO `system_settings` (`id`, `setting_key`, `setting_value`, `descriptio
 (2, 'default_presentation_duration', '3', 'Default duration in hours for presentation panels', '2026-08-19 02:55:56'),
 (3, 'email_notifications_enabled', '1', 'Enable or disable email notifications system-wide', '2026-08-19 02:55:56'),
 (4, 'academic_year', '2025/2026', 'Current academic year', '2026-08-19 02:55:56'),
-(5, 'semester', 'Semester 1', 'Current semester', '2026-08-19 02:55:56');
+(5, 'semester', 'Semester 1', 'Current semester', '2026-08-19 02:55:56'),
+(6, 'site_name', 'Smart Instructor System - UCSC', 'Shown in browser tabs and page titles across the system.', '2026-08-19 02:55:56'),
+(7, 'workload_warning_threshold', '80', 'Instructors at or above this percentage of their maximum weekly hours raise a workload alert.', '2026-08-19 02:55:56'),
+(8, 'booking_start_time', '08:00', 'Room bookings cannot start before this time.', '2026-08-19 02:55:56'),
+(9, 'booking_end_time', '18:00', 'Room bookings must end by this time.', '2026-08-19 02:55:56'),
+(10, 'max_booking_duration_hours', '4', 'Maximum length of a single room booking.', '2026-08-19 02:55:56'),
+(11, 'booking_advance_days', '30', 'How many days ahead rooms may be booked.', '2026-08-19 02:55:56'),
+(12, 'max_leave_days_per_year', '21', 'Maximum leave days an instructor may record per calendar year (pending + confirmed). 0 disables the limit.', '2026-08-19 02:55:56'),
+(13, 'session_timeout_minutes', '60', 'Minutes of inactivity before a user is signed out automatically.', '2026-08-19 02:55:56'),
+(14, 'password_min_length', '12', 'Minimum password length when creating accounts or changing passwords.', '2026-08-19 02:55:56'),
+(15, 'maintenance_mode', '0', 'While enabled, only administrators can sign in and use the system.', '2026-08-19 02:55:56');
 
 INSERT INTO `task_types` (`id`, `name`, `description`, `weight`, `is_presentation`, `created_at`) VALUES
 (1, 'Lecture', 'Regular lecture session', 1.00, 0, '2026-08-19 02:55:56'),

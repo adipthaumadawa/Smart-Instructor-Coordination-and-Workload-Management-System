@@ -48,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $error === '') {
         $error = 'Please enter a valid email address.';
     } elseif (!in_array($status, ['active', 'inactive', 'suspended'], true)) {
         $error = 'Invalid account status.';
-    } elseif (strlen($password) < 6) {
-        $error = 'Password must be at least 6 characters.';
+    } elseif (strlen($password) < sic_password_min_length()) {
+        $error = 'Password must be at least ' . sic_password_min_length() . ' characters.';
     } elseif ($isInstructor && ($departmentId <= 0 || $streamId <= 0)) {
         $error = 'Please select department and academic stream.';
     } elseif ($isInstructor && (!is_numeric($hours) || (float)$hours < 1 || (float)$hours > 80)) {
@@ -128,7 +128,7 @@ include __DIR__ . '/../includes/header.php';
     <div class="col-lg-6"><label class="form-label" for="phone">Phone Number</label><input id="phone" name="phone" class="form-control" maxlength="20" value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>"></div>
     <div class="col-lg-6"><label class="form-label" for="role_id">Role *</label><select id="role_id" name="role_id" class="form-select" required><option value="">Select Role</option><?php foreach ($roles as $role): ?><option value="<?= (int)$role['id'] ?>" <?= (int)($_POST['role_id'] ?? 0) === (int)$role['id'] ? 'selected' : '' ?>><?= htmlspecialchars(ucwords(str_replace('_', ' ', $role['role_name']))) ?></option><?php endforeach; ?></select></div>
     <div class="col-lg-6"><label class="form-label" for="status">Account Status</label><select id="status" name="status" class="form-select"><?php foreach (['active' => 'Active', 'inactive' => 'Inactive', 'suspended' => 'Suspended'] as $value => $label): ?><option value="<?= $value ?>" <?= ($_POST['status'] ?? 'active') === $value ? 'selected' : '' ?>><?= $label ?></option><?php endforeach; ?></select></div>
-    <div class="col-lg-6"><label class="form-label" for="password">Password *</label><input id="password" type="password" name="password" class="form-control" required minlength="6"><div class="form-text">Minimum 6 characters.</div></div>
+    <div class="col-lg-6"><label class="form-label" for="password">Password *</label><input id="password" type="password" name="password" class="form-control" required minlength="<?= sic_password_min_length() ?>"><div class="form-text">Minimum <?= sic_password_min_length() ?> characters.</div></div>
   </div></div></div>
   <div class="card admin-form-card mb-4" id="instructorProfileSection" hidden><div class="card-header admin-form-header"><div><h5>Instructor Profile Details</h5><p>Choose the department, academic stream, and maximum weekly hours. Employee ID and designation are assigned automatically.</p></div></div><div class="card-body"><div class="row g-4">
     <div class="col-lg-6"><label class="form-label" for="employee_id_preview">Employee ID</label><input id="employee_id_preview" class="form-control" value="<?= htmlspecialchars($generatedEmployeeId) ?>" readonly><div class="form-text">System automatically generated.</div></div>

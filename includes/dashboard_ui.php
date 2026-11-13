@@ -43,7 +43,8 @@ if (!function_exists('sic_workload_alert_count')) {
     function sic_workload_alert_count(): int {
         global $pdo;
         try {
-            $stmt = $pdo->query("SELECT COUNT(*) FROM (
+            $threshold = max(1, min(100, (float) getSetting('workload_warning_threshold', 80))) / 100;
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM (
                 SELECT i.id, i.max_weekly_hours, COALESCE(SUM(ta.duration_hours),0) AS week_hours
                 FROM instructors i
                 LEFT JOIN task_assignments ta ON ta.instructor_id = i.id
@@ -52,11 +53,12 @@ if (!function_exists('sic_workload_alert_count')) {
                     AND ta.status IN ('Assigned','Accepted','Completed')
                 WHERE i.status = 'active'
                 GROUP BY i.id, i.max_weekly_hours
-                HAVING week_hours >= (i.max_weekly_hours * 0.8)
+                HAVING week_hours >= (i.max_weekly_hours * :threshold)
             ) x");
+            $stmt->execute([':threshold' => $threshold]);
             return (int)$stmt->fetchColumn();
-        } catch (Throwable $e) { 
-            return 0; 
+        } catch (Throwable $e) {
+            return 0;
         }
     }
 }
@@ -1445,8 +1447,7 @@ if ($isManagementWorkloadView) {
          * Fallback if there are currently no timetable records.
          */
         if ($currentAcademicYear === '') {
-            $currentAcademicYear =
-                date('Y') . '/' . (date('Y') + 1);
+            $currentAcademicYear = getSetting('academic_year', DEFAULT_ACADEMIC_YEAR);
         }
 
         if ($currentSemester === '') {
@@ -2197,7 +2198,6 @@ if ($isManagementWorkloadView) {
 if (!function_exists('sic_render_instructor_dashboard')) {
     function sic_render_instructor_dashboard(string $heading, string $subtitle, array $cards, string $primaryActionUrl, string $primaryActionText) {
         global $pdo;
-        sic_dashboard_styles();
 
         $instructorId = sic_current_instructor_id();
         $weekStart    = date('M d');

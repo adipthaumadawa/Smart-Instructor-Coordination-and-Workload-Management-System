@@ -59,6 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_booking'])) {
         $error = 'End time must be after the start time.';
     } elseif (strtotime($date) < strtotime(date('Y-m-d'))) {
         $error = 'Booking date cannot be in the past.';
+    } elseif (($windowError = sic_booking_window_error($date, $start, $end)) !== null) {
+        $error = $windowError;
     } else {
         $roomStmt = $pdo->prepare("SELECT room_name FROM lecture_rooms WHERE id = ? AND status = 'Available'");
         $roomStmt->execute([$roomId]);
@@ -96,6 +98,8 @@ if (isset($_GET['check_availability']) && $checkDate !== '' && $checkStart !== '
         $error = 'End time must be after the start time.';
     } elseif (strtotime($checkDate) < strtotime(date('Y-m-d'))) {
         $error = 'Date cannot be in the past.';
+    } elseif (($windowError = sic_booking_window_error($checkDate, $checkStart, $checkEnd)) !== null) {
+        $error = $windowError;
     } else {
         $availableRooms = getAvailableRooms($checkDate, $checkStart, $checkEnd);
         $showBookForm = true;

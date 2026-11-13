@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
-if (!isset($pageTitle) || trim((string)$pageTitle) === '') { $pageTitle = SITE_NAME; }
+$brandName = function_exists('sic_site_name') ? sic_site_name() : SITE_NAME;
+if (!isset($pageTitle) || trim((string)$pageTitle) === '') { $pageTitle = $brandName; }
 if (!isset($currentUser) && function_exists('getCurrentUser')) { $currentUser = getCurrentUser(); }
 $currentUser = is_array($currentUser ?? null) ? $currentUser : [];
 $displayName = trim((string)($currentUser['full_name'] ?? 'UCSC User')) ?: 'UCSC User';
@@ -14,7 +15,7 @@ $userInitial = strtoupper(substr($displayName, 0, 1));
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#071a33">
   <meta name="description" content="Smart Instructor Coordination and Workload Management System – UCSC">
-  <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?> | UCSC SIS</title>
+  <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?> | <?= htmlspecialchars($brandName, ENT_QUOTES, 'UTF-8') ?></title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">

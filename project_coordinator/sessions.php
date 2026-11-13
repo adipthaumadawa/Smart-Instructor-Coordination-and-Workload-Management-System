@@ -90,6 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_session'])) {
         $error = 'End time must be after the start time.';
     } elseif (strtotime($date) < strtotime(date('Y-m-d'))) {
         $error = 'Session date cannot be in the past.';
+    } elseif (($windowError = sic_booking_window_error($date, $start, $end)) !== null) {
+        $error = $windowError;
     } else {
         $roomStmt = $pdo->prepare("SELECT room_name FROM lecture_rooms WHERE id = ? AND status = 'Available'");
         $roomStmt->execute([$roomId]);
@@ -140,6 +142,8 @@ $showCreateForm = false;
 if (isset($_GET['check_availability']) && $checkDate !== '' && $checkStart !== '' && $checkEnd !== '') {
     if (strtotime($checkEnd) <= strtotime($checkStart)) {
         $error = 'End time must be after the start time.';
+    } elseif (($windowError = sic_booking_window_error($checkDate, $checkStart, $checkEnd)) !== null) {
+        $error = $windowError;
     } else {
         $availableRooms = getAvailableRooms($checkDate, $checkStart, $checkEnd);
         $showCreateForm = true;
@@ -215,12 +219,26 @@ include __DIR__ . '/../includes/header.php';
                             </div>
                         </div>
                     </form>
+                    <script>
+                    (function() {
+                        var start = document.getElementById('sessionCheckStart');
+                        var end = document.getElementById('sessionCheckEnd');
+                        var defaultHours = <?= max(1, (int) getSetting('default_presentation_duration', 3)) ?>;
+                        if (!start || !end) { return; }
+                        start.addEventListener('change', function() {
+                            if (end.value !== '' || start.value === '') { return; }
+                            var parts = start.value.split(':');
+                            var hour = Math.min(23, parseInt(parts[0], 10) + defaultHours);
+                            end.value = String(hour).padStart(2, '0') + ':' + parts[1];
+                        });
+                    })();
+                    </script>
                 </div>
             </div>
 
             <!-- STEP 2: Available venues + create session -->
             <?php if ($showCreateForm): ?>
-                <div class="card" style="margin-bottom:20px;">
+                <div class="card mb-20px">
                     <div class="card-header"><h5>Step 2 — Select Venue & Create Session</h5></div>
                     <div class="card-body">
                         <?php if (empty($availableRooms)): ?>

@@ -40,6 +40,9 @@ if (!$instructorId) {
 $validLeaveTypes = ['Casual', 'Medical', 'Duty', 'Other'];
 $error = '';
 
+$leaveCap = max(0, (int) getSetting('max_leave_days_per_year', 21));
+$leaveDaysUsed = $leaveCap > 0 ? sic_leave_days_used($instructorId, (int) date('Y')) : 0.0;
+
 /**
  * Notify a user and log the action in one place, so both the "new leave"
  * path and the "pick another replacement" path stay in sync.
@@ -178,6 +181,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_leave_request'
             $error = 'Please select a Morning or Afternoon session for a half day leave.';
         } elseif ($reason === '') {
             $error = 'Please provide a reason for the leave.';
+        } elseif ($leaveCap > 0 && sic_leave_span_days($startDate, $endDate, $durationType) + $leaveDaysUsed > $leaveCap) {
+            $error = 'This leave exceeds your annual allowance. You have ' . sic_leave_days_label($leaveCap - $leaveDaysUsed) . ' of ' . $leaveCap . ' leave days remaining this year.';
         } else {
             try {
                 $pdo->beginTransaction();
@@ -269,6 +274,8 @@ if ($resumeLeaveId > 0) {
         $error = 'Please select a Morning or Afternoon session for a half day leave.';
     } elseif ($reason === '') {
         $error = 'Please provide a reason for the leave.';
+    } elseif ($leaveCap > 0 && sic_leave_span_days($startDate, $endDate, $durationType) + $leaveDaysUsed > $leaveCap) {
+        $error = 'This leave exceeds your annual allowance. You have ' . sic_leave_days_label($leaveCap - $leaveDaysUsed) . ' of ' . $leaveCap . ' leave days remaining this year.';
     } else {
         $showStep2 = true;
         $draftLeaveType = $leaveType;
@@ -363,6 +370,9 @@ include __DIR__ . '/../includes/header.php';
                             <div class="card-header"><h5>Record Leave</h5></div>
                             <div class="card-body">
                                 <p class="text-muted small">A replacement instructor must be assigned to cover this period before the leave is confirmed — even if you have no task scheduled during it.</p>
+                                <?php if ($leaveCap > 0): ?>
+                                    <p class="text-muted small">Leave allowance: <?= sic_leave_days_label($leaveDaysUsed) ?> of <?= $leaveCap ?> days used this year.</p>
+                                <?php endif; ?>
                                 <form method="GET" action="">
                                     <input type="hidden" name="find_replacement" value="1">
                                     <div class="mb-3">

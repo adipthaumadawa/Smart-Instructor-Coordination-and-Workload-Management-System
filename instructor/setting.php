@@ -103,8 +103,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
     if (!$hash || !password_verify($currentPassword, $hash)) {
         $error = 'Current password is incorrect.';
-    } elseif (strlen($newPassword) < 6) {
-        $error = 'New password must be at least 6 characters.';
+    } elseif (strlen($newPassword) < sic_password_min_length()) {
+        $error = 'New password must be at least ' . sic_password_min_length() . ' characters.';
     } elseif ($newPassword !== $confirmPassword) {
         $error = 'New password and confirmation do not match.';
     } else {
@@ -246,12 +246,12 @@ include __DIR__ . '/../includes/header.php';
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">New Password <span class="text-danger">*</span></label>
-                                    <input type="password" name="new_password" class="form-control" required minlength="6">
-                                    <div class="form-text">Minimum 6 characters.</div>
+                                    <input type="password" name="new_password" class="form-control" required minlength="<?= sic_password_min_length() ?>">
+                                    <div class="form-text">Minimum <?= sic_password_min_length() ?> characters.</div>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Confirm New Password <span class="text-danger">*</span></label>
-                                    <input type="password" name="confirm_password" class="form-control" required minlength="6">
+                                    <input type="password" name="confirm_password" class="form-control" required minlength="<?= sic_password_min_length() ?>">
                                 </div>
                                 <button type="submit" name="change_password" class="btn btn-outline-primary">
                                     <span class="ui-dot" aria-hidden="true"></span>

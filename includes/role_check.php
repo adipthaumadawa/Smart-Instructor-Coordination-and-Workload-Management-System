@@ -2,9 +2,15 @@
 /** Role-Based Access Control */
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/settings.php';
 
 function checkRole($allowedRoles, $redirect = true) {
     requireLogin();
+    if (sic_maintenance_mode() && getCurrentRoleId() !== ROLE_ADMIN) {
+        http_response_code(503);
+        include __DIR__ . '/maintenance.php';
+        exit();
+    }
     $currentRole = getCurrentRoleId();
     $allowedRoles = is_array($allowedRoles) ? array_map('intval', $allowedRoles) : [(int)$allowedRoles];
     $hasAccess = in_array((int)$currentRole, $allowedRoles, true);

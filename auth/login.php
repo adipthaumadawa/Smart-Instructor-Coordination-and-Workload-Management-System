@@ -19,6 +19,9 @@ if (isLoggedIn()) {
 }
 
 $error = '';
+if (isset($_GET['expired'])) {
+    $error = 'Your session expired due to inactivity. Please sign in again.';
+}
 $success = isset($_GET['logged_out']) ? 'You have been logged out successfully.' : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -27,8 +30,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || $password === '') {
         $error = 'Please enter both email and password.';
     } elseif (loginUser($email, $password)) {
-        header('Location: ' . getDashboardPath($_SESSION['role_id']));
-        exit;
+        if (sic_maintenance_mode() && (int) $_SESSION['role_id'] !== ROLE_ADMIN) {
+            $_SESSION = [];
+            session_destroy();
+            $error = 'The system is under maintenance. Only administrators can sign in right now.';
+        } else {
+            header('Location: ' . getDashboardPath($_SESSION['role_id']));
+            exit;
+        }
     } else {
         $error = 'Invalid email or password, or account is inactive.';
     }
@@ -40,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In | UCSC Smart Instructor System</title>
+  <title>Sign In | <?= htmlspecialchars(sic_site_name(), ENT_QUOTES, 'UTF-8') ?></title>
   <meta name="description" content="Sign in to the UCSC Smart Instructor Coordination System">
   <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
 </head>
