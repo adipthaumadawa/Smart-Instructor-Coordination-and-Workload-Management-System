@@ -1,0 +1,490 @@
+/* ═══════════════════════════════════════════════════════════════
+   UCSC SIS — auth portal stylesheet
+   Loaded after style.css on: auth/login.php, auth/forgot_password.php,
+   auth/reset_password.php and includes/maintenance.php.
+
+   Contents
+     1. Portal body & layout
+     2. Brand header & form controls
+     3. Alerts & footer
+     4. Hero banner (login)
+     5. Recovery & maintenance cards
+     6. Responsive
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Portal body & layout ── */
+.login-body {
+  background: #ffffff;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Centered card pages (forgot / reset / maintenance) */
+.recovery-body {
+  display: flex;
+  min-height: 100vh;
+  background: #f1f5f9;
+}
+
+.portal-root {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.portal-auth-panel {
+  width: 100%;
+  max-width: 480px;
+  flex: 0 0 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 48px;
+  background: #ffffff;
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  z-index: 2;
+}
+
+.portal-auth-container {
+  width: 100%;
+  max-width: 380px;
+}
+
+/* ── 2. Brand header & form controls ── */
+.portal-brand-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.portal-logo {
+  height: 52px;
+  width: auto;
+  margin-bottom: 14px;
+  object-fit: contain;
+}
+
+.portal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--navy);
+  line-height: 1.15;
+  margin-bottom: 3px;
+}
+
+.portal-subtitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.portal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.portal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.portal-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.portal-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.portal-forgot {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--teal);
+  transition: color 0.15s;
+}
+
+.portal-forgot:hover {
+  color: var(--navy);
+}
+
+.portal-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.portal-input-icon {
+  position: absolute;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.portal-input-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.portal-control {
+  width: 100%;
+  height: 40px;
+  padding: 8px 12px 8px 38px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 0.85rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.portal-control::placeholder {
+  color: #94a3b8;
+}
+
+.portal-control:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.1);
+}
+
+.portal-control-pr {
+  padding-right: 52px;
+}
+
+.portal-pw-toggle {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 3px 6px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.portal-pw-toggle:hover {
+  color: var(--navy);
+  background: var(--soft);
+}
+
+.portal-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.portal-checkbox-row input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--teal);
+  cursor: pointer;
+}
+
+.portal-checkbox-row label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.portal-submit-btn {
+  width: 100%;
+  height: 42px;
+  background: var(--navy);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.portal-submit-btn:hover {
+  background: #0d2a50;
+  transform: translateY(-1px);
+}
+
+.portal-submit-btn:disabled {
+  opacity: 0.75;
+  cursor: wait;
+  transform: none;
+}
+
+.portal-submit-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── 3. Alerts & footer ── */
+.portal-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.portal-alert svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.portal-alert-error {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecaca;
+}
+
+.portal-alert-success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.portal-footer-sec {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.portal-security-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.portal-security-note svg {
+  width: 14px;
+  height: 14px;
+  color: var(--teal);
+  flex-shrink: 0;
+}
+
+/* ── 4. Hero banner (login) ── */
+.portal-hero-banner {
+  flex: 1;
+  background: linear-gradient(160deg, rgba(4, 16, 38, 0.72) 0%, rgba(7, 26, 51, 0.8) 100%),
+              url('../images/ucsc-night-bg.png') center/cover no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.portal-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.portal-hero-crest {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: rgba(10, 155, 168, 0.25);
+  border: 1px solid rgba(10, 155, 168, 0.45);
+  color: var(--teal2);
+  display: grid;
+  place-items: center;
+  margin-bottom: 22px;
+  backdrop-filter: blur(8px);
+}
+
+.portal-hero-crest svg {
+  width: 26px;
+  height: 26px;
+}
+
+.portal-hero-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #ffffff;
+  margin-bottom: 12px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+.portal-hero-text {
+  font-size: 0.88rem;
+  color: #e2e8f0;
+  line-height: 1.65;
+  margin-bottom: 36px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.portal-metrics-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(4, 16, 38, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 16px 24px;
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.portal-metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.portal-metric-item strong {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.portal-metric-item span {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.portal-metric-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ── 5. Recovery & maintenance cards ── */
+.recovery-card {
+  width: min(100% - 32px, 480px);
+  margin: auto;
+  padding: 36px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 12px 36px rgba(13, 35, 62, .1);
+}
+
+.recovery-card h1 {
+  margin: 0 0 8px;
+  color: #0b203d;
+}
+
+.recovery-card p {
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.recovery-card .portal-control {
+  padding-left: 14px;
+}
+
+.recovery-card .portal-form {
+  margin-top: 24px;
+}
+
+.recovery-back {
+  display: inline-block;
+  margin-top: 18px;
+  color: #087f8c;
+}
+
+.maintenance-card {
+  width: min(100% - 32px, 480px);
+  margin: auto;
+  padding: 36px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 12px 36px rgba(13, 35, 62, .1);
+  text-align: center;
+}
+
+.maintenance-card img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+.maintenance-card h1 {
+  margin: 0 0 6px;
+  color: #0b203d;
+  font-size: 26px;
+}
+
+.maintenance-card .maintenance-site {
+  color: #64748b;
+  font-size: 13px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+
+.maintenance-card .portal-alert {
+  text-align: left;
+}
+
+.maintenance-card .portal-submit-btn {
+  margin-top: 20px;
+  text-decoration: none;
+}
+
+/* ── 6. Responsive ── */
+@media (max-width: 900px) {
+  .portal-hero-banner {
+    display: none;
+  }
+
+  .portal-auth-panel {
+    max-width: 100%;
+    flex: 1;
+    border-right: none;
+    padding: 32px 20px;
+  }
+
+  .portal-auth-container {
+    max-width: 100%;
+  }
+}

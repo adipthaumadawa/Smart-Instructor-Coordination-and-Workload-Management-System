@@ -1,6 +1,28 @@
-/* UCSC SIS — 100% vanilla CSS, zero frameworks/libraries */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+/* ═══════════════════════════════════════════════════════════════
+   UCSC SIS — global stylesheet (100% vanilla CSS, zero frameworks)
+   Loaded on every page. Area files layer on top:
+     dashboard.css  — dashboard widgets & navbar profile (app pages)
+     pages.css      — page-specific rules (app pages)
+     auth.css       — sign-in / recovery / maintenance portal pages
+   Cascade order: style.css → dashboard.css → pages.css.
 
+   Contents
+     1. Design tokens
+     2. Reset & base
+     3. App shell (sidebar, topbar, main)
+     4. Page toolbar
+     5. Cards
+     6. Buttons
+     7. Forms
+     8. Grid
+     9. Tables
+    10. Badges & status pills
+    11. Alerts
+    12. Utilities
+    13. Responsive (tablet / mobile)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Design tokens ── */
 :root {
   --navy: #071a33;
   --teal: #087f8c;
@@ -20,7 +42,7 @@
   --sidebar: 260px;
 }
 
-/* ── Reset ── */
+/* ── 2. Reset & base ── */
 *,
 *::before,
 *::after {
@@ -60,16 +82,14 @@ textarea {
   font: inherit;
 }
 
-/* ═══════════════════════════════════════════════
-   APP SHELL — sidebar (full height) + right panel
-   ═══════════════════════════════════════════════ */
+/* ── 3. App shell ── */
 .app-shell {
   display: flex;
   height: 100vh;
   overflow: hidden;
 }
 
-/* ── Sidebar — always full height from top ── */
+/* Sidebar — always full height from top */
 .sidebar {
   width: var(--sidebar);
   min-width: var(--sidebar);
@@ -97,7 +117,6 @@ textarea {
   border-radius: 4px;
 }
 
-/* Sidebar top brand */
 .sidebar-head {
   display: flex;
   align-items: center;
@@ -156,7 +175,6 @@ textarea {
   flex-shrink: 0;
 }
 
-/* Sidebar nav */
 .sidebar nav {
   padding: 10px 10px;
   flex: 1;
@@ -216,7 +234,6 @@ textarea {
   opacity: .85;
 }
 
-/* Sidebar bottom user info */
 .sidebar-user {
   display: flex;
   align-items: center;
@@ -251,7 +268,7 @@ textarea {
   display: none;
 }
 
-/* ── Right panel (topbar + scrollable main content) ── */
+/* Right panel (topbar + scrollable main content) */
 .right-panel {
   flex: 1;
   min-width: 0;
@@ -261,7 +278,6 @@ textarea {
   overflow: hidden;
 }
 
-/* ── Topbar — only spans the right panel ── */
 .topbar {
   height: var(--header);
   flex-shrink: 0;
@@ -295,7 +311,6 @@ textarea {
   flex-shrink: 0;
 }
 
-/* Hamburger (mobile only) */
 .mobile-menu {
   display: none;
 }
@@ -320,7 +335,6 @@ textarea {
   stroke-linecap: round;
 }
 
-/* Search bar */
 .global-search {
   position: relative;
   height: 44px;
@@ -375,7 +389,6 @@ textarea {
   font-size: 10px;
 }
 
-/* Profile + dropdown */
 .menu-wrap {
   position: relative;
 }
@@ -533,7 +546,6 @@ textarea {
   color: var(--danger);
 }
 
-/* ── Main scrollable content ── */
 .main-content {
   flex: 1;
   min-width: 0;
@@ -542,7 +554,7 @@ textarea {
   padding: 28px;
 }
 
-/* ── Page toolbar ── */
+/* ── 4. Page toolbar ── */
 .page-toolbar {
   display: flex;
   justify-content: space-between;
@@ -565,7 +577,7 @@ textarea {
   font-size: 14px;
 }
 
-/* ── Cards ── */
+/* ── 5. Cards ── */
 .card,
 .ui-card {
   background: var(--card);
@@ -603,7 +615,7 @@ textarea {
   box-shadow: var(--shadow);
 }
 
-/* ── Buttons ── */
+/* ── 6. Buttons ── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -687,7 +699,7 @@ textarea {
   line-height: 1;
 }
 
-/* ── Forms ── */
+/* ── 7. Forms ── */
 .form-label {
   display: block;
   margin: 0 0 7px;
@@ -737,7 +749,7 @@ textarea.form-control {
   height: 17px;
 }
 
-/* ── Grid ── */
+/* ── 8. Grid ── */
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -790,7 +802,7 @@ textarea.form-control {
   width: 83.333%;
 }
 
-/* ── Table ── */
+/* ── 9. Tables ── */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -827,7 +839,7 @@ textarea.form-control {
   vertical-align: middle;
 }
 
-/* ── Badges & Status pills ── */
+/* ── 10. Badges & status pills ── */
 .badge,
 .status-pill {
   display: inline-flex;
@@ -870,7 +882,7 @@ textarea.form-control {
   color: #1f7fa3 !important;
 }
 
-/* ── Alerts ── */
+/* ── 11. Alerts ── */
 .alert {
   display: flex;
   align-items: center;
@@ -906,37 +918,7 @@ textarea.form-control {
   color: #805500;
 }
 
-/* ── Login page ── */
-.login-page {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  background: radial-gradient(circle at top left, #f7fbff, #e8eef6);
-}
-
-.login-card {
-  width: min(960px, 100%);
-  display: grid;
-  grid-template-columns: .9fr 1fr;
-  overflow: hidden;
-  border-radius: 26px;
-  background: #fff;
-  box-shadow: 0 6px 18px rgba(7, 26, 51, .08);
-}
-
-.login-brand-panel {
-  min-height: 600px;
-  padding: 42px;
-  background: linear-gradient(160deg, #071a33, #0d3159);
-  color: #fff;
-}
-
-.login-form-panel {
-  padding: 50px;
-}
-
-/* ── Utilities ── */
+/* ── 12. Utilities ── */
 .ui-dot {
   width: 7px;
   height: 7px;
@@ -961,6 +943,18 @@ textarea.form-control {
 
 .d-grid {
   display: grid;
+}
+
+.d-inline {
+  display: inline;
+}
+
+.d-inline-block {
+  display: inline-block;
+}
+
+.is-hidden {
+  display: none;
 }
 
 .align-items-center {
@@ -1019,6 +1013,10 @@ textarea.form-control {
   color: var(--muted);
 }
 
+.text-nowrap {
+  white-space: nowrap;
+}
+
 .small {
   color: var(--muted);
   font-size: .82rem;
@@ -1046,6 +1044,10 @@ textarea.form-control {
 
 .mb-4 {
   margin-bottom: 1.5rem;
+}
+
+.mt-1 {
+  margin-top: .25rem;
 }
 
 .mt-2 {
@@ -1097,7 +1099,24 @@ textarea.form-control {
   padding: 0;
 }
 
-/* ── Responsive: tablet ── */
+/* Off-scale pixel spacing (values outside the rem scale above) */
+.mt-14px {
+  margin-top: 14px;
+}
+
+.mt-20px {
+  margin-top: 20px;
+}
+
+.mb-20px {
+  margin-bottom: 20px;
+}
+
+.ms-6px {
+  margin-left: 6px;
+}
+
+/* ── 13. Responsive: tablet ── */
 @media (max-width: 1050px) {
   .topbar-inner {
     gap: 10px;
@@ -1156,7 +1175,7 @@ textarea.form-control {
   }
 }
 
-/* ── Responsive: mobile ── */
+/* ── 13. Responsive: mobile ── */
 @media (max-width: 720px) {
   :root {
     --header: 60px;
@@ -1231,450 +1250,4 @@ textarea.form-control {
     text-transform: uppercase;
     margin-bottom: 2px;
   }
-
-  .login-card {
-    grid-template-columns: 1fr;
-  }
-
-  .login-brand-panel {
-    display: none;
-  }
-
-  .login-form-panel {
-    padding: 28px 20px;
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   OFFICIAL ENTERPRISE PORTAL LOGIN PAGE STYLES
-   ═══════════════════════════════════════════════ */
-.login-body {
-  background: #ffffff;
-  min-height: 100vh;
-  margin: 0;
-}
-
-.portal-root {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-}
-
-.portal-auth-panel {
-  width: 100%;
-  max-width: 480px;
-  flex: 0 0 480px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 40px 48px;
-  background: #ffffff;
-  border-right: 1px solid var(--line);
-  overflow-y: auto;
-  z-index: 2;
-}
-
-.portal-auth-container {
-  width: 100%;
-  max-width: 380px;
-}
-
-.portal-brand-header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 28px;
-}
-
-.portal-logo {
-  height: 52px;
-  width: auto;
-  margin-bottom: 14px;
-  object-fit: contain;
-}
-
-.portal-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--navy);
-  line-height: 1.15;
-  margin-bottom: 3px;
-}
-
-.portal-subtitle {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.portal-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.portal-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.portal-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.portal-label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.portal-forgot {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--teal);
-  transition: color 0.15s;
-}
-
-.portal-forgot:hover {
-  color: var(--navy);
-}
-
-.portal-input-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.portal-input-icon {
-  position: absolute;
-  left: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #94a3b8;
-  pointer-events: none;
-}
-
-.portal-input-icon svg {
-  width: 16px;
-  height: 16px;
-}
-
-.portal-control {
-  width: 100%;
-  height: 40px;
-  padding: 8px 12px 8px 38px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  background: #fff;
-  font-size: 0.85rem;
-  color: var(--text);
-  outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.portal-control::placeholder {
-  color: #94a3b8;
-}
-
-.portal-control:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.1);
-}
-
-.portal-control-pr {
-  padding-right: 52px;
-}
-
-.portal-pw-toggle {
-  position: absolute;
-  right: 8px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 3px 6px;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 4px;
-}
-
-.portal-pw-toggle:hover {
-  color: var(--navy);
-  background: var(--soft);
-}
-
-.portal-checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 2px;
-}
-
-.portal-checkbox-row input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
-  accent-color: var(--teal);
-  cursor: pointer;
-}
-
-.portal-checkbox-row label {
-  font-size: 0.8rem;
-  color: var(--muted);
-  cursor: pointer;
-  user-select: none;
-}
-
-.portal-submit-btn {
-  width: 100%;
-  height: 42px;
-  background: var(--navy);
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 4px;
-  transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.portal-submit-btn:hover {
-  background: #0d2a50;
-  transform: translateY(-1px);
-}
-
-.portal-submit-btn:disabled {
-  opacity: 0.75;
-  cursor: wait;
-  transform: none;
-}
-
-.portal-submit-btn svg {
-  width: 16px;
-  height: 16px;
-}
-
-.portal-alert {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1.4;
-  margin-bottom: 16px;
-}
-
-.portal-alert svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.portal-alert-error {
-  background: #fff1f2;
-  color: #be123c;
-  border: 1px solid #fecaca;
-}
-
-.portal-alert-success {
-  background: #f0fdf4;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
-}
-
-.portal-footer-sec {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.portal-demo-card {
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 10px 12px;
-}
-
-.portal-demo-title {
-  font-size: 0.74rem;
-  color: var(--muted);
-  margin-bottom: 6px;
-}
-
-.portal-demo-title code {
-  background: #e2e8f0;
-  padding: 1px 4px;
-  border-radius: 3px;
-  font-family: monospace;
-  color: var(--navy);
-}
-
-.portal-demo-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.portal-demo-chip {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 5px;
-  padding: 2px 7px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--navy);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
-
-.portal-demo-chip:hover {
-  background: var(--teal);
-  border-color: var(--teal);
-  color: #ffffff;
-}
-
-.portal-security-note {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.72rem;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-.portal-security-note svg {
-  width: 14px;
-  height: 14px;
-  color: var(--teal);
-  flex-shrink: 0;
-}
-
-/* Cinematic Night Photography Right Banner */
-.portal-hero-banner {
-  flex: 1;
-  background: linear-gradient(160deg, rgba(4, 16, 38, 0.72) 0%, rgba(7, 26, 51, 0.8) 100%), 
-              url('../images/ucsc-night-bg.png') center/cover no-repeat;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 60px;
-  position: relative;
-  overflow: hidden;
-}
-
-.portal-banner-bg {
-  display: none;
-}
-
-.portal-hero-content {
-  position: relative;
-  z-index: 1;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.portal-hero-crest {
-  width: 52px;
-  height: 52px;
-  border-radius: 12px;
-  background: rgba(10, 155, 168, 0.25);
-  border: 1px solid rgba(10, 155, 168, 0.45);
-  color: var(--teal2);
-  display: grid;
-  place-items: center;
-  margin-bottom: 22px;
-  backdrop-filter: blur(8px);
-}
-
-.portal-hero-crest svg {
-  width: 26px;
-  height: 26px;
-}
-
-.portal-hero-title {
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  color: #ffffff;
-  margin-bottom: 12px;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
-}
-
-.portal-hero-text {
-  font-size: 0.88rem;
-  color: #e2e8f0;
-  line-height: 1.65;
-  margin-bottom: 36px;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
-}
-
-.portal-metrics-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  background: rgba(4, 16, 38, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 16px 24px;
-  border-radius: 12px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
-.portal-metric-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.portal-metric-item strong {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 2px;
-}
-
-.portal-metric-item span {
-  font-size: 0.68rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #cbd5e1;
-  font-weight: 600;
-}
-
-.portal-metric-divider {
-  width: 1px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* ── Responsive Tablet & Mobile ── */
-@media (max-width: 900px) {
-  .portal-hero-banner { display: none; }
-  .portal-auth-panel { max-width: 100%; flex: 1; border-right: none; padding: 32px 20px; }
-  .portal-auth-container { max-width: 100%; }
 }

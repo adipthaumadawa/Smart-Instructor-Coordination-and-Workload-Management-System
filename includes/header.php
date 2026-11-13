@@ -20,6 +20,8 @@ $userInitial = strtoupper(substr($displayName, 0, 1));
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
   <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
+  <link rel="stylesheet" href="<?= app_url('assets/css/dashboard.css') ?>">
+  <link rel="stylesheet" href="<?= app_url('assets/css/pages.css') ?>">
 </head>
 <body>
 <?php if (empty($hideNavbar)): ?>

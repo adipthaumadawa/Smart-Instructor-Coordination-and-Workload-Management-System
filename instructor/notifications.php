@@ -62,12 +62,12 @@ include __DIR__ . '/../includes/header.php';
                     <?php else: ?>
                         <div class="d-flex flex-column gap-2">
                             <?php foreach ($notifications as $n): ?>
-                                <div class="p-3" style="border:1px solid var(--line,#e6e9ee); border-radius:10px; <?= !$n['is_read'] ? 'background:#f7f9fc;' : '' ?>">
+                                <div class="p-3 notification-item<?= !$n['is_read'] ? ' unread' : '' ?>">
                                     <div class="d-flex justify-content-between">
                                         <strong><?= htmlspecialchars($n['title']) ?></strong>
                                         <?php if (!$n['is_read']): ?><span class="badge bg-secondary">New</span><?php endif; ?>
                                     </div>
-                                    <p class="small mb-1" style="margin-top:4px;"><?= htmlspecialchars($n['message']) ?></p>
+                                    <p class="small mb-1 mt-1"><?= htmlspecialchars($n['message']) ?></p>
                                     <span class="small text-muted"><?= formatDate($n['created_at'], 'd M Y, h:i A') ?></span>
                                 </div>
                             <?php endforeach; ?>

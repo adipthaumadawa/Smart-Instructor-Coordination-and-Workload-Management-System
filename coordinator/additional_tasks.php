@@ -1559,12 +1559,7 @@ function taskFieldValue(
                 Please fix the following:
             </strong>
 
-            <ul
-                style="
-                    margin:6px 0 0 18px;
-                    padding:0;
-                "
-            >
+            <ul class="task-note-list">
 
                 <?php foreach (
                     $formErrors
@@ -2156,7 +2151,7 @@ function taskFieldValue(
                                 <tr
                                     <?=
                                         $isPreferred
-                                        ? ' style="background:var(--soft);"'
+                                        ? ' class="row-preferred"'
                                         : ''
                                     ?>
                                 >
@@ -2177,12 +2172,7 @@ function taskFieldValue(
                                             $isPreferred
                                         ): ?>
 
-                                            <span
-                                                class="badge bg-primary"
-                                                style="
-                                                    margin-left:6px;
-                                                "
-                                            >
+                                            <span class="badge bg-primary ms-6px">
                                                 Requested
                                             </span>
 
@@ -2269,9 +2259,7 @@ function taskFieldValue(
 
                                         <form
                                             method="post"
-                                            style="
-                                                display:inline-block;
-                                            "
+                                            class="d-inline-block"
                                         >
 
                                             <?= csrf_field() ?>
@@ -2427,10 +2415,7 @@ function taskFieldValue(
                 </div>
 
 
-                <div
-                    class="alert alert-info"
-                    style="margin-top:14px;"
-                >
+                <div class="alert alert-info mt-14px">
 
                     Selecting an instructor immediately
                     creates the task request, assigns it
@@ -2686,10 +2671,7 @@ function taskFieldValue(
 
                             <td
                                 data-label="Actions"
-                                class="text-end"
-                                style="
-                                    white-space:nowrap;
-                                "
+                                class="text-end text-nowrap"
                             >
 
 
@@ -2721,10 +2703,7 @@ function taskFieldValue(
 
                                 <form
                                     method="POST"
-                                    style="
-                                        display:inline-block;
-                                        margin-left:6px;
-                                    "
+                                    class="d-inline-block ms-6px"
                                 >
 
                                     <?= csrf_field() ?>

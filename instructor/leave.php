@@ -400,7 +400,7 @@ include __DIR__ . '/../includes/header.php';
                                             <input type="date" name="end_date" id="leaveEndDate" class="form-control" required min="<?= date('Y-m-d') ?>">
                                         </div>
                                     </div>
-                                    <div class="mb-3 mt-3" id="halfDaySessionWrap" style="display:none;">
+                                    <div class="mb-3 mt-3 is-hidden" id="halfDaySessionWrap">
                                         <label class="form-label">Half Day Session <span class="text-danger">*</span></label>
                                         <select name="half_day_session" id="halfDaySession" class="form-select">
                                             <option value="Morning">Morning</option>
@@ -427,7 +427,7 @@ include __DIR__ . '/../includes/header.php';
 
                                     function syncHalfDay() {
                                         var isHalfDay = durationSelect.value === 'Half Day';
-                                        sessionWrap.style.display = isHalfDay ? '' : 'none';
+                                        sessionWrap.classList.toggle('is-hidden', !isHalfDay);
                                         sessionSelect.required = isHalfDay;
                                         if (isHalfDay) {
                                             endDateInput.value = startDateInput.value;
@@ -459,7 +459,7 @@ include __DIR__ . '/../includes/header.php';
 
             <?php else: ?>
                 <!-- STEP 2: Choose a replacement instructor -->
-                <div class="card" style="margin-bottom:20px;">
+                <div class="card mb-20px">
                     <div class="card-header">
                         <h5>Leave Summary</h5>
                     </div>
@@ -480,7 +480,7 @@ include __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
 
-                <div class="card" style="margin-bottom:20px;">
+                <div class="card mb-20px">
                     <div class="card-header"><h5>Search for a Replacement</h5></div>
                     <div class="card-body">
                         <form method="GET" action="" class="row g-3">
@@ -508,7 +508,7 @@ include __DIR__ . '/../includes/header.php';
                 </div>
 
                 <?php if ($searchTerm !== ''): ?>
-                <div class="card" style="margin-bottom:20px;">
+                <div class="card mb-20px">
                     <div class="card-header">
                         <h5>Search Results</h5>
                         <span class="text-muted small"><?= count($searchResults) ?> found</span>
@@ -573,7 +573,7 @@ include __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
 
-                <div class="row g-4" style="margin-top:4px;">
+                <div class="row g-4 mt-1">
                     <div class="col-md-12">
                         <?php include __DIR__ . '/_leave_history.php'; ?>
                     </div>

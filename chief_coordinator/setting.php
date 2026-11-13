@@ -130,27 +130,6 @@ $pageTitle = 'Settings';
 include __DIR__ . '/../includes/header.php';
 ?>
 
-<style>
-/* CSS fix for avatar preview box */
-.avatar-preview .avatar {
-    width: 48px !important;
-    height: 48px !important;
-    flex: 0 0 48px !important;
-    border-radius: 12px !important;
-    display: grid !important;
-    place-items: center !important;
-    overflow: hidden !important;
-    font-size: 18px !important;
-    font-weight: 800 !important;
-    text-align: center !important;
-}
-.avatar-preview .avatar img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-}
-</style>
-
             <div class="page-toolbar">
                 <div>
                     <h1>Settings</h1>

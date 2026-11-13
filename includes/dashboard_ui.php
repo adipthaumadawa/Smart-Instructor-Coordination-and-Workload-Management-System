@@ -269,1088 +269,10 @@ if (!function_exists('sic_icon')) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   INLINE DASHBOARD & PROFILE CARD STYLES
-   ───────────────────────────────────────────────────────────────────────────── */
-
-if (!function_exists('sic_dashboard_styles')) {
-    function sic_dashboard_styles(): void {
-        static $printed = false;
-        if ($printed) { return; }
-        $printed = true;
-        ?>
-<style>
-/* ── Dashboard design tokens ── */
-:root {
-    --d-navy:   #071a33;
-    --d-navy2:  #0d2a50;
-    --d-teal:   #00939e;
-    --d-teal2:  #00b3c0;
-    --d-blue:   #3b82f6;
-    --d-purple: #7c5fe6;
-    --d-coral:  #ef5350;
-    --d-green:  #22c55e;
-    --d-amber:  #f59e0b;
-    --d-page:   #f1f5f9;
-    --d-card:   #ffffff;
-    --d-line:   #e2e8f0;
-    --d-text:   #0f172a;
-    --d-muted:  #64748b;
-    --d-radius: 10px;
-    --d-shadow: 0 1px 3px rgba(15,23,42,.04);
-    --d-shadow-hover: 0 4px 12px rgba(15,23,42,.06);
-}
-
-/* ── Avatar & Profile Button Enhancements ── */
-.avatar {
-    width: 38px !important;
-    height: 38px !important;
-    flex: 0 0 38px !important;
-    display: grid !important;
-    place-items: center !important;
-    border-radius: 50% !important;
-    background: linear-gradient(145deg, var(--d-teal2), var(--d-teal)) !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    font-size: 15px !important;
-    overflow: hidden !important;
-    position: relative !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.avatar-img,
-.avatar img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    border-radius: 50% !important;
-    display: block !important;
-}
-
-.profile-button {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: transparent;
-    border: none;
-    padding: 4px 8px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.15s ease;
-}
-
-.profile-button:hover {
-    background-color: rgba(15, 23, 42, 0.04);
-}
-
-.profile-button:hover .avatar {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-}
-
-.profile-copy {
-    display: flex;
-    flex-direction: column;
-    text-align: left;
-}
-
-.profile-name {
-    font-size: 13.5px;
-    font-weight: 800;
-    color: var(--d-text);
-    line-height: 1.2;
-}
-
-.profile-role {
-    font-size: 11.5px;
-    color: var(--d-muted);
-    font-weight: 500;
-}
-
-.chevron {
-    width: 16px;
-    height: 16px;
-    color: var(--d-muted);
-    transition: transform 0.2s ease;
-}
-
-.profile-button[aria-expanded="true"] .chevron {
-    transform: rotate(180deg);
-}
-
-/* ── Page wrapper ── */
-.dash-page { padding: 24px; min-height: 100%; }
-
-/* ── Hero / page header ── */
-.dash-hero {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    margin-bottom: 24px;
-}
-.dash-title-wrap h1 {
-    margin: 0 0 5px;
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -.04em;
-    color: var(--d-text);
-    line-height: 1.15;
-}
-.dash-title-wrap p {
-    margin: 0;
-    color: var(--d-muted);
-    font-size: 13.5px;
-}
-.dash-actions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    flex-wrap: wrap;
-    flex-shrink: 0;
-}
-.date-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    border: 1px solid var(--d-line);
-    border-radius: 8px;
-    padding: 8px 13px;
-    background: var(--d-card);
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--d-muted);
-    white-space: nowrap;
-}
-.date-chip .sic-icon svg { color: var(--d-teal); }
-.dash-primary-action {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--d-navy);
-    color: #fff;
-    border-radius: 8px;
-    padding: 9px 18px;
-    font-weight: 700;
-    font-size: 13px;
-    transition: transform .18s, box-shadow .18s;
-    box-shadow: 0 2px 6px rgba(7,26,51,.15);
-    white-space: nowrap;
-}
-.dash-primary-action:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(7,26,51,.22);
-}
-.dash-primary-action .sic-icon svg { width: 17px; height: 17px; }
-
-/* ── KPI Grid ── */
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-}
-.kpi-card {
-    background: var(--d-card);
-    border: 1px solid var(--d-line);
-    border-radius: var(--d-radius);
-    box-shadow: var(--d-shadow);
-    transition: transform .2s ease, box-shadow .2s ease;
-    display: flex;
-    flex-direction: column;
-}
-.kpi-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--d-shadow-hover);
-}
-.kpi-strip {
-    height: 3px;
-    border-radius: var(--d-radius) var(--d-radius) 0 0;
-    flex-shrink: 0;
-}
-.kpi-strip.teal   { background: var(--d-teal); }
-.kpi-strip.blue   { background: var(--d-blue); }
-.kpi-strip.purple { background: var(--d-purple); }
-.kpi-strip.coral  { background: var(--d-coral); }
-.kpi-strip.amber  { background: var(--d-amber); }
-
-.kpi-inner { padding: 18px 20px; flex: 1; }
-.kpi-row-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-.kpi-icon {
-    width: 42px; height: 42px;
-    border-radius: 10px;
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-}
-.kpi-icon.teal   { background: #e6f7f8; color: var(--d-teal); }
-.kpi-icon.blue   { background: #dbeafe; color: var(--d-blue); }
-.kpi-icon.purple { background: #ede9fe; color: var(--d-purple); }
-.kpi-icon.coral  { background: #fee2e2; color: var(--d-coral); }
-.kpi-icon.amber  { background: #fef3c7; color: var(--d-amber); }
-.kpi-icon .sic-icon svg { width: 20px; height: 20px; }
-
-.kpi-trend {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 8px;
-    border-radius: 6px;
-    background: #f0fdf4;
-    color: #15803d;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
-.kpi-trend.danger { background: #fff1f2; color: #be123c; }
-
-.kpi-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    color: var(--d-muted);
-    margin-bottom: 4px;
-}
-.kpi-number {
-    font-size: 32px;
-    font-weight: 800;
-    line-height: 1.1;
-    color: var(--d-text);
-    letter-spacing: -.03em;
-    margin-bottom: 4px;
-    display: block;
-}
-.kpi-note {
-    font-size: 12px;
-    color: var(--d-muted);
-    font-weight: 500;
-}
-.kpi-note.danger { color: var(--d-coral); font-weight: 700; }
-
-/* Remove decorative waveform sparklines */
-.kpi-spark { display: none !important; }
-
-/* ── Section header ── */
-.section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--d-line);
-    flex-shrink: 0;
-}
-.section-title {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    font-size: 14.5px;
-    font-weight: 700;
-    margin: 0;
-    color: var(--d-text);
-}
-.section-title .sic-icon svg { width: 18px; height: 18px; color: var(--d-teal); }
-.section-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 9px;
-    background: #f1f5f9;
-    color: var(--d-muted);
-    border: 1px solid var(--d-line);
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: 600;
-}
-.section-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--d-teal);
-    font-size: 12.5px;
-    font-weight: 700;
-    transition: gap .15s;
-}
-.section-link:hover { gap: 8px; }
-.section-link .sic-icon svg { width: 14px; height: 14px; }
-
-/* ── D-Card base ── */
-.d-card {
-    background: var(--d-card);
-    border: 1px solid var(--d-line);
-    border-radius: var(--d-radius);
-    box-shadow: var(--d-shadow);
-    overflow: hidden;
-    transition: transform .2s ease, box-shadow .2s ease;
-
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    margin: 0;
-}
-.d-card:hover { transform: translateY(-1px); box-shadow: var(--d-shadow-hover); }
-
-/* ── Dashboard main grids ── */
-.dash-grid-row1 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    width: 100%;
-    margin-bottom: 16px;
-    box-sizing: border-box;
-}
-
-.chart-area { padding: 20px 20px 14px; }
-.chart-bars {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 8px;
-    height: 160px;
-    position: relative;
-    background-image:
-        linear-gradient(to right, var(--d-line) 1px, transparent 1px),
-        linear-gradient(to top, var(--d-line) 1px, transparent 1px);
-    background-size: 100% 25%, 100% 25%;
-    background-position: 0 100%, 0 0;
-}
-.bar-col {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    height: 100%;
-    justify-content: flex-end;
-}
-.bar-wrap {
-    width: 100%;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    flex: 1;
-}
-.chart-bar {
-    width: clamp(24px, 70%, 36px);
-    border-radius: 4px 4px 0 0;
-    background: var(--d-teal);
-    transition: opacity .2s;
-    min-height: 6px;
-}
-.bar-col.today .chart-bar {
-    background: var(--d-blue);
-}
-.bar-col:hover .chart-bar { opacity: .85; }
-.bar-label {
-    font-size: 11px;
-    color: var(--d-muted);
-    font-weight: 600;
-    white-space: nowrap;
-}
-.bar-col.today .bar-label { color: var(--d-blue); font-weight: 700; }
-.chart-legend {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid var(--d-line);
-    font-size: 12px;
-    flex-wrap: wrap;
-}
-.legend-dot {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 2px;
-    margin-right: 5px;
-    vertical-align: middle;
-}
-.chart-summary {
-    margin-left: auto;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--d-muted);
-    white-space: nowrap;
-}
-.chart-summary strong { color: var(--d-text); }
-
-/* ── Donut / availability ── */
-.avail-body { padding: 16px 18px; }
-.donut-wrap {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 16px;
-    position: relative;
-}
-.donut-wrap svg { width: 140px; height: 140px; }
-.donut-center {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    line-height: 1.2;
-}
-.donut-center strong { font-size: 24px; font-weight: 800; color: var(--d-text); display: block; }
-.donut-center small  { font-size: 10px; color: var(--d-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
-.avail-legend-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 7px 0;
-    border-bottom: 1px solid var(--d-line);
-    font-size: 12.5px;
-}
-.avail-legend-item:last-child { border-bottom: 0; }
-.avail-legend-name { display: flex; align-items: center; gap: 8px; }
-.leg-dot {
-    width: 8px; height: 8px;
-    border-radius: 2px;
-    display: inline-block;
-    flex-shrink: 0;
-}
-.avail-legend-item strong { font-size: 12.5px; font-weight: 700; }
-.avail-pct-bar {
-    width: 48px; height: 4px;
-    border-radius: 2px;
-    background: var(--d-line);
-    overflow: hidden;
-    margin-left: 8px;
-}
-.avail-pct-fill { height: 100%; border-radius: 2px; }
-
-/* ── Schedule card ── */
-.schedule-list { padding: 0; }
-.sched-item {
-    display: grid;
-    grid-template-columns: 54px 1fr auto;
-    gap: 10px;
-    align-items: center;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--d-line);
-    transition: background .15s;
-}
-.sched-item:last-child { border-bottom: 0; }
-.sched-item:hover { background: #f8fafc; }
-.sched-time { text-align: center; }
-.sched-time-start {
-    font-size: 13px;
-    font-weight: 800;
-    color: var(--d-text);
-    display: block;
-}
-.sched-time-end {
-    font-size: 10px;
-    color: var(--d-muted);
-    display: block;
-    margin-top: 1px;
-}
-.sched-course {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--d-text);
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.sched-meta {
-    font-size: 11.5px;
-    color: var(--d-muted);
-    display: block;
-    margin-top: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* ── Status Pills ── */
-.s-pill {
-    display: inline-flex;
-    align-items: center;
-    border-radius: 6px;
-    padding: 3px 8px;
-    font-size: 11px;
-    font-weight: 700;
-    white-space: nowrap;
-}
-.s-pill-green  { background: #dcfce7; color: #15803d; }
-.s-pill-blue   { background: #dbeafe; color: #1d4ed8; }
-.s-pill-purple { background: #f3e8ff; color: #7e22ce; }
-.s-pill-orange { background: #fef3c7; color: #b45309; }
-.s-pill-red    { background: #fee2e2; color: #b91c1c; }
-.s-pill-teal   { background: #ccfbf1; color: #0f766e; }
-
-/* ── Lower 3-column grid ── */
-.dash-grid-row2 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin-bottom: 16px;
-    width: 100%;
-    box-sizing: border-box;
-    align-items: stretch;
-}
-
-.dash-grid-row2 > .d-card {
-    width: 100%;
-    box-sizing: border-box;
-}
-
-/* ── Leave requests ── */
-.leave-list { padding: 4px 0; }
-.leave-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 16px;
-    border-bottom: 1px solid var(--d-line);
-    transition: background .15s;
-}
-.leave-item:last-child { border-bottom: 0; }
-.leave-item:hover { background: #f8fafc; }
-.lv-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 12px;
-    font-weight: 800;
-    color: #fff;
-    flex-shrink: 0;
-    overflow: hidden;
-}
-.lv-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.lv-info { flex: 1; min-width: 0; }
-.lv-name {
-    font-size: 13px;
-    font-weight: 700;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--d-text);
-}
-.lv-date {
-    font-size: 11.5px;
-    color: var(--d-muted);
-    display: block;
-    margin-top: 1px;
-}
-.lv-badges {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items: flex-end;
-    flex-shrink: 0;
-}
-
-/* ── Replacement alerts ── */
-.alert-list { padding: 4px 0; }
-.alert-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 11px 16px;
-    border-bottom: 1px solid var(--d-line);
-    transition: background .15s;
-}
-.alert-item:last-child { border-bottom: 0; }
-.alert-item:hover { background: #fff9f9; }
-.alert-icon-wrap {
-    width: 32px; height: 32px;
-    background: #fee2e2;
-    border-radius: 8px;
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-}
-.alert-icon-wrap .sic-icon svg { width: 16px; height: 16px; color: var(--d-coral); }
-.alert-info { flex: 1; min-width: 0; }
-.alert-course {
-    font-size: 13px;
-    font-weight: 700;
-    display: block;
-    color: var(--d-text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.alert-meta {
-    font-size: 11.5px;
-    color: var(--d-muted);
-    display: block;
-    margin-top: 2px;
-}
-
-/* ── Venue bookings ── */
-.venue-list { padding: 4px 0; }
-.venue-item {
-    padding: 11px 16px;
-    border-bottom: 1px solid var(--d-line);
-    transition: background .15s;
-}
-.venue-item:last-child { border-bottom: 0; }
-.venue-item:hover { background: #f8fafc; }
-.venue-row1 {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-}
-.venue-name { font-size: 13px; font-weight: 700; color: var(--d-text); }
-.venue-pct  { font-size: 12px; font-weight: 800; color: var(--d-text); }
-.venue-row2 {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-.venue-bar-wrap {
-    flex: 1;
-    height: 4px;
-    background: var(--d-line);
-    border-radius: 2px;
-    overflow: hidden;
-}
-.venue-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--d-teal);
-    transition: width .6s ease;
-}
-.venue-bar-fill.high { background: var(--d-coral); }
-.venue-sessions { font-size: 11.5px; color: var(--d-muted); font-weight: 600; white-space: nowrap; }
-
-/* ── Activity table ── */
-.act-table-wrap { overflow-x: auto; }
-.act-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-.act-table thead th {
-    padding: 10px 14px;
-    font-size: 10.5px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    color: var(--d-muted);
-    background: #f8fafc;
-    border-bottom: 1px solid var(--d-line);
-    white-space: nowrap;
-    text-align: left;
-}
-.act-table tbody td {
-    padding: 12px 14px;
-    font-size: 13px;
-    border-bottom: 1px solid var(--d-line);
-    color: var(--d-text);
-    vertical-align: middle;
-}
-.act-table tbody tr:last-child td { border-bottom: 0; }
-.act-table tbody tr:hover td { background: #f8fafc; }
-.act-assignee {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-.act-avatar {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 11px;
-    font-weight: 800;
-    color: #fff;
-    flex-shrink: 0;
-    background: var(--d-teal);
-    overflow: hidden;
-}
-.act-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.act-name { font-size: 13px; font-weight: 600; }
-
-/* ── Generic icons inline ── */
-.sic-icon { display: inline-flex; align-items: center; line-height: 1; }
-.svg-icon, .sic-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; display: block; }
-
-/* ─────────────────────────────────────────────
-   Management Semester Workload Chart
-   ───────────────────────────────────────────── */
-
-.workload-chart-card {
-    min-width: 0;
-}
-
-.management-workload-bars {
-    min-height: 205px;
-    height: 205px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    justify-content: flex-start;
-    gap: 14px;
-    padding: 8px 4px 0;
-}
-
-.management-bar-col {
-    flex: 0 0 58px;
-    min-width: 58px;
-    position: relative;
-}
-
-.management-chart-bar {
-    width: 34px;
-    max-width: 34px;
-    background: var(--d-teal);
-    border-radius: 5px 5px 0 0;
-}
-
-.management-chart-bar:hover {
-    opacity: .78;
-}
-
-.management-bar-label {
-    width: 62px;
-    max-width: 62px;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--d-muted);
-}
-
-.bar-value {
-    font-size: 9px;
-    font-weight: 700;
-    color: var(--d-text);
-    white-space: nowrap;
-    margin-bottom: 4px;
-    min-height: 12px;
-}
-
-.management-bar-col .bar-wrap {
-    min-height: 145px;
-}
-
-.management-workload-bars::-webkit-scrollbar {
-    height: 6px;
-}
-
-.management-workload-bars::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 10px;
-}
-
-.management-workload-bars::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-}
-
-@media (max-width: 680px) {
-
-    .management-workload-bars {
-        min-height: 190px;
-        height: 190px;
-    }
-
-    .management-bar-col {
-        flex-basis: 52px;
-        min-width: 52px;
-    }
-
-    .management-bar-label {
-        width: 56px;
-        max-width: 56px;
-    }
-
-    .management-chart-bar {
-        width: 30px;
-        max-width: 30px;
-    }
-}
-
-/* ─────────────────────────────────────────────
-   FULL-ROW MANAGEMENT WORKLOAD CARD
-   ───────────────────────────────────────────── */
-
-.management-workload-full-row {
-    grid-column: 1 / -1;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-
-/* ─────────────────────────────────────────────
-   Management workload chart
-   ───────────────────────────────────────────── */
-
-.management-workload-wrapper {
-    width: 100%;
-}
-
-.management-workload-bars {
-    min-height: 260px;
-    height: 260px;
-
-    display: flex;
-    align-items: flex-end;
-
-    justify-content: flex-start;
-
-    gap: 18px;
-
-    overflow-x: auto;
-    overflow-y: hidden;
-
-    padding: 15px 10px 0;
-}
-
-.management-bar-col {
-    flex: 0 0 72px;
-    min-width: 72px;
-
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    justify-content: flex-end;
-
-    gap: 7px;
-}
-
-.management-bar-col .bar-wrap {
-    width: 100%;
-    min-height: 185px;
-
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-
-    flex: 1;
-}
-
-.management-chart-bar {
-    width: 38px;
-    max-width: 38px;
-
-    background: var(--d-teal);
-
-    border-radius: 5px 5px 0 0;
-
-    min-height: 3px;
-
-    transition:
-        height .25s ease,
-        opacity .2s ease;
-}
-
-.management-chart-bar:hover {
-    opacity: .78;
-}
-
-.management-bar-label {
-    width: 72px;
-    max-width: 72px;
-
-    text-align: center;
-
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-    font-size: 11px;
-    font-weight: 800;
-
-    color: var(--d-text);
-}
-
-.bar-value {
-    font-size: 10px;
-    font-weight: 800;
-
-    color: var(--d-text);
-
-    white-space: nowrap;
-
-    min-height: 14px;
-
-    text-align: center;
-}
-
-
-/* ─────────────────────────────────────────────
-   Workload footer
-   ───────────────────────────────────────────── */
-
-.management-workload-footer {
-    width: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 20px;
-
-    margin-top: 18px;
-
-    padding-top: 15px;
-
-    border-top: 1px solid var(--d-line);
-}
-
-.workload-period {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    color: var(--d-muted);
-
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.management-workload-footer .chart-summary {
-    margin-left: auto;
-
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    font-size: 12px;
-    color: var(--d-muted);
-}
-
-.management-workload-footer .chart-summary strong {
-    font-size: 15px;
-    color: var(--d-text);
-    font-weight: 800;
-}
-
-
-/* Empty state */
-
-.workload-empty-state {
-    min-height: 220px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: var(--d-muted);
-
-    font-size: 13px;
-    text-align: center;
-}
-
-
-/* Scrollbar */
-
-.management-workload-bars::-webkit-scrollbar {
-    height: 7px;
-}
-
-.management-workload-bars::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 10px;
-}
-
-.management-workload-bars::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 10px;
-}
-
-.management-workload-bars::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-}
-
-/* ── Responsive ── */
-
-@media (max-width: 680px) {
-
-    .management-workload-full-row {
-        grid-column: auto;
-    }
-
-    .management-workload-bars {
-        min-height: 230px;
-        height: 230px;
-
-        gap: 12px;
-    }
-
-    .management-bar-col {
-        flex: 0 0 62px;
-        min-width: 62px;
-    }
-
-    .management-bar-col .bar-wrap {
-        min-height: 160px;
-    }
-
-    .management-chart-bar {
-        width: 32px;
-        max-width: 32px;
-    }
-
-    .management-bar-label {
-        width: 62px;
-        max-width: 62px;
-
-        font-size: 10px;
-    }
-
-    .management-workload-footer {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .management-workload-footer .chart-summary {
-        margin-left: 0;
-    }
-}
-
-@media (max-width: 1150px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .dash-grid-row1 { grid-template-columns: 1fr 1fr; }
-    .dash-grid-row1 > *:last-child { grid-column: 1 / -1; }
-}
-@media (max-width: 900px) {
-    .dash-grid-row2 { grid-template-columns: 1fr 1fr; }
-    .dash-grid-row2 > *:last-child { grid-column: 1 / -1; }
-}
-@media (max-width: 680px) {
-    .dash-page { padding: 14px; }
-    .dash-hero { flex-direction: column; align-items: flex-start; }
-    .kpi-grid, .dash-grid-row1, .dash-grid-row2 { grid-template-columns: 1fr; }
-    .dash-grid-row1 > *:last-child, .dash-grid-row2 > *:last-child { grid-column: auto; }
-    .act-table thead { display: none; }
-    .act-table, .act-table tbody, .act-table tr, .act-table td { display: block; width: 100%; }
-    .act-table td { padding: 8px 14px; border: 0; }
-    .act-table td::before { content: attr(data-label); display: block; font-size: 10px; color: var(--d-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 3px; }
-    .act-table tr { border-bottom: 1px solid var(--d-line); }
-}
-</style>
-        <?php
-    }
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
    MAIN RENDER FUNCTION
    ───────────────────────────────────────────────────────────────────────────── */
 
 function sic_render_dashboard(string $heading, string $subtitle, array $cards = [], string $primaryActionUrl = '', string $primaryActionText = 'Quick Action', bool $kpiOnly = false) {
-    sic_dashboard_styles();
 
     $activeInstructors    = sic_count("SELECT COUNT(*) FROM instructors WHERE status='active'");
     $todayClasses         = sic_count("SELECT COUNT(*) FROM timetable_slots WHERE day_of_week = DAYNAME(CURDATE())");
@@ -1665,11 +587,7 @@ if ($isManagementWorkloadView) {
 
             Workload Overview
 
-            <span style="
-                font-weight:400;
-                color:var(--d-muted);
-                font-size:13px;
-            ">
+            <span class="section-title-note">
                 (Hours)
             </span>
         </h2>
@@ -1748,7 +666,7 @@ if ($isManagementWorkloadView) {
 
                                     <div
                                         class="chart-bar management-chart-bar"
-                                        style="height:<?= $barHeight ?>%;"
+                                        style="--bar-height:<?= $barHeight ?>%"
                                         title="<?= htmlspecialchars(
                                             $fullName
                                             . ' - '
@@ -1779,10 +697,7 @@ if ($isManagementWorkloadView) {
 
                         <div class="workload-period">
 
-                            <span
-                                class="legend-dot"
-                                style="background:var(--d-teal)"
-                            ></span>
+                            <span class="legend-dot teal"></span>
 
                             Semester Workload of Instructor
 
@@ -1834,11 +749,9 @@ if ($isManagementWorkloadView) {
 
                             <div
                                 class="chart-bar"
-                                style="
-                                    height:<?= round(
-                                        ($barH / $maxBar) * 100
-                                    ) ?>%;
-                                "
+                                style="--bar-height:<?= round(
+                                    ($barH / $maxBar) * 100
+                                ) ?>%"
                                 title="<?= $barH ?> hrs"
                             ></div>
 
@@ -1858,19 +771,13 @@ if ($isManagementWorkloadView) {
             <div class="chart-legend">
 
                 <span>
-                    <span
-                        class="legend-dot"
-                        style="background:var(--d-teal)"
-                    ></span>
+                    <span class="legend-dot teal"></span>
 
                     Regular
                 </span>
 
                 <span>
-                    <span
-                        class="legend-dot"
-                        style="background:var(--d-blue)"
-                    ></span>
+                    <span class="legend-dot blue"></span>
 
                     Today
                 </span>
@@ -1927,12 +834,12 @@ if ($isManagementWorkloadView) {
                 <?php foreach ($segs as $seg): ?>
                 <div class="avail-legend-item">
                     <div class="avail-legend-name">
-                        <span class="leg-dot" style="background:<?= htmlspecialchars($seg[2]) ?>"></span>
+                        <span class="leg-dot" style="--dot-color:<?= htmlspecialchars($seg[2]) ?>"></span>
                         <?= htmlspecialchars($seg[0]) ?>
                     </div>
-                    <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="avail-legend-value">
                         <div class="avail-pct-bar">
-                            <div class="avail-pct-fill" style="width:<?= $seg[1] ?>%;background:<?= htmlspecialchars($seg[2]) ?>"></div>
+                            <div class="avail-pct-fill" style="--value:<?= $seg[1] ?>%;--fill-color:<?= htmlspecialchars($seg[2]) ?>"></div>
                         </div>
                         <strong><?= $seg[1] ?>%</strong>
                     </div>
@@ -2000,7 +907,7 @@ if ($isManagementWorkloadView) {
 
             <div class="leave-item">
 
-                <div class="lv-avatar" style="background:<?= $avatarBg ?>">
+                <div class="lv-avatar" style="--avatar-bg:<?= $avatarBg ?>">
                     <?php if ($imgUrl): ?>
                         <img
                             src="<?= htmlspecialchars($imgUrl, ENT_QUOTES, 'UTF-8') ?>"
@@ -2102,7 +1009,7 @@ if ($isManagementWorkloadView) {
                     <div class="venue-bar-wrap">
                         <div
                             class="venue-bar-fill <?= $b[4] ? 'high' : '' ?>"
-                            style="width:<?= $b[3] ?>%"
+                            style="--value:<?= $b[3] ?>%"
                         ></div>
                     </div>
 
@@ -2165,7 +1072,7 @@ if ($isManagementWorkloadView) {
                     <td data-label="Course"><?= htmlspecialchars($t['type_name'] ?? 'Module') ?></td>
                     <td data-label="Assigned To">
                         <div class="act-assignee">
-                            <div class="act-avatar" style="background:<?= $actBg ?>">
+                            <div class="act-avatar" style="--avatar-bg:<?= $actBg ?>">
                                 <?php if (!empty($userAvatar)): ?>
                                     <img src="<?= htmlspecialchars($userAvatar, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($assigneeName, ENT_QUOTES, 'UTF-8') ?>">
                                 <?php else: ?>
@@ -2344,7 +1251,7 @@ if (!function_exists('sic_render_instructor_dashboard')) {
         </div>
         <div class="schedule-list">
             <?php if (empty($upcoming)): ?>
-                <p class="text-muted" style="padding:8px 4px;">You have no upcoming tasks scheduled.</p>
+                <p class="text-muted list-empty">You have no upcoming tasks scheduled.</p>
             <?php else: foreach ($upcoming as $s): ?>
                 <div class="sched-item">
                     <div class="sched-time">
@@ -2427,19 +1334,19 @@ if (!function_exists('sic_render_instructor_dashboard')) {
                     </div>
                 </div>
                 <?php if (empty($typeBreakdown)): ?>
-                    <p class="text-muted" style="padding:8px 4px;">No tasks scheduled in the next 7 days.</p>
+                    <p class="text-muted list-empty">No tasks scheduled in the next 7 days.</p>
                 <?php else: foreach ($typeBreakdown as $ti => $row):
                     $color = $typeColors[$ti % count($typeColors)];
                     $pct = $weekTotal > 0 ? round(($row['c'] / $weekTotal) * 100) : 0;
                 ?>
                 <div class="avail-legend-item">
                     <div class="avail-legend-name">
-                        <span class="leg-dot" style="background:<?= htmlspecialchars($color) ?>"></span>
+                        <span class="leg-dot" style="--dot-color:<?= htmlspecialchars($color) ?>"></span>
                         <?= htmlspecialchars($row['type_name']) ?>
                     </div>
-                    <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="avail-legend-value">
                         <div class="avail-pct-bar">
-                            <div class="avail-pct-fill" style="width:<?= $pct ?>%;background:<?= htmlspecialchars($color) ?>"></div>
+                            <div class="avail-pct-fill" style="--value:<?= $pct ?>%;--fill-color:<?= htmlspecialchars($color) ?>"></div>
                         </div>
                         <strong><?= (int)$row['c'] ?></strong>
                     </div>
@@ -2456,7 +1363,7 @@ if (!function_exists('sic_render_instructor_dashboard')) {
             </div>
             <div class="alert-list">
                 <?php if (empty($myAlerts)): ?>
-                    <p class="text-muted" style="padding:8px 4px;">No pending replacement requests involving you.</p>
+                    <p class="text-muted list-empty">No pending replacement requests involving you.</p>
                 <?php else: foreach ($myAlerts as $a):
                     $role = ((int)$a['requested_by_instructor_id'] === $instructorId) ? 'You requested' : 'Suggested for you';
                 ?>

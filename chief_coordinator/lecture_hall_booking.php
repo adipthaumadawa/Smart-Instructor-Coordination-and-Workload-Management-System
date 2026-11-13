@@ -785,7 +785,6 @@ include __DIR__ . '/../includes/header.php';
                         class="form-control"
                         placeholder="Additional remarks"
                         rows="4"
-                        style="resize: vertical;"
                     ></textarea>
 
                 </div>

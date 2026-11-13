@@ -39,7 +39,7 @@
                                     <?= htmlspecialchars($lr['rr_suggested_name'] ?? 'Unknown') ?>
                                     <?= getStatusBadge($lr['rr_status']) ?>
                                     <?php if ($lr['status'] === 'Pending' && in_array($lr['rr_status'], ['Rejected', 'Cancelled'], true)): ?>
-                                        <br><a href="<?= app_url('instructor/leave.php') ?>?leave_id=<?= (int)$lr['id'] ?>" class="btn btn-sm btn-outline-primary" style="margin-top:4px;">Choose Another Replacement</a>
+                                        <br><a href="<?= app_url('instructor/leave.php') ?>?leave_id=<?= (int)$lr['id'] ?>" class="btn btn-sm btn-outline-primary mt-1">Choose Another Replacement</a>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             </td>
@@ -50,14 +50,14 @@
                                 $canCancelRequest = $lr['status'] === 'Pending' && ($lr['rr_status'] ?? '') === 'Pending';
                                 ?>
                                 <?php if ($canCancelRequest): ?>
-                                    <form method="POST" action="" style="display:inline-block;">
+                                    <form method="POST" action="" class="d-inline-block">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="cancel_request" value="<?= (int)$lr['rr_id'] ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-secondary" onclick="return confirm('Cancel the pending replacement request? Your leave will stay pending until you choose another replacement.')">Cancel Request</button>
                                     </form>
                                 <?php endif; ?>
                                 <?php if ($canCancelLeave): ?>
-                                    <form method="POST" action="" style="display:inline-block;">
+                                    <form method="POST" action="" class="d-inline-block">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="cancel_leave" value="<?= (int)$lr['id'] ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('<?= $lr['status'] === 'Approved' ? 'Cancel this confirmed leave? Tasks handed to your replacement will be returned to you and they will be notified.' : 'Cancel this leave? Any pending replacement request will be withdrawn.' ?>')">Cancel Leave</button>

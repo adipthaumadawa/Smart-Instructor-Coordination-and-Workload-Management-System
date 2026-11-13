@@ -113,9 +113,9 @@ $leaveRows = $pdo->query("
                                 <td><strong><?= htmlspecialchars($r['full_name']) ?></strong></td>
                                 <td><?= htmlspecialchars($r['stream']) ?></td>
                                 <td><?= htmlspecialchars($r['hours']) ?> hrs</td>
-                                <td style="width: 25%;">
-                                    <div class="progress" style="height: 8px;">
-                                        <div class="progress-bar" role="progressbar" style="width: <?= $pct ?>%;"></div>
+                                <td class="col-progress">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="--value:<?= $pct ?>%"></div>
                                     </div>
                                     <small class="text-muted"><?= $pct ?>% capacity</small>
                                 </td>
@@ -129,7 +129,7 @@ $leaveRows = $pdo->query("
     </div>
 
     <!-- Allocations Preview -->
-    <div id="allocations-preview" class="report-preview-section" style="display: none;">
+    <div id="allocations-preview" class="report-preview-section is-hidden">
         <div class="alert alert-info"><strong>Read-only:</strong> Allocation status monitoring preview.</div>
         <div class="card shadow-sm">
             <div class="card-header"><h5>Allocations Preview</h5></div>
@@ -166,7 +166,7 @@ $leaveRows = $pdo->query("
     </div>
 
     <!-- Leave Records Preview -->
-    <div id="leave-preview" class="report-preview-section" style="display: none;">
+    <div id="leave-preview" class="report-preview-section is-hidden">
         <div class="alert alert-info"><strong>Read-only:</strong> Leave records monitoring preview.</div>
         <div class="card shadow-sm">
             <div class="card-header"><h5>Leave Records Preview</h5></div>
@@ -219,11 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const targetId = this.getAttribute('data-target');
             sections.forEach(sec => {
-                if (sec.id === targetId) {
-                    sec.style.display = 'block';
-                } else {
-                    sec.style.display = 'none';
-                }
+                sec.classList.toggle('is-hidden', sec.id !== targetId);
             });
         });
     });
@@ -234,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         searchInput.addEventListener('input', function() {
             const query = this.value.trim().toLowerCase();
             // Target only the visible active tab section's table rows
-            const activeSection = document.querySelector('.report-preview-section:not([style*="display: none"])');
+            const activeSection = document.querySelector('.report-preview-section:not(.is-hidden)');
             if (!activeSection) return;
 
             const rows = activeSection.querySelectorAll('.report-search-table tbody tr');

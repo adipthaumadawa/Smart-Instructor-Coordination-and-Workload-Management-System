@@ -65,7 +65,7 @@ include __DIR__ . '/../includes/header.php';
                 <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
             <?php endif; ?>
 
-            <div class="card" style="margin-bottom:16px;">
+            <div class="card mb-3">
                 <div class="card-body d-flex gap-2 flex-wrap">
                     <a href="?filter=upcoming" class="btn btn-sm <?= $filter === 'upcoming' ? 'btn-primary' : 'btn-outline-secondary' ?>">Upcoming</a>
                     <a href="?filter=completed" class="btn btn-sm <?= $filter === 'completed' ? 'btn-primary' : 'btn-outline-secondary' ?>">Completed</a>

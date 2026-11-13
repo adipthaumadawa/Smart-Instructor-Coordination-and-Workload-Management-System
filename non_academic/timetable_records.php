@@ -539,22 +539,6 @@ if ($viewRequested && $viewYear !== '' && $viewSemester !== '') {
 include __DIR__ . '/../includes/header.php';
 ?>
 
-<style>
-.timetable-page{width:100%}.timetable-page *{box-sizing:border-box}
-.timetable-page .page-toolbar{margin-bottom:25px}.timetable-page h1{margin:0;font-size:28px;font-weight:700}.timetable-page .page-toolbar p{margin:7px 0 0;color:#6b7280;font-size:14px}
-.timetable-page .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;margin-bottom:24px;overflow:hidden}.timetable-page .card-body{padding:25px}
-.timetable-page .section-heading{margin-bottom:22px}.timetable-page .section-heading h2{margin:0;font-size:20px;font-weight:700}.timetable-page .section-heading p{margin:6px 0 0;color:#6b7280;font-size:14px}
-.timetable-page .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px}.timetable-page label{display:block;margin-bottom:7px;font-size:14px;font-weight:600;color:#111827}
-.timetable-page .form-control{width:100%;min-height:44px;padding:10px 12px;border:1px solid #d1d5db;border-radius:9px;background:#fff;color:#111827;font-size:14px}.timetable-page .readonly-control{background:#f3f4f6;color:#4b5563}
-.timetable-page .room-warning{display:block;margin-top:7px;color:#b45309;font-size:12px}.timetable-page .button-area{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}.timetable-page .btn{display:inline-block;border:0;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none}.timetable-page .btn-primary{background:#000a1e;color:#fff}.timetable-page .btn-danger{background:#8f1414;color:#fff}.timetable-page .btn-secondary{background:#6b7280;color:#fff}.timetable-page .btn-outline{background:#fff;border:1px solid #d1d5db;color:#374151}
-.timetable-page .old-box,.timetable-page .new-box{border-radius:12px;padding:22px}.timetable-page .old-box{background:#f8fafc;border:1px solid #e5e7eb}.timetable-page .new-box{background:#fff;border:1px solid #dbe3ee}.timetable-page .box-title{margin:0 0 18px;font-size:17px}.timetable-page .divider{height:18px}
-.timetable-page .empty-state{border:1px dashed #d1d5db;border-radius:10px;padding:30px;text-align:center}.timetable-page .empty-state h3{margin:0;font-size:17px}.timetable-page .empty-state p{color:#6b7280;margin-bottom:0}
-
-/* UCSC-style weekly timetable */
-.schedule-wrap{width:100%;overflow-x:auto}.schedule-table{width:100%;min-width:1120px;border-collapse:collapse;table-layout:fixed;background:#fff;border:1px solid #111}.schedule-table col.time-col{width:110px}.schedule-table col.slot-col{width:auto}.schedule-table th,.schedule-table td{border:1px solid #111;padding:0;text-align:center;vertical-align:middle}.schedule-table thead th{height:30px;background:#fff;font-size:11px;font-weight:700}.schedule-table thead .day-head{height:30px;font-size:12px}.schedule-table .time-cell{width:110px;height:58px;font-size:11px;font-weight:700;line-height:1.25;padding:4px}.schedule-table .empty-cell{height:58px;background:#fff}.schedule-table .event-cell{height:58px;padding:3px;vertical-align:middle}.schedule-table .slot-event{width:100%;height:100%;min-height:52px;border:0;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4px;cursor:pointer}.schedule-table .slot-event:hover{background:#eef2f7}.schedule-table .slot-event .subject{font-weight:700;font-size:11px;line-height:1.2;overflow-wrap:anywhere}.schedule-table .slot-event .room{font-size:10px;line-height:1.2;margin-top:3px}.schedule-table .slot-event .course-tag{font-size:9px;line-height:1.2;margin-top:3px;color:#4b5563}.schedule-table .slot-actions{display:none;gap:4px;margin-top:6px;justify-content:center;flex-wrap:wrap}.schedule-table .slot-event.selected .slot-actions{display:flex}.schedule-table .slot-actions a,.schedule-table .slot-actions button{border:0;border-radius:4px;padding:4px 7px;font-size:10px;font-weight:600;text-decoration:none;cursor:pointer}.schedule-table .slot-actions a{background:#000a1e;color:#fff}.schedule-table .slot-actions button{background:#8f1414;color:#fff}.schedule-table .lunch-label{height:34px;font-size:11px;font-weight:700}.schedule-table .lunch{height:34px;font-size:12px;font-weight:700}.schedule-title{text-align:center;margin-bottom:12px}.schedule-title h3{margin:0;font-size:17px}.schedule-title p{margin:4px 0 0;font-size:12px;color:#6b7280}
-@media(max-width:800px){.timetable-page .card-body{padding:18px}.timetable-page h1{font-size:23px}}
-</style>
-
 <div class="timetable-page">
 <div class="page-toolbar"><h1>Timetable Management</h1><p>Add timetable records and view the weekly timetable by academic year and semester.</p></div>
 
@@ -695,7 +679,7 @@ foreach($hours as $h):
 <?php if($h===11): ?><tr><td class="lunch-label">12.00 noon - 1.00 pm</td><td class="lunch" colspan="10">Lunch Break</td></tr><?php endif; ?>
 <?php endforeach; ?>
 </tbody></table></div>
-<p style="margin-top:12px;color:#6b7280;font-size:12px">Click a subject or lecture room in the timetable to show its Edit and Delete options.</p>
+<p class="table-hint">Click a subject or lecture room in the timetable to show its Edit and Delete options.</p>
 <?php endif; ?>
 </div></div>
 <?php endif; ?>

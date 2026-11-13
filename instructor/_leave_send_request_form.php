@@ -6,7 +6,7 @@
  * $resumeLeaveId in scope from the parent script.
  */
 ?>
-<form method="POST" action="" style="display:inline-block;">
+<form method="POST" action="" class="d-inline-block">
     <?= csrf_field() ?>
     <input type="hidden" name="submit_leave_request" value="1">
     <input type="hidden" name="suggested_instructor_id" value="<?= (int)$sr['instructor_id'] ?>">

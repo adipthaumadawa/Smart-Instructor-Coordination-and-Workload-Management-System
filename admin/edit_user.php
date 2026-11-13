@@ -161,7 +161,6 @@ include __DIR__ . '/../includes/header.php';
     <div class="alert alert-danger d-flex align-items-center gap-2"><span class="ui-dot" aria-hidden="true"></span><span><?= htmlspecialchars($error) ?></span></div>
 <?php endif; ?>
 <form method="POST" action="">
-    <style>#instructorProfileSection[hidden] { display: none !important; }</style>
     <div class="card admin-form-card mb-4">
         <div class="card-header admin-form-header"><div><h5>User Information</h5><p>Edit the selected user details carefully.</p></div></div>
         <div class="card-body"><div class="row g-4">

@@ -58,9 +58,9 @@ $rows = $pdo->query("
                         <td><strong><?= htmlspecialchars($r['full_name']) ?></strong></td>
                         <td><?= htmlspecialchars($r['stream']) ?></td>
                         <td><?= htmlspecialchars($r['hours']) ?> hrs</td>
-                        <td style="width: 25%;">
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar" role="progressbar" style="width: <?= $pct ?>%;" aria-valuenow="<?= $pct ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                        <td class="col-progress">
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="--value:<?= $pct ?>%" aria-valuenow="<?= $pct ?>" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <small class="text-muted"><?= $pct ?>% capacity</small>
                         </td>

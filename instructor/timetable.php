@@ -62,7 +62,7 @@ include __DIR__ . '/../includes/header.php';
                 <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
             <?php endif; ?>
 
-            <div class="card" style="margin-bottom:20px;">
+            <div class="card mb-20px">
                 <div class="card-header">
                     <h5>Upcoming Tasks (Next 14 Days)</h5>
                     <span class="text-muted small"><?= count($upcomingTasks) ?> task(s)</span>

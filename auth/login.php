@@ -1,7 +1,7 @@
 <?php
 /**
  * Login page
- * Framework-free: no Bootstrap / Font Awesome / Material / Google Fonts CDN
+ * Framework-free: no Bootstrap / Font Awesome / Material
  */
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -51,7 +51,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In | <?= htmlspecialchars(sic_site_name(), ENT_QUOTES, 'UTF-8') ?></title>
   <meta name="description" content="Sign in to the UCSC Smart Instructor Coordination System">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
   <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
+  <link rel="stylesheet" href="<?= app_url('assets/css/auth.css') ?>">
 </head>
 <body class="login-body">
 
@@ -143,7 +147,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <!-- Right Immersive Institutional Banner -->
   <main class="portal-hero-banner" aria-hidden="true">
-    <div class="portal-banner-bg" style="background-image: url('<?= app_url('assets/images/ucsc-logo.png') ?>');"></div>
     <div class="portal-hero-content">
       <div class="portal-hero-crest">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>

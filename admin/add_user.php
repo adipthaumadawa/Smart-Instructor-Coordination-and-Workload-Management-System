@@ -120,7 +120,6 @@ include __DIR__ . '/../includes/header.php';
 <div class="page-toolbar"><div><h1>Add New User</h1><p>Create an account and enter instructor details on this page.</p></div><a href="<?= app_url('admin/users.php') ?>" class="btn btn-outline-primary">Back to Users</a></div>
 <?php if ($error): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?><?php if ($existingUserId > 0): ?> <a href="<?= app_url('admin/edit_user.php?id=' . $existingUserId) ?>" class="alert-link">Edit existing user</a><?php endif; ?></div><?php endif; ?>
 <form method="POST" action="">
-  <style>#instructorProfileSection[hidden] { display: none !important; }</style>
   <div class="card admin-form-card mb-4"><div class="card-header admin-form-header"><div><h5>User Information</h5><p>Fields marked with * are required.</p></div></div><div class="card-body"><div class="row g-4">
     <div class="col-lg-6"><label class="form-label" for="full_name">Full Name *</label><input id="full_name" name="full_name" class="form-control" required maxlength="150" value="<?= htmlspecialchars($_POST['full_name'] ?? '') ?>"></div>
     <div class="col-lg-6"><label class="form-label" for="username">Username *</label><input id="username" name="username" class="form-control" required maxlength="50" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>"></div>

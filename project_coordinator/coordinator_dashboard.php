@@ -85,8 +85,8 @@ sic_render_dashboard(
 );
 ?>
 
-<section class="dash-page" style="padding-top:0;">
-    <div class="dash-grid-row1" style="grid-template-columns: 1fr 1fr;">
+<section class="dash-page dash-page-flush">
+    <div class="dash-grid-row1">
 
         <!-- Upcoming Presentations -->
         <div class="d-card">
@@ -96,7 +96,7 @@ sic_render_dashboard(
             </div>
             <div class="schedule-list">
                 <?php if (empty($upcomingSessions)): ?>
-                    <p class="text-muted" style="padding:14px 16px;">No upcoming presentation sessions.</p>
+                    <p class="text-muted sched-empty">No upcoming presentation sessions.</p>
                 <?php else: foreach ($upcomingSessions as $s):
                     $count = (int)$s['panel_count'];
                     $ready = $count >= $minPanelSize; ?>
@@ -113,7 +113,7 @@ sic_render_dashboard(
                                 • <?= htmlspecialchars(formatDate($s['session_date'])) ?>
                             </span>
                         </div>
-                        <a class="s-pill <?= $ready ? 's-pill-green' : 's-pill-orange' ?>" style="text-decoration:none;"
+                        <a class="s-pill <?= $ready ? 's-pill-green' : 's-pill-orange' ?>"
                            href="<?= app_url('project_coordinator/panel.php?session_id=' . (int)$s['id']) ?>">
                             <?= $count ?>/<?= (int)$minPanelSize ?> panel
                         </a>
@@ -130,7 +130,7 @@ sic_render_dashboard(
             </div>
             <div class="alert-list">
                 <?php if (empty($sessionsNeedingAttention)): ?>
-                    <p class="text-muted" style="padding:14px 16px;">All upcoming sessions have a complete panel.</p>
+                    <p class="text-muted sched-empty">All upcoming sessions have a complete panel.</p>
                 <?php else: foreach ($sessionsNeedingAttention as $s): ?>
                     <div class="alert-item">
                         <div class="alert-icon-wrap"><?= sic_icon('warning') ?></div>
@@ -142,7 +142,7 @@ sic_render_dashboard(
                                 • <?= (int)$s['panel_members_count'] ?>/<?= (int)$minPanelSize ?> panel members
                             </span>
                         </div>
-                        <a class="s-pill s-pill-red" style="text-decoration:none;"
+                        <a class="s-pill s-pill-red"
                            href="<?= app_url('project_coordinator/panel.php?session_id=' . (int)$s['id']) ?>">Assign Panel</a>
                     </div>
                 <?php endforeach; endif; ?>
@@ -157,9 +157,9 @@ sic_render_dashboard(
         </div>
         <div class="schedule-list">
             <?php if (empty($recentActivity)): ?>
-                <p class="text-muted" style="padding:14px 16px;">No recent activity.</p>
+                <p class="text-muted sched-empty">No recent activity.</p>
             <?php else: foreach ($recentActivity as $a): ?>
-                <div class="sched-item" style="grid-template-columns: 1fr auto;">
+                <div class="sched-item sched-item-compact">
                     <div class="sched-info">
                         <span class="sched-course"><?= htmlspecialchars($a['action']) ?></span>
                         <?php if (!empty($a['description'])): ?>

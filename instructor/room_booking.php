@@ -153,7 +153,7 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <!-- STEP 1: Check availability -->
-            <div class="card" style="margin-bottom:20px;">
+            <div class="card mb-20px">
                 <div class="card-header"><h5>Step 1 — Check Availability</h5></div>
                 <div class="card-body">
                     <form method="GET" action="">
@@ -172,7 +172,7 @@ include __DIR__ . '/../includes/header.php';
                                 <input type="time" name="end_time" class="form-control" required value="<?= htmlspecialchars($checkEnd) ?>">
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary" style="width:100%;">Check</button>
+                                <button type="submit" class="btn btn-primary w-100">Check</button>
                             </div>
                         </div>
                     </form>
@@ -181,7 +181,7 @@ include __DIR__ . '/../includes/header.php';
 
             <!-- STEP 2: Available rooms + book -->
             <?php if ($showBookForm): ?>
-                <div class="card" style="margin-bottom:20px;">
+                <div class="card mb-20px">
                     <div class="card-header"><h5>Step 2 — Select Room & Book</h5></div>
                     <div class="card-body">
                         <?php if (empty($availableRooms)): ?>
@@ -223,7 +223,7 @@ include __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <!-- My bookings -->
-            <div class="card" style="margin-bottom:16px;">
+            <div class="card mb-3">
                 <div class="card-body d-flex gap-2 flex-wrap">
                     <a href="?view=upcoming" class="btn btn-sm <?= $view === 'upcoming' ? 'btn-primary' : 'btn-outline-secondary' ?>">Upcoming</a>
                     <a href="?view=past" class="btn btn-sm <?= $view === 'past' ? 'btn-primary' : 'btn-outline-secondary' ?>">Past</a>

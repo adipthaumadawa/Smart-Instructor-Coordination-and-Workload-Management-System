@@ -284,7 +284,7 @@ include __DIR__ . '/../includes/header.php';
                 <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
-            <div class="card" style="margin-bottom:20px;">
+            <div class="card mb-20px">
                 <div class="card-header"><h5>New Replacement Request</h5></div>
                 <div class="card-body">
                     <?php if (empty($eligibleTasks)): ?>
@@ -327,7 +327,7 @@ include __DIR__ . '/../includes/header.php';
             </div>
 
             <?php if (!empty($requestsForMe)): ?>
-            <div class="card" style="margin-bottom:20px;">
+            <div class="card mb-20px">
                 <div class="card-header">
                     <h5>Requests Suggesting You as Replacement</h5>
                     <span class="text-muted small"><?= count($requestsForMe) ?> request(s)</span>
@@ -351,13 +351,13 @@ include __DIR__ . '/../includes/header.php';
                                         <td data-label="Status"><?= getStatusBadge($r['status']) ?></td>
                                         <td data-label="Actions" class="text-end action-cell">
                                             <?php if ($r['status'] === 'Pending'): ?>
-                                                <form method="POST" action="" style="display:inline-block;">
+                                                <form method="POST" action="" class="d-inline-block">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="respond" value="<?= (int)$r['id'] ?>">
                                                     <input type="hidden" name="action" value="accept">
                                                     <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Accept this replacement request?')">Accept</button>
                                                 </form>
-                                                <form method="POST" action="" style="display:inline-block;">
+                                                <form method="POST" action="" class="d-inline-block">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="respond" value="<?= (int)$r['id'] ?>">
                                                     <input type="hidden" name="action" value="reject">
@@ -400,7 +400,7 @@ include __DIR__ . '/../includes/header.php';
                                         <td data-label="Status"><?= getStatusBadge($r['status']) ?></td>
                                         <td data-label="Actions" class="text-end action-cell">
                                             <?php if ($r['status'] === 'Pending'): ?>
-                                                <form method="POST" action="" style="display:inline-block;">
+                                                <form method="POST" action="" class="d-inline-block">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="cancel_request" value="<?= (int)$r['id'] ?>">
                                                     <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Cancel this replacement request?<?= !empty($r['leave_record_id']) ? ' Your leave will stay pending until you choose another replacement.' : '' ?>')">Cancel Request</button>

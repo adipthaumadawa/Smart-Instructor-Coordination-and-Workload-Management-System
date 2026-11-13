@@ -70,17 +70,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <title>Reset Password | <?= htmlspecialchars(sic_site_name()) ?></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
   <link rel="stylesheet" href="<?= app_url('assets/css/style.css') ?>">
-  <style>
-    .recovery-card { width:min(100% - 32px,480px); margin:auto; padding:36px; background:#fff; border-radius:18px; box-shadow:0 12px 36px rgba(13,35,62,.1); }
-    .recovery-card h1 { margin:0 0 8px; color:#0b203d; }
-    .recovery-card p { color:#64748b; line-height:1.55; }
-    .recovery-card .portal-control { padding-left:14px; }
-    .recovery-card .portal-form { margin-top:24px; }
-    .recovery-back { display:inline-block; margin-top:18px; color:#087f8c; }
-  </style>
+  <link rel="stylesheet" href="<?= app_url('assets/css/auth.css') ?>">
 </head>
-<body class="login-body" style="display:flex;min-height:100vh;background:#f1f5f9;">
+<body class="login-body recovery-body">
 <main class="recovery-card">
   <h1>Reset Password</h1>
   <?php if ($error): ?><div class="portal-alert portal-alert-error" role="alert"><?= htmlspecialchars($error) ?></div><?php endif; ?>

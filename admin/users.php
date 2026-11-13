@@ -124,53 +124,6 @@ $pageTitle = 'Manage Users';
 include __DIR__ . '/../includes/header.php';
 ?>
 
-<style>
-.avatar-mini {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
-    flex: 0 0 32px !important;
-    display: grid !important;
-    place-items: center !important;
-    border-radius: 50% !important;
-    background: linear-gradient(145deg, var(--teal2, #0a9ba8), var(--teal, #087f8c)) !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    font-size: 13px !important;
-    overflow: hidden !important;
-}
-.avatar-mini img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    border-radius: 50% !important;
-}
-.user-cell-flex {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-    flex-wrap: nowrap !important;
-}
-.user-cell-flex strong {
-    white-space: nowrap !important;
-}
-/* Action cell alignment fixes */
-.action-cell {
-    text-align: right !important;
-    white-space: nowrap !important;
-}
-.action-btn-group {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 8px !important;
-}
-.action-btn-group .btn {
-    margin: 0 !important;
-}
-</style>
-
             <div class="page-toolbar">
                 <div>
                     <h1>Manage Users</h1>

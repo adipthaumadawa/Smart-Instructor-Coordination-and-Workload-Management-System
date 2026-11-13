@@ -108,11 +108,11 @@ include __DIR__ . '/../includes/header.php';
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <div class="d-card" style="max-width: 680px; padding: 24px;">
+    <div class="d-card profile-card">
         <form method="POST" action="" enctype="multipart/form-data">
             
             <!-- Avatar Upload Row -->
-            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 24px;">
+            <div class="profile-avatar-row">
                 <div>
                     <?= sic_user_avatar($user['avatar_url'] ?? null, $user['full_name'], 'avatar') ?>
                 </div>
@@ -140,7 +140,7 @@ include __DIR__ . '/../includes/header.php';
                 <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
             </div>
 
-            <div style="margin-top: 20px; text-align: right;">
+            <div class="mt-20px text-end">
                 <button type="submit" class="btn btn-primary">Save Profile</button>
             </div>
         </form>

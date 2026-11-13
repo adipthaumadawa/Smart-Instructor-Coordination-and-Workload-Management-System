@@ -84,7 +84,7 @@ include __DIR__ . '/../includes/header.php';
                 <div class="alert alert-danger"><?= htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?></div>
             <?php endif; ?>
 
-            <div class="row g-4" style="margin-bottom:4px;">
+            <div class="row g-4 mb-1">
                 <div class="col-md-4">
                     <div class="card"><div class="card-body">
                         <p class="text-muted small mb-1">This Week's Working Hours</p>
@@ -116,17 +116,17 @@ include __DIR__ . '/../includes/header.php';
                 </div>
             </div>
 
-            <p class="small text-muted" style="margin-bottom:16px;">
+            <p class="small text-muted mb-3">
                 Note: Presentation panel duties are not counted toward normal working-hours calculations. All hour figures on this page are working hours (hours actually assigned to teaching/task duties), not clock-in/attendance time.
             </p>
 
-            <div class="card" style="margin-bottom:20px;">
+            <div class="card mb-20px">
                 <div class="card-header"><h5>Daily Working Hours This Week</h5></div>
                 <div class="card-body">
-                    <div class="d-flex align-items-end gap-3" style="height:140px;">
+                    <div class="d-flex align-items-end gap-3 daily-chart">
                         <?php foreach ($dailyHours as $date => $hrs): ?>
-                            <div class="d-flex flex-column align-items-center" style="flex:1;">
-                                <div style="width:100%;max-width:36px;background:var(--primary,#00236f);border-radius:6px 6px 0 0;height:<?= (int)round(($hrs / $maxDay) * 100) ?>px;min-height:2px;"></div>
+                            <div class="d-flex flex-column align-items-center daily-chart-col">
+                                <div class="daily-bar" style="--bar-height:<?= (int)round(($hrs / $maxDay) * 100) ?>px"></div>
                                 <span class="small text-muted mt-1"><?= date('D', strtotime($date)) ?></span>
                                 <span class="small fw-bold"><?= $hrs ?>h</span>
                             </div>
