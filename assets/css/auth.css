@@ -161,7 +161,7 @@
 
 .portal-control:focus {
   border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.1);
+  box-shadow: var(--ring);
 }
 
 .portal-control-pr {
@@ -347,6 +347,7 @@
   line-height: 1.2;
   color: #ffffff;
   margin-bottom: 12px;
+  /* legibility over photo, not elevation */
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
 }
 
@@ -355,6 +356,7 @@
   color: #e2e8f0;
   line-height: 1.65;
   margin-bottom: 36px;
+  /* legibility over photo, not elevation */
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
 }
 
@@ -367,7 +369,7 @@
   padding: 16px 24px;
   border-radius: 12px;
   backdrop-filter: blur(12px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-3);
 }
 
 .portal-metric-item {
@@ -404,7 +406,7 @@
   padding: 36px;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 12px 36px rgba(13, 35, 62, .1);
+  box-shadow: var(--shadow-3);
 }
 
 .recovery-card h1 {
@@ -437,7 +439,7 @@
   padding: 36px;
   background: #fff;
   border-radius: 18px;
-  box-shadow: 0 12px 36px rgba(13, 35, 62, .1);
+  box-shadow: var(--shadow-3);
   text-align: center;
 }
 

@@ -37,7 +37,11 @@
   --success: #16835b;
   --warning: #a76c00;
   --radius: 16px;
-  --shadow: 0 2px 8px rgba(7, 26, 51, .05);
+  /* Elevation scale: 1 resting surfaces, 2 hover/floating, 3 overlays; --ring is focus, not elevation */
+  --shadow-1: 0 1px 3px rgba(7, 26, 51, .05);
+  --shadow-2: 0 4px 12px rgba(7, 26, 51, .08);
+  --shadow-3: 0 12px 36px rgba(7, 26, 51, .12);
+  --ring: 0 0 0 3px rgba(8, 127, 140, .12);
   --header: 68px;
   --sidebar: 260px;
 }
@@ -214,6 +218,7 @@ textarea {
 .sidebar-link.active {
   background: linear-gradient(135deg, rgba(10, 155, 168, .32), rgba(10, 155, 168, .14));
   color: #fff;
+  /* active-state indicator, not elevation */
   box-shadow: inset 3px 0 0 #27c0c9;
 }
 
@@ -351,7 +356,7 @@ textarea {
 .global-search:focus-within {
   background: #fff;
   border-color: rgba(8, 127, 140, .55);
-  box-shadow: 0 0 0 4px rgba(8, 127, 140, .09);
+  box-shadow: var(--ring);
 }
 
 .global-search>svg {
@@ -406,13 +411,12 @@ textarea {
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(7, 26, 51, .08);
   transition: transform .15s, box-shadow .15s;
 }
 
 .primary-action:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(7, 26, 51, .10);
+  box-shadow: var(--shadow-2);
 }
 
 .primary-action svg {
@@ -502,7 +506,7 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 16px;
   background: #fff;
-  box-shadow: 0 4px 12px rgba(7, 26, 51, .08);
+  box-shadow: var(--shadow-2);
 }
 
 .dropdown-menu[hidden] {
@@ -583,7 +587,7 @@ textarea {
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-1);
 }
 
 .card {
@@ -612,7 +616,7 @@ textarea {
 }
 
 .shadow-sm {
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-1);
 }
 
 /* ── 6. Buttons ── */
@@ -636,7 +640,7 @@ textarea {
 
 .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(7, 26, 51, .07);
+  box-shadow: var(--shadow-2);
 }
 
 .btn-primary {
@@ -724,7 +728,7 @@ textarea {
 .form-control:focus,
 .form-select:focus {
   border-color: rgba(8, 127, 140, .6);
-  box-shadow: 0 0 0 4px rgba(8, 127, 140, .09);
+  box-shadow: var(--ring);
 }
 
 textarea.form-control {

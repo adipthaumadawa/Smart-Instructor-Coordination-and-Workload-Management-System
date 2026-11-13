@@ -38,8 +38,6 @@
   --d-text:   #0f172a;
   --d-muted:  #64748b;
   --d-radius: 10px;
-  --d-shadow: 0 1px 3px rgba(15,23,42,.04);
-  --d-shadow-hover: 0 4px 12px rgba(15,23,42,.06);
 }
 
 /* ── 2. Avatar & profile button ── */
@@ -86,7 +84,7 @@
 
 .profile-button:hover .avatar {
   transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-2);
 }
 
 .profile-copy {
@@ -189,13 +187,12 @@
   font-weight: 700;
   font-size: 13px;
   transition: transform .18s, box-shadow .18s;
-  box-shadow: 0 2px 6px rgba(7,26,51,.15);
   white-space: nowrap;
 }
 
 .dash-primary-action:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(7,26,51,.22);
+  box-shadow: var(--shadow-2);
 }
 
 .dash-primary-action .sic-icon svg {
@@ -215,7 +212,7 @@
   background: var(--d-card);
   border: 1px solid var(--d-line);
   border-radius: var(--d-radius);
-  box-shadow: var(--d-shadow);
+  box-shadow: var(--shadow-1);
   transition: transform .2s ease, box-shadow .2s ease;
   display: flex;
   flex-direction: column;
@@ -223,7 +220,7 @@
 
 .kpi-card:hover {
   transform: translateY(-2px);
-  box-shadow: var(--d-shadow-hover);
+  box-shadow: var(--shadow-2);
 }
 
 .kpi-strip {
@@ -388,7 +385,7 @@
   background: var(--d-card);
   border: 1px solid var(--d-line);
   border-radius: var(--d-radius);
-  box-shadow: var(--d-shadow);
+  box-shadow: var(--shadow-1);
   overflow: hidden;
   transition: transform .2s ease, box-shadow .2s ease;
   width: 100%;
@@ -399,7 +396,7 @@
 
 .d-card:hover {
   transform: translateY(-1px);
-  box-shadow: var(--d-shadow-hover);
+  box-shadow: var(--shadow-2);
 }
 
 /* ── 6. Bar charts & legends ── */

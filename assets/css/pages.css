@@ -388,8 +388,8 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .booking-form-control:focus {
-    border-color: #000a1e;
-    box-shadow: 0 0 0 3px rgba(0, 10, 30, 0.10);
+    border-color: rgba(8, 127, 140, .6);
+    box-shadow: var(--ring);
 }
 .booking-form-control::placeholder { color: #9ca3af; }
 select.booking-form-control { cursor: pointer; }
@@ -581,8 +581,8 @@ textarea.booking-form-control { resize: vertical; }
     outline: none;
 }
 .room-page .form-control:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+    border-color: rgba(8, 127, 140, .6);
+    box-shadow: var(--ring);
 }
 
 .room-page .button-area { margin-top: 20px; }
