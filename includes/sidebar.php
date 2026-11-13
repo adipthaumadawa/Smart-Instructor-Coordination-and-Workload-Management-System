@@ -58,6 +58,7 @@ if (!function_exists('sidebar_link')) {
         echo '<p class="sidebar-label">Administration</p>';
         sidebar_link('admin/users.php', 'Users', 'users', $currentPage);
         sidebar_link('admin/roles.php', 'Roles & access', 'shield', $currentPage);
+        sidebar_link('admin/lecture_hall_booking.php', 'Lecture Hall Booking', 'door', $currentPage);
         sidebar_link('admin/activity_logs.php', 'Activity logs', 'history', $currentPage);
         sidebar_link('admin/settings.php', 'System settings', 'settings', $currentPage);
       }
