@@ -1,0 +1,3 @@
+# Internal staff system - keep search engines out
+User-agent: *
+Disallow: /

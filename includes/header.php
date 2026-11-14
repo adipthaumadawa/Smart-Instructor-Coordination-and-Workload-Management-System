@@ -16,6 +16,7 @@ $userInitial = strtoupper(substr($displayName, 0, 1));
   <meta name="theme-color" content="#071a33">
   <meta name="description" content="Smart Instructor Coordination and Workload Management System – UCSC">
   <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?> | <?= htmlspecialchars($brandName, ENT_QUOTES, 'UTF-8') ?></title>
+  <link rel="icon" type="image/png" href="<?= app_url('assets/images/favicon.png') ?>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap">
